@@ -10,15 +10,12 @@ import com.tritandb.engine.tsc.data.Row
  */
 class DecompressorFlat(val input:BitReader) {
     private val FIRST_DELTA_BITS:Int = 27
-    // private int storedLeadingZeros = Integer.MAX_VALUE;
-    // private int storedTrailingZeros = 0;
     private var storedLeadingZerosRow:IntArray = IntArray(1)
     private var storedTrailingZerosRow:IntArray = IntArray(1)
     private var storedVals:LongArray = LongArray(1)
     private var storedTimestamp:Long = 0
     private var storedDelta:Long = 0
     private var columns = 0
-    internal var count = 0
     private var blockTimestamp:Long = 0
     private var endOfStream = false
     init{
@@ -157,23 +154,5 @@ class DecompressorFlat(val input:BitReader) {
                 storedVals[i] = value
             }
         }
-        // // Read value
-        // if (in.readBit()) {
-        // // else -> same value as before
-        // if (in.readBit()) {
-        // // New leading and trailing zeros
-        // storedLeadingZeros = (int) in.getLong(5);
-        //
-        // byte significantBits = (byte) in.getLong(6);
-        // if(significantBits == 0) {
-        // significantBits = 64;
-        // }
-        // storedTrailingZeros = 64 - significantBits - storedLeadingZeros;
-        // }
-        // long value = in.getLong(64 - storedLeadingZeros - storedTrailingZeros);
-        // value <<= storedTrailingZeros;
-        // value = storedVal ^ value;
-        // storedVal = value;
-        // }
     }
 }

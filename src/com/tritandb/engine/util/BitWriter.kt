@@ -9,6 +9,20 @@ import java.io.OutputStream
 
 class BitWriter(val output: OutputStream) {
 
+    var bitsLeft = 0
+    var b = 0
+
+    private fun flipByte() {
+        if (bitsLeft == 0) {
+            output.write(b)
+            if (!bb.hasRemaining()) {
+                expandAllocation()
+            }
+            b = bb.get(bb.position())
+            bitsLeft = java.lang.Byte.SIZE
+        }
+    }
+
     var pos = 0
         private set
 
