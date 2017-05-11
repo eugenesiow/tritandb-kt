@@ -60,7 +60,7 @@ class BitWriter(val output: OutputStream) {
     }
 
     @Throws(IOException::class)
-    fun writeBits(numBits: Int, value: Long) {
+    fun writeBits(value: Long, numBits: Int) {
         if (numBits > 64 || numBits < 1) {
             throw IllegalArgumentException("Invalid numBits: $numBits, must be in range 1 .. 64")
         }

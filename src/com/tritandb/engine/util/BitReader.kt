@@ -2,102 +2,74 @@ package com.tritandb.engine.util
 
 import java.io.IOException
 import java.io.InputStream
+import kotlin.experimental.and
 
 /**
  * Created by eugenesiow on 10/05/2017.
  */
 class BitReader(val input: InputStream) {
 
-    var pos = 0
-        private set
+    var b = 0
+    var bitsLeft = 0
 
-    private var mark = 0
-    private var nextByte = 0
-    private var remainingBits = 0
-
-    fun mark(readLimit: Int = 8) {
-        mark = pos;
-        input.mark(readLimit)
+    init {
+        flipByte()
     }
 
-    fun reset() {
-        pos = mark;
-        input.reset()
-    }
+//    var pos = 0
+//        private set
+//
+//    private var mark = 0
+//    private var nextByte = 0
+//    private var remainingBits = 0
 
-    @Throws(IOException::class)
-    fun readBytes(len: Int): ByteArray {
-        val data = ByteArray(len)
-        for (i in 0 .. (len - 1)) {
-            data[i] = readU08().toByte()
+//    fun mark(readLimit: Int = 8) {
+//        mark = pos;
+//        input.mark(readLimit)
+//    }
+//
+//    fun reset() {
+//        pos = mark;
+//        input.reset()
+//    }
+
+    fun flipByte() {
+        if (bitsLeft == 0) {
+            val i = input.read()
+            b = i
+//            if (i == -1) {
+//                throw IOException("Stream was closed")
+//            }
+            bitsLeft = java.lang.Byte.SIZE
         }
-        return data
     }
 
-    @Throws(IOException::class)
-    fun readU08(): Int {
-        pos++
-        val byte = input.read()
-        if (byte == -1) {
-            throw IOException("Stream was closed")
-        }
-        if (remainingBits != 0) {
-            println("Oh no, there are remaining bits :(")
-            remainingBits = 0
-            throw RuntimeException()
-        }
-        return byte
+    fun readBit():Boolean {
+        val bit:Int = (b shr bitsLeft - 1 and 1)
+        bitsLeft--
+        flipByte()
+        return bit == 1
     }
 
-    @Throws(IOException::class)
-    fun readU16(): Int {
-        return (readU08() shl 8) or readU08()
-    }
-
-    @Throws(IOException::class)
-    fun readU32(): Int {
-        return (readU08() shl 24) or (readU08() shl 16) or (readU08() shl 8) or readU08()
-    }
-
-    @Throws(IOException::class)
-    fun readU64(): Long {
-        return (readU08().toLong() shl 56) or (readU08().toLong() shl 48) or
-                (readU08().toLong() shl 40) or (readU08().toLong() shl 32) or
-                (readU08().toLong() shl 24) or (readU08().toLong() shl 16) or
-                (readU08().toLong() shl 8)  or  readU08().toLong()
-    }
-
-    @Throws(IOException::class)
-    fun readBits(numBits: Int): Long {
-        if (numBits > 64 || numBits < 1) {
-            throw IllegalArgumentException("Invalid numBits: $numBits, must be in range 1 .. 64")
-        }
-        if (remainingBits == 0) {
-            when (numBits) {
-                8 -> return readU08().toLong()
-                16 -> return readU16().toLong()
-                32 -> return readU32().toLong()
-                64 -> return readU64().toLong()
+    fun readBits(bits: Int): Long {
+        var numBits = bits
+        var value = 0L
+        while(numBits>0) {
+            if (numBits > bitsLeft || numBits == java.lang.Byte.SIZE) {
+                // Take only the bitsLeft "least significant" bits
+                val d = (b and (1 shl bitsLeft) - 1)
+                value = (value shl bitsLeft) + (d and 0xFF)
+                numBits -= bitsLeft
+                bitsLeft = 0
+            } else {
+                // Shift to correct position and take only least significant bits
+                value = (value shl numBits) + (b ushr (bitsLeft - numBits) and (1 shl numBits) - 1 and 0xFF)
+                bitsLeft -= numBits
+                numBits = 0
             }
+            flipByte()
         }
-        var bits: Long = 0
-        for (i in 1 .. numBits) {
-            bits = (bits shl 1) or nextBit().toLong()
-        }
-        return bits
-    }
-
-    @Throws(IOException::class)
-    private fun nextBit(): Int {
-        if (remainingBits == 0) {
-            nextByte = readU08()
-            remainingBits = 7
-        } else {
-            remainingBits--
-        }
-        val bit = (nextByte and 0x80) shr 7
-        nextByte = nextByte shl 1
-        return bit
+        return value;
     }
 
 }
