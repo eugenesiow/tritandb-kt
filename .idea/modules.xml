@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/tritandb-kt.iml" filepath="$PROJECT_DIR$/tritandb-kt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tritandb-kt.iml" filepath="$PROJECT_DIR$/.idea/modules/tritandb-kt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tritandb-kt_main.iml" filepath="$PROJECT_DIR$/.idea/modules/tritandb-kt_main.iml" group="tritandb-kt" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tritandb-kt_test.iml" filepath="$PROJECT_DIR$/.idea/modules/tritandb-kt_test.iml" group="tritandb-kt" />
     </modules>
   </component>
 </project>
