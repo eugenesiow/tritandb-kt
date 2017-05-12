@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="824bcca3-cbb8-471d-b969-c63af3c522a5" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/tritandb/engine/tsc/CompressorFlat.kt" afterPath="$PROJECT_DIR$/src/com/tritandb/engine/tsc/CompressorFlat.kt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/tritandb/engine/tsc/DecompressorFlat.kt" afterPath="$PROJECT_DIR$/src/com/tritandb/engine/tsc/DecompressorFlat.kt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/tritandb/engine/tsc/test.kt" afterPath="$PROJECT_DIR$/src/com/tritandb/engine/tsc/test.kt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/tritandb/engine/util/BitWriter.kt" afterPath="$PROJECT_DIR$/src/com/tritandb/engine/util/BitWriter.kt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test.tsc" afterPath="$PROJECT_DIR$/test.tsc" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,35 +20,13 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="test.kt" pinned="false" current-in-tab="false">
+      <file leaf-file-name="test.kt" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/tsc/test.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="27" column="35" lean-forward="true" selection-start-line="27" selection-start-column="35" selection-end-line="27" selection-end-column="35" />
+            <state relative-caret-position="630">
+              <caret line="42" column="1" lean-forward="true" selection-start-line="42" selection-start-column="1" selection-end-line="42" selection-end-column="1" />
               <folding>
-                <element signature="e#33#231#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CompressorFlat.kt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/tsc/CompressorFlat.kt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1500">
-              <caret line="100" column="36" lean-forward="true" selection-start-line="100" selection-start-column="36" selection-end-line="100" selection-end-column="36" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BitWriter.kt" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/util/BitWriter.kt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="230">
-              <caret line="24" column="0" lean-forward="true" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-              <folding>
-                <element signature="e#34#88#0" expanded="true" />
+                <element signature="e#33#255#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -73,10 +55,14 @@
       <find>readbits(1</find>
       <find>.read</find>
       <find>readbits(1)</find>
+      <find>writebits(0,1)</find>
+      <find>compressvalue</find>
+      <find>compressvalue(</find>
     </findStrings>
     <replaceStrings>
       <replace>input</replace>
       <replace>value</replace>
+      <replace>writeBit(false)</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -93,13 +79,13 @@
         <option value="$PROJECT_DIR$/src/com/tritandb/engine/tsc/Compressor.kt" />
         <option value="$PROJECT_DIR$/src/com/tritandb/engine/util/IO.kt" />
         <option value="$PROJECT_DIR$/src/com/tritandb/engine/util/NIO.kt" />
-        <option value="$PROJECT_DIR$/src/com/tritandb/engine/tsc/CompressorFlat.kt" />
         <option value="$PROJECT_DIR$/src/com/tritandb/engine/tsc/data/Pair.kt" />
         <option value="$PROJECT_DIR$/src/com/tritandb/engine/tsc/data/Row.kt" />
         <option value="$PROJECT_DIR$/src/com/tritandb/engine/util/BitReader.kt" />
-        <option value="$PROJECT_DIR$/src/com/tritandb/engine/tsc/test.kt" />
-        <option value="$PROJECT_DIR$/src/com/tritandb/engine/tsc/DecompressorFlat.kt" />
         <option value="$PROJECT_DIR$/src/com/tritandb/engine/util/BitWriter.kt" />
+        <option value="$PROJECT_DIR$/src/com/tritandb/engine/tsc/test.kt" />
+        <option value="$PROJECT_DIR$/src/com/tritandb/engine/tsc/CompressorFlat.kt" />
+        <option value="$PROJECT_DIR$/src/com/tritandb/engine/tsc/DecompressorFlat.kt" />
       </list>
     </option>
   </component>
@@ -667,12 +653,13 @@
       <workItem from="1494431236788" duration="3424000" />
       <workItem from="1494497854480" duration="2477000" />
       <workItem from="1494506063196" duration="8559000" />
-      <workItem from="1494518644221" duration="3907000" />
+      <workItem from="1494518644221" duration="3927000" />
+      <workItem from="1494582985496" duration="7167000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="18367000" />
+    <option name="totallyTimeSpent" value="25554000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="23" width="2112" height="1336" extended-state="0" />
@@ -695,6 +682,7 @@
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1813447" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32991317" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -706,7 +694,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -726,10 +713,28 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/tsc/test.kt">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#33#255#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/tsc/CompressorFlat.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1500">
+          <caret line="100" column="36" lean-forward="true" selection-start-line="100" selection-start-column="36" selection-end-line="100" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/tsc/test.kt">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
           <caret line="19" column="50" lean-forward="false" selection-start-line="19" selection-start-column="50" selection-end-line="19" selection-end-column="50" />
           <folding>
-            <element signature="e#33#231#0" expanded="true" />
+            <element signature="e#33#255#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -747,7 +752,7 @@
         <state relative-caret-position="735">
           <caret line="52" column="0" lean-forward="false" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
           <folding>
-            <element signature="e#33#212#0" expanded="true" />
+            <element signature="e#33#114#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -767,7 +772,7 @@
         <state relative-caret-position="225">
           <caret line="17" column="26" lean-forward="true" selection-start-line="17" selection-start-column="26" selection-end-line="17" selection-end-column="26" />
           <folding>
-            <element signature="e#34#118#0" expanded="true" />
+            <element signature="e#34#118#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -777,7 +782,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#33#231#0" expanded="true" />
+            <element signature="e#33#255#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -805,7 +810,7 @@
         <state relative-caret-position="195">
           <caret line="15" column="1" lean-forward="true" selection-start-line="15" selection-start-column="1" selection-end-line="15" selection-end-column="1" />
           <folding>
-            <element signature="e#33#231#0" expanded="true" />
+            <element signature="e#33#255#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -851,7 +856,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="4" column="3" lean-forward="true" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
-          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bedroom_corner-motion.tsc">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -863,17 +874,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/util/BitReader.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="680">
-          <caret line="72" column="5" lean-forward="false" selection-start-line="72" selection-start-column="5" selection-end-line="72" selection-end-column="5" />
-          <folding>
-            <element signature="e#34#118#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bedroom_corner-motion.tsc">
+    <entry file="file://$PROJECT_DIR$/kotlin.tsc">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -881,40 +882,46 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/tsc/test.kt">
+    <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/util/BitWriter.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="27" column="35" lean-forward="true" selection-start-line="27" selection-start-column="35" selection-end-line="27" selection-end-column="35" />
+        <state relative-caret-position="735">
+          <caret line="49" column="34" lean-forward="false" selection-start-line="49" selection-start-column="34" selection-end-line="49" selection-end-column="34" />
           <folding>
-            <element signature="e#33#231#0" expanded="true" />
+            <element signature="e#34#88#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/tsc/DecompressorFlat.kt">
+    <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/util/BitReader.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="27" lean-forward="false" selection-start-line="17" selection-start-column="27" selection-end-line="17" selection-end-column="27" />
-          <folding>
-            <element signature="e#33#212#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="1050">
+          <caret line="72" column="5" lean-forward="false" selection-start-line="72" selection-start-column="5" selection-end-line="72" selection-end-column="5" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/tsc/CompressorFlat.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1500">
-          <caret line="100" column="36" lean-forward="true" selection-start-line="100" selection-start-column="36" selection-end-line="100" selection-end-column="36" />
+        <state relative-caret-position="-1327">
+          <caret line="33" column="70" lean-forward="true" selection-start-line="33" selection-start-column="70" selection-end-line="33" selection-end-column="70" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/util/BitWriter.kt">
+    <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/tsc/DecompressorFlat.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="24" column="0" lean-forward="true" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+        <state relative-caret-position="30">
+          <caret line="2" column="41" lean-forward="false" selection-start-line="2" selection-start-column="41" selection-end-line="2" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/tritandb/engine/tsc/test.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="630">
+          <caret line="42" column="1" lean-forward="true" selection-start-line="42" selection-start-column="1" selection-end-line="42" selection-end-column="1" />
           <folding>
-            <element signature="e#34#88#0" expanded="true" />
+            <element signature="e#33#255#0" expanded="true" />
           </folding>
         </state>
       </provider>

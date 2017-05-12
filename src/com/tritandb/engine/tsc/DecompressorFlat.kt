@@ -1,8 +1,6 @@
 package com.tritandb.engine.tsc
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import com.tritandb.engine.util.BitReader
-import com.tritandb.engine.tsc.data.Pair
 import com.tritandb.engine.tsc.data.Row
 
 /**
@@ -26,68 +24,46 @@ class DecompressorFlat(val input:BitReader) {
         storedLeadingZerosRow = IntArray(columns)
         storedTrailingZerosRow = IntArray(columns)
         storedVals = LongArray(columns)
-        for (i in 0..columns - 1)
-        {
+        for (i in 0..columns - 1) {
             storedLeadingZerosRow[i] = Integer.MAX_VALUE
             storedTrailingZerosRow[i] = 0
         }
         blockTimestamp = input.readBits(64)
     }
-    /**
-     * Returns the next pair in the time series, if available.
-     *
-     * @return Pair if there's next value, null if series is done.
-     */
-    fun readPair():Pair? {
-        next()
-        if (endOfStream)
-        {
-            return null
-        }
-        return Pair(storedTimestamp, storedVals[0])
-    }
     fun readRow(): Row? {
         next()
-        if (endOfStream)
-        {
+        if (endOfStream) {
             return null
         }
         return Row(storedTimestamp, storedVals)
     }
     private fun next() {
-        if (storedTimestamp == 0L)
-        {
+        if (storedTimestamp == 0L) {
             // First item to read
             storedDelta = input.readBits(FIRST_DELTA_BITS)
-            if (storedDelta == ((1 shl 27) - 1).toLong())
-            {
+            if (storedDelta == ((1 shl 27) - 1).toLong()) {
                 endOfStream = true
                 return
             }
-            for (i in 0..columns - 1)
-            {
+            for (i in 0..columns - 1) {
                 storedVals[i] = input.readBits(64)
             }
             storedTimestamp = blockTimestamp + storedDelta
         }
-        else
-        {
+        else {
             nextTimestamp()
             nextValue()
         }
     }
     private fun bitsToRead():Int {
         var value = 0x00
-        for (i in 0..3)
-        {
+        for (i in 0..3) {
             value = value shl 1
             val bit = input.readBit()
-            if (bit)
-            {
+            if (bit) {
                 value = value or 0x01
             }
-            else
-            {
+            else {
                 break
             }
         }
@@ -105,23 +81,18 @@ class DecompressorFlat(val input:BitReader) {
         // Next, read timestamp
         var deltaDelta:Long = 0
         val toRead = bitsToRead()
-        if (toRead > 0)
-        {
+        if (toRead > 0) {
             deltaDelta = input.readBits(toRead)
-            if (toRead == 32)
-            {
-                if (deltaDelta.toInt() == 0xFFFFFFFF.toInt())
-                {
+            if (toRead == 32) {
+                if (deltaDelta.toInt() == 0xFFFFFFFF.toInt()) {
                     // End of stream
                     endOfStream = true
                     return
                 }
             }
-            else
-            {
+            else {
                 // Turn "unsigned" long value back to signed one
-                if (deltaDelta > (1 shl (toRead - 1)))
-                {
+                if (deltaDelta > (1 shl (toRead - 1))) {
                     deltaDelta -= (1 shl toRead).toLong()
                 }
             }
@@ -131,19 +102,15 @@ class DecompressorFlat(val input:BitReader) {
         storedTimestamp = storedDelta + storedTimestamp
     }
     private fun nextValue() {
-        for (i in 0..columns - 1)
-        {
+        for (i in 0..columns - 1) {
             // Read value
-            if (input.readBit())
-            {
+            if (input.readBit()) {
                 // else -> same value as before
-                if (input.readBit())
-                {
+                if (input.readBit()) {
                     // New leading and trailing zeros
                     storedLeadingZerosRow[i] = input.readBits(5).toInt()
                     var significantBits = input.readBits(6).toInt()
-                    if (significantBits == 0)
-                    {
+                    if (significantBits == 0) {
                         significantBits = 64
                     }
                     storedTrailingZerosRow[i] = 64 - significantBits - storedLeadingZerosRow[i]
