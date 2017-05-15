@@ -36,7 +36,7 @@ class CompressorFlat(timestamp:Long, val out: BitWriter, var columns:Int) {
      * @param timestamp Timestamp in miliseconds
      * @param values LongArray of values for the next row in the series, use java.lang.Double.doubleToRawLongBits function to convert from double to long bits
      */
-    fun addRow(timestamp:Long, values:LongArray) {
+    fun addRow(timestamp:Long, values:List<Long>) {
         if (storedTimestamp == 0L) {
             writeFirstRow(timestamp, values)
         }
@@ -46,7 +46,7 @@ class CompressorFlat(timestamp:Long, val out: BitWriter, var columns:Int) {
         }
     }
 
-    private fun writeFirstRow(timestamp:Long, values:LongArray) {
+    private fun writeFirstRow(timestamp:Long, values:List<Long>) {
         storedDelta = timestamp - blockTimestamp
         storedTimestamp = timestamp
         out.writeBits(storedDelta, FIRST_DELTA_BITS)
@@ -106,7 +106,7 @@ class CompressorFlat(timestamp:Long, val out: BitWriter, var columns:Int) {
         storedDelta = newDelta
         storedTimestamp = timestamp
     }
-    private fun compressValues(values:LongArray) {
+    private fun compressValues(values:List<Long>) {
         (0..columns - 1).forEach { i ->
             val xor = storedVals[i] xor values[i]
             if (xor == 0L) {

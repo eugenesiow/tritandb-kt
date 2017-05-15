@@ -2,9 +2,10 @@ package com.tritandb.engine.tsc
 
 import com.lmax.disruptor.EventFactory
 import com.lmax.disruptor.dsl.Disruptor
-import com.tritandb.engine.tsc.data.DisruptorEvent
 import java.util.concurrent.Executors
 import com.lmax.disruptor.EventHandler
+import com.tritandb.engine.tsc.data.*
+import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
 import main.kotlin.com.tritandb.engine.tsc.CompressorFlat
 import main.kotlin.com.tritandb.engine.util.BitWriter
 import java.io.File
@@ -19,9 +20,13 @@ val b: BitWriter = BitWriter(o)
 val c: CompressorFlat = CompressorFlat(System.currentTimeMillis(),b,1)
 
 val handler:EventHandler<DisruptorEvent> = EventHandler({ event, sequence, endOfBatch ->
-    val arr:LongArray = longArrayOf(event.value)
-    c.addRow(System.currentTimeMillis(),arr)
-    println(arr)
+    val tEvent:EventProtos.TritanEvent = event.value
+    when(tEvent.type) {
+        INSERT -> for(row in tEvent.rows.rowList) {
+            c.addRow(row.timestamp,row.valueList)
+        }
+        CLOSE -> c.close()
+    }
 })
 
 fun main(args: Array<String>) {
@@ -43,6 +48,19 @@ fun main(args: Array<String>) {
     // Get the ring buffer from the Disruptor to be used for publishing.
     val ringBuffer = disruptor.getRingBuffer()
 
-    ringBuffer.publishEvent { event, sequence -> event.value = 2L }
+    ringBuffer.publishEvent { event, sequence -> event.value = buildTritanEvent {
+        type = INSERT
+        name = "test"
+        rows = buildRows {
+            addRow(buildRow {
+                timestamp = System.currentTimeMillis()
+                addValue(3000)
+            })
+        }
+    } }
+    ringBuffer.publishEvent { event, sequence -> event.value = buildTritanEvent {
+        type = CLOSE
+        name = "test"
+    } }
 
 }

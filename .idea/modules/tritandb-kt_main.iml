@@ -6,7 +6,7 @@
         <compilerSettings />
         <compilerArguments>
           <option name="destination" value="$MODULE_DIR$/../../build/kotlin-classes/main" />
-          <option name="classpath" value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.1.2-2/2b22828f027e103dcd45f3aa240338bfdb53d16b/kotlin-stdlib-1.1.2-2.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/com.lmax/disruptor/3.3.6/9bfca4ee4f691f3737b3f4f006d0c4770f178eb/disruptor-3.3.6.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar" />
+          <option name="classpath" value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.1.2-2/2b22828f027e103dcd45f3aa240338bfdb53d16b/kotlin-stdlib-1.1.2-2.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/com.lmax/disruptor/3.3.6/9bfca4ee4f691f3737b3f4f006d0c4770f178eb/disruptor-3.3.6.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/com.google.protobuf/protobuf-java/3.3.0/9f301d1a27501b1afcb2ed16aad428337dabf9e4/protobuf-java-3.3.0.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar" />
           <option name="noStdlib" value="true" />
           <option name="noReflect" value="true" />
           <option name="moduleName" value="tritandb-kt_main" />
@@ -38,6 +38,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.1.2-2" level="project" />
     <orderEntry type="library" name="Gradle: com.lmax:disruptor:3.3.6" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.protobuf:protobuf-java:3.3.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
   </component>
 </module>

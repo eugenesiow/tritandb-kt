@@ -20,4 +20,5 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "com.lmax:disruptor:3.3.6"
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.3.0'
 }
