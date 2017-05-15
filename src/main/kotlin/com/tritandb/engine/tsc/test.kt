@@ -26,15 +26,17 @@ fun main(args : Array<String>) {
 //    c.close()
 //    o.close()
 
-    val i:InputStream = File("disruptor.tsc").inputStream()
+    val i:InputStream = File("shelburne.tsc").inputStream()
     val bi:BitReader = BitReader(i)
     val d:DecompressorFlat = DecompressorFlat(bi)
     var r: Row? = null
     var count = 0
     while({ r = d.readRow(); r }() !=null) {
-        print("${count++}:")
-        println(r)
-
+        print("${count++}:${r!!.timestamp}")
+        for(pair in r!!.getRow()) {
+            print(", ${pair.getDoubleValue()}")
+        }
+        println()
     }
     i.close()
 
