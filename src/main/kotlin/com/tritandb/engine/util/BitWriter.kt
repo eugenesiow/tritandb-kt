@@ -1,6 +1,7 @@
 package main.kotlin.com.tritandb.engine.util
 
 import java.io.OutputStream
+import kotlin.experimental.or
 
 /**
  * Created by eugene on 10/05/2017.
@@ -9,11 +10,11 @@ import java.io.OutputStream
 class BitWriter(val output: OutputStream) {
 
     var bitsLeft = java.lang.Byte.SIZE
-    var b = 0
+    var b:Byte = 0
 
     private fun flipByte() {
         if (bitsLeft == 0) {
-            output.write(b)
+            output.write(b.toInt())
             bitsLeft = java.lang.Byte.SIZE
             b = 0
         }
@@ -21,7 +22,7 @@ class BitWriter(val output: OutputStream) {
 
     fun writeBit(bit: Boolean) {
         if (bit) {
-            b = b or (1 shl (bitsLeft - 1))
+            b = b or (1 shl (bitsLeft - 1)).toByte()
         }
         bitsLeft--
         flipByte()
@@ -33,10 +34,10 @@ class BitWriter(val output: OutputStream) {
             val bitsToWrite = if (bits > bitsLeft) bitsLeft else bits
             if (bits > bitsLeft) {
                 val shift = bits - bitsLeft
-                b = b or (value shr shift and ((1 shl bitsLeft) - 1).toLong()).toInt()
+                b = b or ((value shr shift) and ((1 shl bitsLeft) - 1).toLong()).toByte()
             } else {
                 val shift = bitsLeft - bits
-                b = b or (value shl shift).toInt()
+                b = b or (value shl shift).toByte()
             }
             bits -= bitsToWrite
             bitsLeft -= bitsToWrite

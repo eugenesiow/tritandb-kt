@@ -7,28 +7,31 @@ import com.lmax.disruptor.EventHandler
 import com.lmax.disruptor.RingBuffer
 import com.tritandb.engine.tsc.data.*
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
-import com.tritandb.engine.util.ByteBufferBitOutput
 import main.kotlin.com.tritandb.engine.tsc.CompressorFlat
 import main.kotlin.com.tritandb.engine.util.BitWriter
+import java.io.BufferedReader
 import java.io.File
-import java.io.OutputStream
+import java.io.FileReader
 import kotlin.system.measureTimeMillis
+import java.io.OutputStream
+
 
 /**
  * Created by eugene on 12/05/2017.
  */
 
 val o: OutputStream = File("shelburne.tsc").outputStream()
-//val b: BitWriter = BitWriter(o)
-val b:ByteBufferBitOutput = ByteBufferBitOutput(o)
-//val c: CompressorFlat = CompressorFlat(1271692742103,b,6)
-val c: Compressor = Compressor(1271692742103,b,6)
+val b: BitWriter = BitWriter(o)
+val c: CompressorFlat = CompressorFlat(1271692742104,b,6)
+//var count = 0
 
 val handler:EventHandler<DisruptorEvent> = EventHandler({ event, sequence, endOfBatch ->
     val tEvent:EventProtos.TritanEvent = event.value
     when(tEvent.type) {
-        INSERT -> for(row in tEvent.rows.rowList) {
-            c.addRow(row.timestamp,row.valueList.toLongArray())
+        INSERT -> {
+            for (row in tEvent.rows.rowList) {
+                c.addRow(row.timestamp, row.valueList)
+            }
         }
         CLOSE -> {
             c.close()
@@ -39,7 +42,7 @@ val handler:EventHandler<DisruptorEvent> = EventHandler({ event, sequence, endOf
 
 fun main(args: Array<String>) {
     // Executor that will be used to construct new threads for consumers
-    val executor = Executors.newCachedThreadPool()
+    val executor = Executors.newSingleThreadExecutor()
 
     // Specify the size of the ring buffer, must be power of 2.
     val bufferSize = 1024
@@ -59,15 +62,17 @@ fun main(args: Array<String>) {
     println("Time: ${measureTimeMillis{shelburne(ringBuffer)}}")
 }
 
-fun  shelburne(ringBuffer: RingBuffer<DisruptorEvent>) {
-    var count = 0
-    File("/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv").reader().forEachLine {
-        if(count==0) {
-            count++
-            return@forEachLine
-        }
-        val parts = it.split(",")
+fun shelburne(ringBuffer: RingBuffer<DisruptorEvent>) {
+    val br = BufferedReader(FileReader("/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"))
+    br.readLine() //header
+    for(line in br.lines()) {
+        val parts = line.split(",")
         if(parts.size>6) {
+//            val arr:MutableList<Long> = mutableListOf()
+//            for (i in 1..6) {
+//                arr.add(java.lang.Double.doubleToLongBits(java.lang.Double.parseDouble(parts[i])))
+//            }
+//            c.addRow(parts[0].toLong() / 1000000, arr)
             ringBuffer.publishEvent { event, _ ->
                 event.value = buildTritanEvent {
                     type = INSERT

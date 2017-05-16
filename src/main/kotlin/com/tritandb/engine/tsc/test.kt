@@ -33,6 +33,7 @@ fun main(args : Array<String>) {
     var count = 0
     while({ r = d.readRow(); r }() !=null) {
         print("${count++}:${r!!.timestamp}")
+//        print("${r!!.timestamp}")
         for(pair in r!!.getRow()) {
             print(", ${pair.getDoubleValue()}")
         }

@@ -91,9 +91,11 @@ class DecompressorFlat(val input:BitReader) {
                 }
             }
             else {
-                // Turn "unsigned" long value back to signed one
-                if (deltaDelta > (1 shl (toRead - 1))) {
-                    deltaDelta -= (1 shl toRead).toLong()
+                // Turn deltaDelta long value back to signed one
+                when(toRead) {
+                    7 -> deltaDelta -=63
+                    9 -> deltaDelta -=255
+                    12 -> deltaDelta -=2047
                 }
             }
             deltaDelta = deltaDelta.toInt().toLong()

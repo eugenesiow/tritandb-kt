@@ -1,12 +1,11 @@
 package main.kotlin.com.tritandb.engine.tsc
 
-import com.tritandb.engine.util.ByteBufferBitOutput
 import main.kotlin.com.tritandb.engine.util.BitWriter
 
 /**
  * Created by eugenesiow on 10/05/2017.
  */
-class CompressorFlat(timestamp:Long, val out: ByteBufferBitOutput, var columns:Int) {
+class CompressorFlat(timestamp:Long, val out: BitWriter, var columns:Int) {
 
     private val FIRST_DELTA_BITS:Int = 27
     private var storedLeadingZerosRow:IntArray = IntArray(columns)
@@ -43,12 +42,7 @@ class CompressorFlat(timestamp:Long, val out: ByteBufferBitOutput, var columns:I
         }
         else {
             compressTimestamp(timestamp)
-            if(timestamp>=1271693182094) {
-                print("${timestamp},")
-                compressValues2(values)
-            }
-            else
-                compressValues(values)
+            compressValues(values)
         }
     }
 
@@ -92,17 +86,17 @@ class CompressorFlat(timestamp:Long, val out: ByteBufferBitOutput, var columns:I
         else if (deltaD >= -63 && deltaD <= 64)
         {
             out.writeBits(0x02, 2) // store '10'
-            out.writeBits(deltaD, 7) // Using 7 bits, store the value..
+            out.writeBits(deltaD + 63, 7) // Using 7 bits, store the value..
         }
         else if (deltaD >= -255 && deltaD <= 256)
         {
             out.writeBits(0x06, 3) // store '110'
-            out.writeBits(deltaD, 9) // Use 9 bits
+            out.writeBits(deltaD + 255, 9) // Use 9 bits
         }
         else if (deltaD >= -2047 && deltaD <= 2048)
         {
             out.writeBits(0x0E, 4) // store '1110'
-            out.writeBits(deltaD, 12) // Use 12 bits
+            out.writeBits(deltaD + 2047, 12) // Use 12 bits
         }
         else
         {
@@ -112,33 +106,7 @@ class CompressorFlat(timestamp:Long, val out: ByteBufferBitOutput, var columns:I
         storedDelta = newDelta
         storedTimestamp = timestamp
     }
-    private fun compressValues2(values:List<Long>) {
-        (0..columns - 1).forEach { i ->
-            val xor = storedVals[i] xor values[i]
-            if (xor == 0L) {
-                // Write 0
-                out.writeBit(false)
-            }
-            else {
-                var leadingZeros = java.lang.Long.numberOfLeadingZeros(xor)
-                val trailingZeros = java.lang.Long.numberOfTrailingZeros(xor)
-                // Check overflow of leading? Can't be 32!
-                if (leadingZeros >= 32) {
-                    leadingZeros = 31
-                }
-                // Store bit '1'
-                out.writeBit(true)
-                if (leadingZeros >= storedLeadingZerosRow[i] && trailingZeros >= storedTrailingZerosRow[i]) {
-                    writeExistingLeadingRow2(xor, i)
-                }
-                else {
-                    writeNewLeadingRow(xor, leadingZeros, trailingZeros, i)
-                }
-            }
-            storedVals[i] = values[i]
-        }
-        println()
-    }
+
     private fun compressValues(values:List<Long>) {
         (0..columns - 1).forEach { i ->
             val xor = storedVals[i] xor values[i]
@@ -178,12 +146,6 @@ class CompressorFlat(timestamp:Long, val out: ByteBufferBitOutput, var columns:I
         out.writeBits(xor.ushr(storedTrailingZerosRow[col]), significantBits)
     }
 
-    private fun writeExistingLeadingRow2(xor:Long, col:Int) {
-        out.writeBit(false)
-        val significantBits = 64 - storedLeadingZerosRow[col] - storedTrailingZerosRow[col]
-        out.writeBits(xor.ushr(storedTrailingZerosRow[col]), significantBits)
-        print("${xor.ushr(storedTrailingZerosRow[col])}:${significantBits},")
-    }
     /**
      * store the length of the number of leading zeros in the next 5 bits
      * store length of the meaningful XORed value in the next 6 bits,
