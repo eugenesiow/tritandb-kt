@@ -63,16 +63,11 @@ fun main(args: Array<String>) {
 }
 
 fun shelburne(ringBuffer: RingBuffer<DisruptorEvent>) {
-    val br = BufferedReader(FileReader("/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"))
+    val br = BufferedReader(FileReader("/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"))
     br.readLine() //header
     for(line in br.lines()) {
         val parts = line.split(",")
         if(parts.size>6) {
-//            val arr:MutableList<Long> = mutableListOf()
-//            for (i in 1..6) {
-//                arr.add(java.lang.Double.doubleToLongBits(java.lang.Double.parseDouble(parts[i])))
-//            }
-//            c.addRow(parts[0].toLong() / 1000000, arr)
             ringBuffer.publishEvent { event, _ ->
                 event.value = buildTritanEvent {
                     type = INSERT
