@@ -2,27 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f8b6e45e-2584-45e3-bd18-2ef796848531" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/TestDisruptorKt$WhenMappings.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/TestDisruptorKt$handler$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/TestDisruptorKt$main$disruptor$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/TestDisruptorKt$shelburne$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/TestDisruptorKt$shelburne$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/TestFileKt.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/classes/main/main/kotlin/com/tritandb/engine/tsc/CompressorFlat.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/classes/main/main/kotlin/com/tritandb/engine/tsc/TestKt.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/classes/main/main/kotlin/com/tritandb/engine/util/BitReader.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/classes/main/main/kotlin/com/tritandb/engine/util/BitWriter.class" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.3/taskArtifacts/taskArtifacts.lock" afterPath="$PROJECT_DIR$/.gradle/3.3/taskArtifacts/taskArtifacts.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/main/META-INF/tritandb-kt_main.kotlin_module" afterPath="$PROJECT_DIR$/build/classes/main/META-INF/tritandb-kt_main.kotlin_module" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/DecompressorFlat.class" afterPath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/DecompressorFlat.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/TestDisruptorKt.class" afterPath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/TestDisruptorKt.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/util/BitByteBufferWriter.class" afterPath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/util/BitByteBufferWriter.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules/tritandb-kt_main.iml" afterPath="$PROJECT_DIR$/.idea/modules/tritandb-kt_main.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules/tritandb-kt_test.iml" afterPath="$PROJECT_DIR$/.idea/modules/tritandb-kt_test.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/CompressorFlat.kt" afterPath="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/CompressorFlat.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/testDisruptor.kt" afterPath="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/testDisruptor.kt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.kt" afterPath="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.kt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/startServer.kt" afterPath="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/startServer.kt" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -97,11 +78,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DecompressorFlat.kt" pinned="false" current-in-tab="true">
+      <file leaf-file-name="DecompressorFlat.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/DecompressorFlat.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="21" column="20" lean-forward="false" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
+            <state relative-caret-position="330">
+              <caret line="42" column="49" lean-forward="true" selection-start-line="42" selection-start-column="49" selection-end-line="42" selection-end-column="49" />
               <folding />
             </state>
           </provider>
@@ -110,8 +91,8 @@
       <file leaf-file-name="startServer.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/startServer.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="22" column="19" lean-forward="false" selection-start-line="22" selection-start-column="19" selection-end-line="22" selection-end-column="19" />
+            <state relative-caret-position="195">
+              <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
               <folding>
                 <element signature="e#33#240#0" expanded="true" />
               </folding>
@@ -119,13 +100,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ZmqServer.kt" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ZmqServer.kt" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1005">
-              <caret line="67" column="1" lean-forward="false" selection-start-line="67" selection-start-column="1" selection-end-line="67" selection-end-column="1" />
+            <state relative-caret-position="1080">
+              <caret line="72" column="9" lean-forward="true" selection-start-line="72" selection-start-column="9" selection-end-line="72" selection-end-column="9" />
               <folding>
-                <element signature="e#36#638#0" expanded="true" />
+                <element signature="e#36#626#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -525,9 +506,9 @@
         <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/CompressorFlat.kt" />
         <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.java" />
         <option value="$PROJECT_DIR$/build.gradle" />
-        <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.kt" />
-        <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/startServer.kt" />
         <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/testDisruptor.kt" />
+        <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/startServer.kt" />
+        <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.kt" />
       </list>
     </option>
   </component>
@@ -1183,7 +1164,7 @@
       <workItem from="1494840641179" duration="16131000" />
       <workItem from="1494929912293" duration="18001000" />
       <workItem from="1495012941028" duration="19999000" />
-      <workItem from="1495042757719" duration="10000" />
+      <workItem from="1495042757719" duration="155000" />
     </task>
     <servers />
   </component>
@@ -1220,7 +1201,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="64351000" />
+    <option name="totallyTimeSpent" value="64496000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="23" width="2112" height="1336" extended-state="0" />
@@ -1547,26 +1528,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/startServer.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" column="19" lean-forward="false" selection-start-line="22" selection-start-column="19" selection-end-line="22" selection-end-column="19" />
-          <folding>
-            <element signature="e#33#240#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1005">
-          <caret line="67" column="1" lean-forward="false" selection-start-line="67" selection-start-column="1" selection-end-line="67" selection-end-column="1" />
-          <folding>
-            <element signature="e#36#638#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/test.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="465">
@@ -1595,9 +1556,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/DecompressorFlat.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="21" column="20" lean-forward="false" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
+        <state relative-caret-position="330">
+          <caret line="42" column="49" lean-forward="true" selection-start-line="42" selection-start-column="49" selection-end-line="42" selection-end-column="49" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/startServer.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding>
+            <element signature="e#33#240#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1080">
+          <caret line="72" column="9" lean-forward="true" selection-start-line="72" selection-start-column="9" selection-end-line="72" selection-end-column="9" />
+          <folding>
+            <element signature="e#36#626#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

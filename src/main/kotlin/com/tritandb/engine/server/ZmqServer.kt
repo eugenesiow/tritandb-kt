@@ -4,7 +4,7 @@ import com.lmax.disruptor.EventFactory
 import com.lmax.disruptor.EventHandler
 import com.lmax.disruptor.dsl.Disruptor
 import com.lmax.disruptor.util.DaemonThreadFactory
-import com.natpryce.konfig.Configuration
+import com.natpryce.konfig.*
 import com.tritandb.engine.tsc.CompressorFlat
 import com.tritandb.engine.tsc.data.DisruptorEvent
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
@@ -20,9 +20,15 @@ import java.io.OutputStream
  * TritanDb
  * Created by eugene on 17/05/2017.
  */
-class ZmqServer(config:Configuration) {
+class ZmqServer(val config:Configuration) {
     init {
 
+    }
+
+    object server : PropertyGroup() {
+        val port by intType
+        val host by stringType
+        val bufferSize by intType
     }
 
     val o: OutputStream = File("shelburne.tsc").outputStream()
@@ -48,7 +54,7 @@ class ZmqServer(config:Configuration) {
 
 
     fun start() {
-        val bufferSize = 1024 // Specify the size of the ring buffer, must be power of 2.
+        val bufferSize = config[server.bufferSize] // Specify the size of the ring buffer, must be power of 2.
         val disruptor = Disruptor(EventFactory ({ DisruptorEvent() }), bufferSize, DaemonThreadFactory.INSTANCE)
 
         disruptor.handleEventsWith(handler)
@@ -59,7 +65,8 @@ class ZmqServer(config:Configuration) {
 
         val context = ZMQ.context(1)
         val receiver = context.socket(ZMQ.PULL)
-        receiver.bind("tcp://localhost:5700")
+        //tcp://localhost:5700
+        receiver.bind("${config[server.host]}:${config[server.port]}")
         while (!Thread.currentThread().isInterrupted) {
             val msg = receiver.recv()
             ringBuffer.publishEvent { event, _ -> event.value = TritanEvent.parseFrom(msg)}

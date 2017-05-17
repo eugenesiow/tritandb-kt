@@ -11,11 +11,6 @@ import com.tritandb.engine.server.ZmqServer
 * Created by eugene on 12/05/2017.
 */
 
-//object server : PropertyGroup() {
-//    val port by intType
-//    val host by stringType
-//}
-
 fun main(args: Array<String>) {
     val config = systemProperties() overriding
             EnvironmentVariables()
