@@ -1,16 +1,13 @@
-package main.kotlin.com.tritandb.engine.tsc
+package com.tritandb.engine.tsc
 
-import main.kotlin.com.tritandb.engine.tsc.data.Row
-import main.kotlin.com.tritandb.engine.util.BitReader
-import main.kotlin.com.tritandb.engine.util.BitWriter
+import com.tritandb.engine.util.BitReader
 import java.io.File
 import java.io.InputStream
-import java.io.OutputStream
-import java.util.Random
 
 /**
- * Created by eugene on 10/05/2017.
- */
+* TritanDb
+* Created by eugene on 10/05/2017.
+*/
 
 fun main(args : Array<String>) {
 //    val o:OutputStream = File("test.tsc").outputStream()
@@ -26,9 +23,9 @@ fun main(args : Array<String>) {
 //    c.close()
 //    o.close()
 
-    val i:InputStream = File("shelburne.tsc").inputStream()
-    val bi:BitReader = BitReader(i)
-    val d:DecompressorFlat = DecompressorFlat(bi)
+    val i: InputStream = File("shelburne.tsc").inputStream()
+    val bi: BitReader = BitReader(i)
+    val d: DecompressorFlat = DecompressorFlat(bi)
 //    var r: Row? = null
     var count = 0
 //    while({ r = d.readRow(); r }() !=null) {

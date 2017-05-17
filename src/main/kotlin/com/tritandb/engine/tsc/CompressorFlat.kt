@@ -1,10 +1,11 @@
-package main.kotlin.com.tritandb.engine.tsc
+package com.tritandb.engine.tsc
 
 import com.tritandb.engine.util.BitOutput
 
 /**
- * Created by eugenesiow on 10/05/2017.
- */
+* TritanDb
+* Created by eugenesiow on 10/05/2017.
+*/
 class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
 
     private val FIRST_DELTA_BITS:Int = 27
@@ -83,6 +84,11 @@ class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
         {
             out.writeBit(false)
         }
+//        else if (deltaD >= -31 && deltaD <= 32)
+//        {
+//            out.writeBits(0x02, 2) // store '10'
+//            out.writeBits(deltaD + 31, 6) // Using 7 bits, store the value..
+//        }
         else if (deltaD >= -63 && deltaD <= 64)
         {
             out.writeBits(0x02, 2) // store '10'

@@ -1,13 +1,14 @@
-package main.kotlin.com.tritandb.engine.tsc
+package com.tritandb.engine.tsc
 
-import main.kotlin.com.tritandb.engine.util.BitReader
+import com.tritandb.engine.util.BitReader
 import main.kotlin.com.tritandb.engine.tsc.data.Row
 import kotlin.coroutines.experimental.buildIterator
 
 /**
- * Created by eugene on 11/05/2017.
- */
-class DecompressorFlat(val input:BitReader) {
+* TritanDb
+* Created by eugene on 11/05/2017.
+*/
+class DecompressorFlat(val input: BitReader) {
     private val FIRST_DELTA_BITS:Int = 27
     private var storedLeadingZerosRow:IntArray = IntArray(1)
     private var storedTrailingZerosRow:IntArray = IntArray(1)
@@ -45,12 +46,10 @@ class DecompressorFlat(val input:BitReader) {
 //        nextRow()
 //        return !endOfStream
 //    }
-    fun readRows():Iterator<Row> {
-        return buildIterator {
-            while(!endOfStream) {
-                nextRow()
-                if (!endOfStream) yield(Row(storedTimestamp, storedVals))
-            }
+    fun readRows():Iterator<Row> = buildIterator {
+        while(!endOfStream) {
+            nextRow()
+            if (!endOfStream) yield(Row(storedTimestamp, storedVals))
         }
     }
     private fun nextRow() {
@@ -86,6 +85,7 @@ class DecompressorFlat(val input:BitReader) {
         var toRead = 0
         when (value) {
             0x00 -> {}
+//            0x02 -> toRead = 6 // '10'
             0x02 -> toRead = 7 // '10'
             0x06 -> toRead = 9 // '110'
             0x0e -> toRead = 12
@@ -109,15 +109,16 @@ class DecompressorFlat(val input:BitReader) {
             else {
                 // Turn deltaDelta long value back to signed one
                 when(toRead) {
-                    7 -> deltaDelta -=63
+//                    6 -> deltaDelta -=31
+                    7 -> deltaDelta -= 63
                     9 -> deltaDelta -=255
                     12 -> deltaDelta -=2047
                 }
             }
             deltaDelta = deltaDelta.toInt().toLong()
         }
-        storedDelta = storedDelta + deltaDelta
-        storedTimestamp = storedDelta + storedTimestamp
+        storedDelta += deltaDelta
+        storedTimestamp += storedDelta
     }
     private fun nextValue() {
         for (i in 0..columns - 1) {

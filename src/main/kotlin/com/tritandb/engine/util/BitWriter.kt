@@ -1,12 +1,12 @@
-package main.kotlin.com.tritandb.engine.util
+package com.tritandb.engine.util
 
-import com.tritandb.engine.util.BitOutput
 import java.io.OutputStream
 import kotlin.experimental.or
 
 /**
- * Created by eugene on 10/05/2017.
- */
+* TritanDb
+* Created by eugene on 10/05/2017.
+*/
 
 class BitWriter(val output: OutputStream): BitOutput {
 

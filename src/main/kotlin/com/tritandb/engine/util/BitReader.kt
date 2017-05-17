@@ -1,10 +1,11 @@
-package main.kotlin.com.tritandb.engine.util
+package com.tritandb.engine.util
 
 import java.io.InputStream
 
 /**
- * Created by eugenesiow on 10/05/2017.
- */
+* TritanDb
+* Created by eugenesiow on 10/05/2017.
+*/
 class BitReader(val input: InputStream) {
 
     var b = 0
@@ -67,7 +68,7 @@ class BitReader(val input: InputStream) {
             }
             flipByte()
         }
-        return value;
+        return value
     }
 
 }

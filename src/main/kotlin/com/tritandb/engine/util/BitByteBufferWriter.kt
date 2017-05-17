@@ -5,8 +5,9 @@ import java.nio.ByteBuffer
 import kotlin.experimental.or
 
 /**
- * Created by eugene on 17/05/2017.
- */
+* TritanDb
+* Created by eugene on 17/05/2017.
+*/
 class BitByteBufferWriter(val output: OutputStream): BitOutput {
     val DEFAULT_ALLOCATION = 4096
     val bb: ByteBuffer

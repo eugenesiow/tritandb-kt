@@ -1,8 +1,9 @@
 package com.tritandb.engine.util
 
 /**
- * Created by eugene on 17/05/2017.
- */
+* TritanDb
+* Created by eugene on 17/05/2017.
+*/
 interface BitOutput {
     /**
      * Stores a single bit, 1 is true, 0 is false.

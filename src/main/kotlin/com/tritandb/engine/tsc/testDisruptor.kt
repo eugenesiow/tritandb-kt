@@ -9,7 +9,6 @@ import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.CLOSE
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.INSERT
 import com.tritandb.engine.util.BitByteBufferWriter
 import com.tritandb.engine.util.BitOutput
-import main.kotlin.com.tritandb.engine.tsc.CompressorFlat
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -19,8 +18,9 @@ import kotlin.system.measureTimeMillis
 
 
 /**
- * Created by eugene on 12/05/2017.
- */
+* TritanDb
+* Created by eugene on 12/05/2017.
+*/
 
 val o: OutputStream = File("shelburne.tsc").outputStream()
 //val b: BitOutput = BitWriter(o)
@@ -28,8 +28,7 @@ val b: BitOutput = BitByteBufferWriter(o)
 val c: CompressorFlat = CompressorFlat(1271692742104,b,6)
 //var count = 0
 
-val handler:EventHandler<DisruptorEvent> = EventHandler({ event, sequence, endOfBatch ->
-    val tEvent:EventProtos.TritanEvent = event.value
+val handler:EventHandler<DisruptorEvent> = EventHandler({ (tEvent), _, _ ->
     when(tEvent.type) {
         INSERT -> {
             for (row in tEvent.rows.rowList) {
@@ -39,6 +38,8 @@ val handler:EventHandler<DisruptorEvent> = EventHandler({ event, sequence, endOf
         CLOSE -> {
             c.close()
             println("closed")
+        }
+        else -> {
         }
     }
 })
@@ -51,6 +52,7 @@ fun main(args: Array<String>) {
     val bufferSize = 1024
 
     // Construct the Disruptor
+    @Suppress("DEPRECATION")
     val disruptor = Disruptor(EventFactory ({ DisruptorEvent() }), bufferSize, executor) //TODO: change to threadfactory
 
     // Connect the handler
@@ -60,13 +62,13 @@ fun main(args: Array<String>) {
     disruptor.start()
 
     // Get the ring buffer from the Disruptor to be used for publishing.
-    val ringBuffer = disruptor.getRingBuffer()
+    val ringBuffer = disruptor.ringBuffer
 
     println("Time: ${measureTimeMillis{shelburne(ringBuffer)}}")
 }
 
 fun shelburne(ringBuffer: RingBuffer<DisruptorEvent>) {
-    val br = BufferedReader(FileReader("/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"))
+    val br = BufferedReader(FileReader("/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"))
     br.readLine() //header
     for(line in br.lines()) {
         val parts = line.split(",")
@@ -79,7 +81,7 @@ fun shelburne(ringBuffer: RingBuffer<DisruptorEvent>) {
                         addRow(buildRow {
                             timestamp = (parts[0].toLong()/1000000)
                             for(i in 1..6) {
-                                if(parts[i].equals(""))
+                                if(parts[i] == "")
                                     return@publishEvent
                                 addValue(java.lang.Double.doubleToLongBits(parts[i].toDouble()))
                             }
@@ -90,7 +92,7 @@ fun shelburne(ringBuffer: RingBuffer<DisruptorEvent>) {
         }
     }
 
-    ringBuffer.publishEvent { event, sequence -> event.value = buildTritanEvent {
+    ringBuffer.publishEvent { event, _ -> event.value = buildTritanEvent {
         type = CLOSE
         name = "shelburne"
     } }
