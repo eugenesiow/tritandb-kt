@@ -7,6 +7,7 @@ import com.tritandb.engine.util.BitOutput
 * Created by eugenesiow on 10/05/2017.
 */
 class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
+
     private val FIRST_DELTA_BITS:Int = 27
     private var storedLeadingZerosRow:IntArray = IntArray(columns)
     private var storedTrailingZerosRow:IntArray = IntArray(columns)
