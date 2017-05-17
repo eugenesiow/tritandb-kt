@@ -1,8 +1,12 @@
 package com.tritandb.engine.tsc
 
+import com.tritandb.engine.util.BitByteBufferWriter
+import com.tritandb.engine.util.BitOutput
 import main.kotlin.com.tritandb.engine.tsc.CompressorFlat
-import main.kotlin.com.tritandb.engine.util.BitWriter
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+import java.io.OutputStream
 
 
 /**
@@ -13,7 +17,8 @@ fun main(args: Array<String>) {
     val br = BufferedReader(FileReader("/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"))
     br.readLine()
     val o: OutputStream = File("shelburne.tsc").outputStream()
-    val b: BitWriter = BitWriter(o)
+//    val b: BitOutput = BitWriter(o)
+    val b: BitOutput = BitByteBufferWriter(com.tritandb.engine.tsc.o)
     val c = CompressorFlat(1271692742103L, b, 6)
     for(line in br.lines()) {
         val parts = line.split(",")

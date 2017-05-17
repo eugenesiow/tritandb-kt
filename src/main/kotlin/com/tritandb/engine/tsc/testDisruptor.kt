@@ -1,19 +1,21 @@
 package com.tritandb.engine.tsc
 
 import com.lmax.disruptor.EventFactory
-import com.lmax.disruptor.dsl.Disruptor
-import java.util.concurrent.Executors
 import com.lmax.disruptor.EventHandler
 import com.lmax.disruptor.RingBuffer
+import com.lmax.disruptor.dsl.Disruptor
 import com.tritandb.engine.tsc.data.*
-import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
+import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.CLOSE
+import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.INSERT
+import com.tritandb.engine.util.BitByteBufferWriter
+import com.tritandb.engine.util.BitOutput
 import main.kotlin.com.tritandb.engine.tsc.CompressorFlat
-import main.kotlin.com.tritandb.engine.util.BitWriter
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
-import kotlin.system.measureTimeMillis
 import java.io.OutputStream
+import java.util.concurrent.Executors
+import kotlin.system.measureTimeMillis
 
 
 /**
@@ -21,7 +23,8 @@ import java.io.OutputStream
  */
 
 val o: OutputStream = File("shelburne.tsc").outputStream()
-val b: BitWriter = BitWriter(o)
+//val b: BitOutput = BitWriter(o)
+val b: BitOutput = BitByteBufferWriter(o)
 val c: CompressorFlat = CompressorFlat(1271692742104,b,6)
 //var count = 0
 

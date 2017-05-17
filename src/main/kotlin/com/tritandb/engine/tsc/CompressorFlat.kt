@@ -1,11 +1,11 @@
 package main.kotlin.com.tritandb.engine.tsc
 
-import main.kotlin.com.tritandb.engine.util.BitWriter
+import com.tritandb.engine.util.BitOutput
 
 /**
  * Created by eugenesiow on 10/05/2017.
  */
-class CompressorFlat(timestamp:Long, val out: BitWriter, var columns:Int) {
+class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
 
     private val FIRST_DELTA_BITS:Int = 27
     private var storedLeadingZerosRow:IntArray = IntArray(columns)

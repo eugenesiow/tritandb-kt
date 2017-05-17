@@ -2,6 +2,7 @@ package main.kotlin.com.tritandb.engine.tsc
 
 import main.kotlin.com.tritandb.engine.util.BitReader
 import main.kotlin.com.tritandb.engine.tsc.data.Row
+import kotlin.coroutines.experimental.buildIterator
 
 /**
  * Created by eugene on 11/05/2017.
@@ -30,14 +31,29 @@ class DecompressorFlat(val input:BitReader) {
         }
         blockTimestamp = input.readBits(64)
     }
-    fun readRow(): Row? {
-        next()
-        if (endOfStream) {
-            return null
+//    fun readRow(): Row? {
+//        next()
+//        if (endOfStream) {
+//            return null
+//        }
+//        return Row(storedTimestamp, storedVals)
+//    }
+//    override fun next():Row {
+//        return Row(storedTimestamp, storedVals)
+//    }
+//    override fun hasNext():Boolean {
+//        nextRow()
+//        return !endOfStream
+//    }
+    fun readRows():Iterator<Row> {
+        return buildIterator {
+            while(!endOfStream) {
+                nextRow()
+                if (!endOfStream) yield(Row(storedTimestamp, storedVals))
+            }
         }
-        return Row(storedTimestamp, storedVals)
     }
-    private fun next() {
+    private fun nextRow() {
         if (storedTimestamp == 0L) {
             // First item to read
             storedDelta = input.readBits(FIRST_DELTA_BITS)

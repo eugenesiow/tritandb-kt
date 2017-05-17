@@ -1,24 +1,42 @@
-package main.kotlin.com.tritandb.engine.util
+package com.tritandb.engine.util
 
-import com.tritandb.engine.util.BitOutput
 import java.io.OutputStream
+import java.nio.ByteBuffer
 import kotlin.experimental.or
 
 /**
- * Created by eugene on 10/05/2017.
+ * Created by eugene on 17/05/2017.
  */
-
-class BitWriter(val output: OutputStream): BitOutput {
-
+class BitByteBufferWriter(val output: OutputStream): BitOutput {
+    val DEFAULT_ALLOCATION = 4096
+    val bb: ByteBuffer
     var bitsLeft = java.lang.Byte.SIZE
-    var b:Byte = 0
+    var b:Byte
+
+    init{
+        bb = ByteBuffer.allocateDirect(DEFAULT_ALLOCATION)
+        b = bb.get(bb.position())
+    }
 
     private fun flipByte() {
         if (bitsLeft == 0) {
-            output.write(b.toInt())
+            if(!bb.hasRemaining()) {
+                writeBB()
+            }
+            bb.put(b)
             bitsLeft = java.lang.Byte.SIZE
             b = 0
         }
+    }
+
+    private fun writeBB() {
+        bb.flip()
+        val bTemp = ByteArray(bb.remaining())
+        bb.get(bTemp)
+        output.write(bTemp)
+        bb.clear()
+        bb.position(bb.remaining())
+        bb.flip()
     }
 
     override fun writeBit(bit: Boolean) {
@@ -49,6 +67,6 @@ class BitWriter(val output: OutputStream): BitOutput {
     override fun flush() {
         bitsLeft = 0
         flipByte() // Causes write
+        writeBB()
     }
-
 }

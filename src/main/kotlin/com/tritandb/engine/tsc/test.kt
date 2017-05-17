@@ -29,9 +29,10 @@ fun main(args : Array<String>) {
     val i:InputStream = File("shelburne.tsc").inputStream()
     val bi:BitReader = BitReader(i)
     val d:DecompressorFlat = DecompressorFlat(bi)
-    var r: Row? = null
+//    var r: Row? = null
     var count = 0
-    while({ r = d.readRow(); r }() !=null) {
+//    while({ r = d.readRow(); r }() !=null) {
+    for(r in d.readRows()) {
         print("${count++}:${r!!.timestamp}")
 //        print("${r!!.timestamp}")
         for(pair in r!!.getRow()) {
