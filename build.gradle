@@ -20,7 +20,10 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "com.lmax:disruptor:3.3.6"
-    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.3.0'
+    compile 'com.google.protobuf:protobuf-java:3.3.0'
+    compile 'com.natpryce:konfig:1.6.1.0'
+    compile 'org.zeromq:jeromq:0.4.0'
+
 }
 kotlin {
     experimental {
