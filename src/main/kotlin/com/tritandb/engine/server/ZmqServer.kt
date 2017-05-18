@@ -9,6 +9,7 @@ import com.tritandb.engine.tsc.CompressorFlat
 import com.tritandb.engine.tsc.data.DisruptorEvent
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent
+import com.tritandb.engine.tsc.data.FileCompressor
 import com.tritandb.engine.util.BitByteBufferWriter
 import com.tritandb.engine.util.BitOutput
 import org.zeromq.ZMQ
@@ -21,29 +22,29 @@ import java.io.OutputStream
  * Created by eugene on 17/05/2017.
  */
 class ZmqServer(val config:Configuration) {
-    init {
 
-    }
-
-    object server : PropertyGroup() {
+    private object server : PropertyGroup() {
         val port by intType
         val host by stringType
         val bufferSize by intType
+        val dataDir by stringType
     }
 
-    val o: OutputStream = File("shelburne.tsc").outputStream()
-    //val b: BitOutput = BitWriter(o)
-    val b: BitOutput = BitByteBufferWriter(o)
-    val c: CompressorFlat = CompressorFlat(1271692742104,b,6)
+    private val C:MutableMap<String,FileCompressor> = mutableMapOf()
 
-    val handler: EventHandler<DisruptorEvent> = EventHandler({ (tEvent), _, _ ->
+    private val handler: EventHandler<DisruptorEvent> = EventHandler({ (tEvent), _, _ ->
         when(tEvent.type) {
             INSERT -> {
-                for (row in tEvent.rows.rowList) {
-                    c.addRow(row.timestamp, row.valueList)
+                if(tEvent.hasRows()) {
+                    val firstRow = tEvent.rows.getRow(0)
+                    val c = GetCompressor(tEvent.name,firstRow.timestamp,firstRow.valueCount)
+                    for (row in tEvent.rows.rowList) {
+                        c.addRow(row.timestamp, row.valueList)
+                    }
                 }
             }
             CLOSE -> {
+                val c = C.getValue(tEvent.name).compressor
                 c.close()
                 println("closed")
             }
@@ -51,6 +52,19 @@ class ZmqServer(val config:Configuration) {
             }
         }
     })
+
+    private fun GetCompressor(name: String, timestamp: Long, valueCount: Int): CompressorFlat {
+        if(C.containsKey(name))
+            return C.getValue(name).compressor
+        else {
+            val o:OutputStream = File("${config[server.dataDir]}/${name}.tsc").outputStream()
+            val b:BitOutput = BitByteBufferWriter(o)
+            val c:CompressorFlat = CompressorFlat(timestamp,b,valueCount)
+            val f:FileCompressor = FileCompressor(c,b,o)
+            C.put(name,f)
+            return f.compressor
+        }
+    }
 
 
     fun start() {

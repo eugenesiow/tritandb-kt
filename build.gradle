@@ -19,6 +19,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect"
     compile "com.lmax:disruptor:3.3.6"
     compile 'com.google.protobuf:protobuf-java:3.3.0'
     compile 'com.natpryce:konfig:1.6.1.0'

@@ -1,9 +1,11 @@
 package com.tritandb.engine.tsc
 
+import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.ConfigurationProperties.Companion.systemProperties
 import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.overriding
 import com.tritandb.engine.server.ZmqServer
+import java.io.File
 
 
 /**
@@ -13,7 +15,9 @@ import com.tritandb.engine.server.ZmqServer
 
 fun main(args: Array<String>) {
     val config = systemProperties() overriding
-            EnvironmentVariables()
+            EnvironmentVariables() overriding
+            ConfigurationProperties.fromFile(File("config/defaults.properties")) overriding
+            ConfigurationProperties.fromResource("defaults.properties")
     val zServer: ZmqServer = ZmqServer(config)
     zServer.start()
 }

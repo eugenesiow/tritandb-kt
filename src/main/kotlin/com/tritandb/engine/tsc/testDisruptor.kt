@@ -32,7 +32,7 @@ fun main(args: Array<String>) {
 fun shelburne(sender:ZMQ.Socket) {
 
 
-    val br = BufferedReader(FileReader("/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"))
+    val br = BufferedReader(FileReader("/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"))
     br.readLine() //header
     for(line in br.lines()) {
         var addThis = true
