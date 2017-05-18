@@ -7,6 +7,7 @@ import com.tritandb.engine.tsc.data.buildRows
 import com.tritandb.engine.tsc.data.buildTritanEvent
 import org.zeromq.ZMQ
 import java.io.BufferedReader
+import java.io.File
 import java.io.FileReader
 import kotlin.system.measureTimeMillis
 
@@ -23,15 +24,21 @@ fun main(args: Array<String>) {
 
     Thread.sleep(1000)
 
-    println("Time: ${measureTimeMillis{shelburne(sender)}}")
+//    println("Time: ${measureTimeMillis{shelburne(sender)}}")
+    println("Time: ${measureTimeMillis{ srbench(sender) }}")
 
     sender.close()
     context.close()
 }
 
+fun srbench(sender:ZMQ.Socket) {
+    File("/Users/eugene/Downloads/knoesis_observations_csv_date_sorted/").walkTopDown()
+            .filter { !it.name.startsWith(".") }.forEach {
+        println(it.name)
+    }
+}
+
 fun shelburne(sender:ZMQ.Socket) {
-
-
     val br = BufferedReader(FileReader("/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"))
     br.readLine() //header
     for(line in br.lines()) {

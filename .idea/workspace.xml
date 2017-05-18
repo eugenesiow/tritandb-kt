@@ -2,21 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f8b6e45e-2584-45e3-bd18-2ef796848531" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_nhaarman_mockito_kotlin_1_4_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_bytebuddy_byte_buddy_1_6_11.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_bytebuddy_byte_buddy_agent_1_6_11.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_test_1_1_2_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jetbrains_kotlin_kotlin_test_junit_1_1_2_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_mockito_mockito_core_2_7_21.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_objenesis_objenesis_2_5.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/kotlin/com/tritandb/engine/TscTest.kt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/resources/main/config.properties" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.3/taskArtifacts/taskArtifacts.lock" afterPath="$PROJECT_DIR$/.gradle/3.3/taskArtifacts/taskArtifacts.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/StartServerKt.class" afterPath="$PROJECT_DIR$/build/classes/main/com/tritandb/engine/tsc/StartServerKt.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules/tritandb-kt_test.iml" afterPath="$PROJECT_DIR$/.idea/modules/tritandb-kt_test.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/testDisruptor.kt" afterPath="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/testDisruptor.kt" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -69,12 +55,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="testDisruptor.kt" pinned="false" current-in-tab="false">
+      <file leaf-file-name="testDisruptor.kt" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/testDisruptor.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-160">
-              <caret line="8" column="29" lean-forward="false" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
-              <folding />
+            <state relative-caret-position="155">
+              <caret line="36" column="0" lean-forward="false" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+              <folding>
+                <element signature="e#33#466#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -92,22 +80,10 @@
       <file leaf-file-name="ZmqServer.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="319">
-              <caret line="34" column="88" lean-forward="false" selection-start-line="34" selection-start-column="88" selection-end-line="34" selection-end-column="88" />
+            <state relative-caret-position="375">
+              <caret line="25" column="45" lean-forward="true" selection-start-line="25" selection-start-column="45" selection-end-line="25" selection-end-column="45" />
               <folding>
                 <element signature="e#36#677#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TscTest.kt" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/test/kotlin/com/tritandb/engine/TscTest.kt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="585">
-              <caret line="39" column="9" lean-forward="true" selection-start-line="39" selection-start-column="9" selection-end-line="39" selection-end-column="9" />
-              <folding>
-                <element signature="e#29#258#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -498,7 +474,6 @@
         <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/CompressorFlat.kt" />
         <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/data/FileCompressor.kt" />
         <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.kt" />
-        <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/testDisruptor.kt" />
         <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/test.kt" />
         <option value="$PROJECT_DIR$/config/config.properties" />
         <option value="$PROJECT_DIR$/src/main/resources/config.properties" />
@@ -506,6 +481,7 @@
         <option value="$PROJECT_DIR$/src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker" />
         <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/src/test/kotlin/com/tritandb/engine/TscTest.kt" />
+        <option value="$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/testDisruptor.kt" />
       </list>
     </option>
   </component>
@@ -560,36 +536,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="org.jetbrains.plugins.gradle.projectView.GradleTreeStructureProvider$GradleSourceSetDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tritandb-kt" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tritandb-kt" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="org.jetbrains.plugins.gradle.projectView.GradleTreeStructureProvider$GradleSourceSetDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="kotlin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="engine" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -735,7 +681,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.CompressorTest">
+  <component name="RunManager" selected="Kotlin.com.tritandb.engine.tsc.TestDisruptorKt">
     <configuration default="false" name="build" type="GroovyScriptRunConfiguration" factoryName="Groovy" temporary="true">
       <module name="tritandb-kt" />
       <setting name="path" value="file://$PROJECT_DIR$/build.gradle" />
@@ -1228,9 +1174,9 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="JUnit.CompressorTest" />
-        <item index="1" class="java.lang.String" itemvalue="Kotlin.com.tritandb.engine.tsc.TestKt" />
-        <item index="2" class="java.lang.String" itemvalue="Kotlin.com.tritandb.engine.tsc.TestDisruptorKt" />
+        <item index="0" class="java.lang.String" itemvalue="Kotlin.com.tritandb.engine.tsc.TestDisruptorKt" />
+        <item index="1" class="java.lang.String" itemvalue="JUnit.CompressorTest" />
+        <item index="2" class="java.lang.String" itemvalue="Kotlin.com.tritandb.engine.tsc.TestKt" />
         <item index="3" class="java.lang.String" itemvalue="Kotlin.com.tritandb.engine.tsc.StartServerKt" />
         <item index="4" class="java.lang.String" itemvalue="Groovy.build" />
       </list>
@@ -1254,7 +1200,7 @@
       <workItem from="1495012941028" duration="19999000" />
       <workItem from="1495042757719" duration="179000" />
       <workItem from="1495112642778" duration="52000" />
-      <workItem from="1495112960145" duration="10624000" />
+      <workItem from="1495112960145" duration="11465000" />
     </task>
     <servers />
   </component>
@@ -1291,7 +1237,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="75196000" />
+    <option name="totallyTimeSpent" value="76037000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="23" width="2112" height="1336" extended-state="0" />
@@ -1315,7 +1261,7 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.329582" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.329582" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2004831" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329582" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1367,7 +1313,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#33#466#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1404,7 +1352,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#33#466#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1622,28 +1572,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="319">
-          <caret line="34" column="88" lean-forward="false" selection-start-line="34" selection-start-column="88" selection-end-line="34" selection-end-column="88" />
-          <folding>
-            <element signature="e#36#677#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/test.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="525">
           <caret line="37" column="17" lean-forward="false" selection-start-line="37" selection-start-column="17" selection-end-line="37" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/testDisruptor.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-160">
-          <caret line="8" column="29" lean-forward="false" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
           <folding />
         </state>
       </provider>
@@ -1658,10 +1590,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/kotlin/com/tritandb/engine/TscTest.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="39" column="9" lean-forward="true" selection-start-line="39" selection-start-column="9" selection-end-line="39" selection-end-column="9" />
+        <state relative-caret-position="75">
+          <caret line="5" column="51" lean-forward="true" selection-start-line="5" selection-start-column="51" selection-end-line="5" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/server/ZmqServer.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="25" column="45" lean-forward="true" selection-start-line="25" selection-start-column="45" selection-end-line="25" selection-end-column="45" />
           <folding>
-            <element signature="e#29#258#0" expanded="true" />
+            <element signature="e#36#677#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/kotlin/com/tritandb/engine/tsc/testDisruptor.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="155">
+          <caret line="36" column="0" lean-forward="false" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+          <folding>
+            <element signature="e#33#466#0" expanded="true" />
           </folding>
         </state>
       </provider>
