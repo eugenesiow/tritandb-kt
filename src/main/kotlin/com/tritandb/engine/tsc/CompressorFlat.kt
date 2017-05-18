@@ -7,12 +7,12 @@ import com.tritandb.engine.util.BitOutput
 * Created by eugenesiow on 10/05/2017.
 */
 class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
-    private val FIRST_DELTA_BITS:Int = 27
+    private val FIRST_DELTA_BITS = 27
     private var storedLeadingZerosRow:IntArray = IntArray(columns)
     private var storedTrailingZerosRow:IntArray = IntArray(columns)
     private val storedVals:LongArray = LongArray(columns)
-    private var storedTimestamp:Long = 0
-    private var storedDelta:Long = 0
+    private var storedTimestamp = -1L
+    private var storedDelta = 0L
     private var blockTimestamp:Long = timestamp
     init{
         //setup for rows
@@ -37,7 +37,7 @@ class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
      * @param values LongArray of values for the next row in the series, use java.lang.Double.doubleToRawLongBits function to convert from double to long bits
      */
     fun addRow(timestamp:Long, values:List<Long>) {
-        if (storedTimestamp == 0L) {
+        if (storedTimestamp == -1L) {
             writeFirstRow(timestamp, values)
         }
         else {
