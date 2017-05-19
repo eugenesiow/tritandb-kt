@@ -6,7 +6,7 @@ import com.tritandb.engine.util.BitOutput
 * TritanDb
 * Created by eugenesiow on 10/05/2017.
 */
-class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
+class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int):Compressor {
     private val FIRST_DELTA_BITS = 27
     private var storedLeadingZerosRow:IntArray = IntArray(columns)
     private var storedTrailingZerosRow:IntArray = IntArray(columns)
@@ -36,7 +36,7 @@ class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
      * @param timestamp Timestamp in miliseconds
      * @param values LongArray of values for the next row in the series, use java.lang.Double.doubleToRawLongBits function to convert from double to long bits
      */
-    fun addRow(timestamp:Long, values:List<Long>) {
+    override fun addRow(timestamp:Long, values:List<Long>) {
         if (storedTimestamp == -1L) {
             writeFirstRow(timestamp, values)
         }
@@ -59,7 +59,7 @@ class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
     /**
      * Closes the block and flushes the remaining byte to OutputStream.
      */
-    fun close() {
+    override fun close() {
         // These are selected to test interoperability and correctness of the solution, this can be read with go-tsz
         out.writeBits(0x0F, 4)
         out.writeBits(0xFFFFFFFF, 32)
@@ -67,10 +67,7 @@ class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
         out.flush()
     }
     /**
-     * Difference to the original Facebook paper, we store the first delta as 27 bits to allow
-     * millisecond accuracy for a one day block.
-     *
-     * Also, the timestamp delta-delta is not good for millisecond compressions..
+     * Stores up to millisecond accuracy, if seconds are used, delta-delta scale automagically
      *
      * @param timestamp epoch
      */
@@ -78,6 +75,7 @@ class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
         // a) Calculate the delta of delta
         val newDelta = (timestamp - storedTimestamp)
         val deltaD = newDelta - storedDelta
+        println(deltaD)
         // If delta is zero, write single 0 bit
         if (deltaD == 0L)
         {
@@ -122,6 +120,8 @@ class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int) {
             else {
                 var leadingZeros = java.lang.Long.numberOfLeadingZeros(xor)
                 val trailingZeros = java.lang.Long.numberOfTrailingZeros(xor)
+//                if(trailingZeros>=32)
+//                    println("${leadingZeros}:${trailingZeros}:${xor}")
                 // Check overflow of leading? Can't be 32!
                 if (leadingZeros >= 32) {
                     leadingZeros = 31

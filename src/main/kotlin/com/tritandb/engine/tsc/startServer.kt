@@ -16,7 +16,7 @@ import java.io.File
 fun main(args: Array<String>) {
     val config = systemProperties() overriding
             EnvironmentVariables() overriding
-            ConfigurationProperties.fromFile(File("config/defaults.properties")) overriding
+            ConfigurationProperties.fromFile(File("config/config.properties")) overriding
             ConfigurationProperties.fromResource("defaults.properties")
     val zServer: ZmqServer = ZmqServer(config)
     zServer.start()

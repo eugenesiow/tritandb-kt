@@ -23,7 +23,7 @@ fun main(args : Array<String>) {
 //    c.close()
 //    o.close()
 
-    val i: InputStream = File("data/shelburne.tsc").inputStream()
+    val i: InputStream = File("data/4UT01.tsc").inputStream()
     val bi: BitReader = BitReader(i)
     val d: DecompressorFlat = DecompressorFlat(bi)
 //    var r: Row? = null

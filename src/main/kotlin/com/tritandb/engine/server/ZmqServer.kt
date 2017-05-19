@@ -5,11 +5,13 @@ import com.lmax.disruptor.EventHandler
 import com.lmax.disruptor.dsl.Disruptor
 import com.lmax.disruptor.util.DaemonThreadFactory
 import com.natpryce.konfig.*
+import com.tritandb.engine.experimental.CompressorTs
+import com.tritandb.engine.tsc.Compressor
 import com.tritandb.engine.tsc.CompressorFlat
 import com.tritandb.engine.tsc.data.DisruptorEvent
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent
-import com.tritandb.engine.tsc.data.FileCompressor
+import com.tritandb.engine.tsc.FileCompressor
 import com.tritandb.engine.util.BitByteBufferWriter
 import com.tritandb.engine.util.BitOutput
 import org.zeromq.ZMQ
@@ -30,7 +32,7 @@ class ZmqServer(val config:Configuration) {
         val dataDir by stringType
     }
 
-    private val C:MutableMap<String,FileCompressor> = mutableMapOf()
+    private val C:MutableMap<String, FileCompressor> = mutableMapOf()
 
     private val handler: EventHandler<DisruptorEvent> = EventHandler({ (tEvent), _, _ ->
         when(tEvent.type) {
@@ -53,14 +55,14 @@ class ZmqServer(val config:Configuration) {
         }
     })
 
-    private fun GetCompressor(name: String, timestamp: Long, valueCount: Int): CompressorFlat {
+    private fun GetCompressor(name: String, timestamp: Long, valueCount: Int): Compressor {
         if(C.containsKey(name))
             return C.getValue(name).compressor
         else {
             val o:OutputStream = File("${config[server.dataDir]}/${name}.tsc").outputStream()
             val b:BitOutput = BitByteBufferWriter(o)
             val c:CompressorFlat = CompressorFlat(timestamp,b,valueCount)
-            val f:FileCompressor = FileCompressor(c,b,o)
+            val f: FileCompressor = FileCompressor(c,b,o)
             C.put(name,f)
             return f.compressor
         }
