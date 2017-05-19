@@ -75,7 +75,7 @@ class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int):Compre
         // a) Calculate the delta of delta
         val newDelta = (timestamp - storedTimestamp)
         val deltaD = newDelta - storedDelta
-        println(deltaD)
+//        println(deltaD)
         // If delta is zero, write single 0 bit
         if (deltaD == 0L)
         {
