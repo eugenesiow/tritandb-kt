@@ -25,8 +25,8 @@ fun main(args: Array<String>) {
 
     Thread.sleep(1000)
 
-//    println("Time: ${measureTimeMillis{shelburne(sender)}}")
-    println("Time: ${measureTimeMillis{ srbench(sender) }}")
+    println("Time: ${measureTimeMillis{shelburne(sender)}}")
+//    println("Time: ${measureTimeMillis{ srbench(sender) }}")
 
     sender.close()
     context.close()
@@ -96,7 +96,7 @@ fun shelburne(sender:ZMQ.Socket) {
         if(parts.size>6) {
             val event = buildTritanEvent {
                 type = INSERT
-                name = "shelburne"
+                name = "shelburne_fpc"
                 rows = buildRows {
                     addRow(buildRow {
                         timestamp = (parts[0].toLong() / 1000000)
@@ -117,6 +117,6 @@ fun shelburne(sender:ZMQ.Socket) {
 
     sender.send(buildTritanEvent {
         type = CLOSE
-        name = "shelburne"
+        name = "shelburne_fpc"
     }.toByteArray())
 }

@@ -1,51 +1,34 @@
-package com.tritandb.engine.tsc
+package com.tritandb.engine.experimental
 
 import com.tritandb.engine.util.BitReader
 import main.kotlin.com.tritandb.engine.tsc.data.Row
 import kotlin.coroutines.experimental.buildIterator
 
 /**
-* TritanDb
-* Created by eugene on 11/05/2017.
-*/
-class DecompressorFlat(val input: BitReader) {
+ * TritanDb
+ * Created by eugene on 22/05/2017.
+ */
+class DecompressorFpc(val input: BitReader) {
     private val FIRST_DELTA_BITS:Int = 27
-    private var storedLeadingZerosRow:IntArray = IntArray(1)
-    private var storedTrailingZerosRow:IntArray = IntArray(1)
-    private var storedVals:LongArray = LongArray(1)
     private var storedTimestamp = -1L
     private var storedDelta:Long = 0
+    private var storedVals:LongArray = LongArray(0)
     private var columns = 0
     private var blockTimestamp:Long = 0
     private var endOfStream = false
+
+    private val logOfTableSize = 16
+    private var predictor1 = FcmPredictor(logOfTableSize)
+    private var predictor2 = DfcmPredictor(logOfTableSize)
+
     init{
         readHeader()
     }
     private fun readHeader() {
         columns = input.readBits(32).toInt()
-        storedLeadingZerosRow = IntArray(columns)
-        storedTrailingZerosRow = IntArray(columns)
         storedVals = LongArray(columns)
-        for (i in 0..columns - 1) {
-            storedLeadingZerosRow[i] = Integer.MAX_VALUE
-            storedTrailingZerosRow[i] = 0
-        }
         blockTimestamp = input.readBits(64)
     }
-//    fun readRow(): Row? {
-//        next()
-//        if (endOfStream) {
-//            return null
-//        }
-//        return Row(storedTimestamp, storedVals)
-//    }
-//    override fun next():Row {
-//        return Row(storedTimestamp, storedVals)
-//    }
-//    override fun hasNext():Boolean {
-//        nextRow()
-//        return !endOfStream
-//    }
     fun readRows():Iterator<Row> = buildIterator {
         while(!endOfStream) {
             nextRow()
@@ -61,7 +44,7 @@ class DecompressorFlat(val input: BitReader) {
                 return
             }
             for (i in 0..columns - 1) {
-                storedVals[i] = input.readBits(64)
+                storedVals[i] = decode()
             }
             storedTimestamp = blockTimestamp + storedDelta
         }
@@ -69,6 +52,28 @@ class DecompressorFlat(val input: BitReader) {
             nextTimestamp()
             nextValue()
         }
+    }
+    private fun decode():Long {
+        val header = input.readBits(4).toInt()
+
+        var prediction: Long
+        if (header and 0x80 != 0) {
+            prediction = predictor2.getPrediction()
+        } else {
+            prediction = predictor1.getPrediction()
+        }
+
+        var numZeroBytes = header and 0x70 shr 4
+        if (numZeroBytes > 3) {
+            numZeroBytes++
+        }
+        var diff = input.readBits((8 - numZeroBytes)*8)
+        var actual = prediction xor diff
+
+        predictor1.update(actual)
+        predictor2.update(actual)
+
+        return actual
     }
     private fun bitsToRead():Int {
         var value = 0x00
@@ -122,23 +127,7 @@ class DecompressorFlat(val input: BitReader) {
     }
     private fun nextValue() {
         for (i in 0..columns - 1) {
-            // Read value
-            if (input.readBit()) {
-                // else -> same value as before
-                if (input.readBit()) {
-                    // New leading and trailing zeros
-                    storedLeadingZerosRow[i] = input.readBits(5).toInt()
-                    var significantBits = input.readBits(6).toInt()
-                    if (significantBits == 0) {
-                        significantBits = 64
-                    }
-                    storedTrailingZerosRow[i] = 64 - significantBits - storedLeadingZerosRow[i]
-                }
-                var value = input.readBits(64 - storedLeadingZerosRow[i] - storedTrailingZerosRow[i])
-                value = value shl storedTrailingZerosRow[i]
-                value = storedVals[i] xor value
-                storedVals[i] = value
-            }
+            storedVals[i] = decode()
         }
     }
 }

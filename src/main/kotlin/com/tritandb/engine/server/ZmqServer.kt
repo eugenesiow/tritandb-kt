@@ -5,6 +5,7 @@ import com.lmax.disruptor.EventHandler
 import com.lmax.disruptor.dsl.Disruptor
 import com.lmax.disruptor.util.DaemonThreadFactory
 import com.natpryce.konfig.*
+import com.tritandb.engine.experimental.CompressorFpc
 import com.tritandb.engine.experimental.CompressorTs
 import com.tritandb.engine.tsc.Compressor
 import com.tritandb.engine.tsc.CompressorFlat
@@ -61,7 +62,7 @@ class ZmqServer(val config:Configuration) {
         else {
             val o:OutputStream = File("${config[server.dataDir]}/${name}.tsc").outputStream()
             val b:BitOutput = BitByteBufferWriter(o)
-            val c:CompressorFlat = CompressorFlat(timestamp,b,valueCount)
+            val c:CompressorFpc = CompressorFpc(timestamp,b,valueCount)
             val f: FileCompressor = FileCompressor(c,b,o)
             C.put(name,f)
             return f.compressor
