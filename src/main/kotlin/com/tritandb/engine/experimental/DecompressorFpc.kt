@@ -57,13 +57,13 @@ class DecompressorFpc(val input: BitReader) {
         val header = input.readBits(4).toInt()
 
         var prediction: Long
-        if (header and 0x80 != 0) {
-            prediction = predictor2.getPrediction()
+        if (header and 0x08 > 0) {
+            prediction = predictor2.prediction
         } else {
-            prediction = predictor1.getPrediction()
+            prediction = predictor1.prediction
         }
 
-        var numZeroBytes = header and 0x70 shr 4
+        var numZeroBytes = header and 0x07
         if (numZeroBytes > 3) {
             numZeroBytes++
         }
@@ -72,6 +72,8 @@ class DecompressorFpc(val input: BitReader) {
 
         predictor1.update(actual)
         predictor2.update(actual)
+
+//        println("${actual}:${(8 - numZeroBytes)*8}:${header}")
 
         return actual
     }

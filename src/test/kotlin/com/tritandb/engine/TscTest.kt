@@ -1,9 +1,15 @@
 package com.tritandb.engine
 
 import com.nhaarman.mockito_kotlin.*
+import com.tritandb.engine.experimental.CompressorFpc
+import com.tritandb.engine.experimental.DecompressorFpc
 import com.tritandb.engine.tsc.CompressorFlat
+import com.tritandb.engine.tsc.DecompressorFlat
 import com.tritandb.engine.util.BitByteBufferWriter
+import com.tritandb.engine.util.BitReader
 import org.junit.Test
+import java.io.*
+import kotlin.test.assertEquals
 
 /**
  * TritanDb
@@ -52,5 +58,51 @@ class CompressorTest {
         //header
 
 
+    }
+
+    @Test fun compressSeries() {
+        val o: ByteArrayOutputStream = ByteArrayOutputStream()
+        val timestamp = 0L
+        val c = CompressorFlat(timestamp, BitByteBufferWriter(o), 2)
+        c.addRow(timestamp, listOf(0,1))
+        c.addRow(timestamp+1, listOf(1,2))
+        c.close()
+        o.close()
+        val i: InputStream = ByteArrayInputStream(o.toByteArray())
+        val d = DecompressorFlat(BitReader(i))
+        var r = d.readRows().iterator().next()
+        var row = r.getRow()
+        assertEquals((row.get(0).timestamp),0)
+        assertEquals((row.get(0).value),0)
+        assertEquals((row.get(1).value),1)
+        r = d.readRows().iterator().next()
+        row = r.getRow()
+        assertEquals((row.get(0).timestamp),1)
+        assertEquals((row.get(0).value),1)
+        assertEquals((row.get(1).value),2)
+    }
+}
+
+class CompressorFpcTest {
+    @Test fun compressSeries() {
+        val o: ByteArrayOutputStream = ByteArrayOutputStream()
+        val timestamp = 1000L
+        val c = CompressorFpc(timestamp, BitByteBufferWriter(o), 2)
+        c.addRow(timestamp, listOf(java.lang.Double.doubleToLongBits(1.1),java.lang.Double.doubleToLongBits(2.2)))
+        c.addRow(timestamp+1, listOf(java.lang.Double.doubleToLongBits(3.3),java.lang.Double.doubleToLongBits(4.4)))
+        c.close()
+        o.close()
+        val i: InputStream = ByteArrayInputStream(o.toByteArray())
+        val d = DecompressorFpc(BitReader(i))
+        var r = d.readRows().iterator().next()
+        var row = r.getRow()
+        assertEquals((row.get(0).timestamp),1000)
+        assertEquals(row.get(0).getDoubleValue(),1.1)
+        assertEquals(row.get(1).getDoubleValue(),2.2)
+        r = d.readRows().iterator().next()
+        row = r.getRow()
+        assertEquals((row.get(0).timestamp),1001)
+        assertEquals(row.get(0).getDoubleValue(),3.3)
+        assertEquals(row.get(1).getDoubleValue(),4.4)
     }
 }

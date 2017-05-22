@@ -83,8 +83,10 @@ class CompressorFpc(timestamp:Long, val out: BitOutput, var columns:Int): Compre
 
         if (predictor1Better) {
             out.writeBits(diff1, bitCounter(diff1))
+//            println("${predictor1Better}:${diff1}:${bitCounter(diff1)}:${code}")
         } else {
             out.writeBits(diff2, bitCounter(diff2))
+//            println("${predictor1Better}:${diff2}:${bitCounter(diff2)}:${code}")
         }
     }
 
