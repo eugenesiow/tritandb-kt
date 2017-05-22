@@ -4,6 +4,7 @@ import com.tritandb.engine.experimental.DecompressorFpc
 import com.tritandb.engine.util.BitReader
 import java.io.File
 import java.io.InputStream
+import kotlin.system.measureTimeMillis
 
 /**
 * TritanDb
@@ -26,20 +27,40 @@ fun main(args : Array<String>) {
 //        println()
 //    }
 //    i.close()
-    readShelburne()
+    println("Time: ${measureTimeMillis{readShelburne("data/shelburne.tsc")}}")
+//    println("Time: ${measureTimeMillis{readShelburneFPC("data/shelburne_fpc.tsc")}}")
 }
 
-fun readShelburne() {
-    val i: InputStream = File("data/shelburne_fpc.tsc").inputStream()
+fun readShelburne(filePath:String) {
+    val i: InputStream = File(filePath).inputStream()
+    val bi: BitReader = BitReader(i)
+    val d: DecompressorFlat = DecompressorFlat(bi)
+//    var count = 0
+    File("${filePath}.csv").printWriter().use { out ->
+        for (r in d.readRows()) {
+            out.print("${r.timestamp}")
+            for (pair in r.getRow()) {
+                out.print(", ${pair.getDoubleValue()}")
+            }
+            out.println()
+        }
+    }
+    i.close()
+}
+
+fun readShelburneFPC(filePath:String) {
+    val i: InputStream = File(filePath).inputStream()
     val bi: BitReader = BitReader(i)
     val d: DecompressorFpc = DecompressorFpc(bi)
-    var count = 0
-    for(r in d.readRows()) {
-        print("${count++}:${r!!.timestamp}")
-        for(pair in r!!.getRow()) {
-            print(", ${pair.getDoubleValue()}")
+//    var count = 0
+    File("${filePath}.csv").printWriter().use { out ->
+        for (r in d.readRows()) {
+            out.print("${r.timestamp}")
+            for (pair in r.getRow()) {
+                out.print(", ${pair.getDoubleValue()}")
+            }
+            out.println()
         }
-        println()
     }
     i.close()
 }

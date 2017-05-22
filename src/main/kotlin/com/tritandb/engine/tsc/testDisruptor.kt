@@ -25,17 +25,72 @@ fun main(args: Array<String>) {
 
     Thread.sleep(1000)
 
-    println("Time: ${measureTimeMillis{shelburne(sender)}}")
-//    println("Time: ${measureTimeMillis{ srbench(sender) }}")
+//    println("Time: ${measureTimeMillis{shelburne(sender,"/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv")}}")
+//    println("Time: ${measureTimeMillis{ srbench(sender,"/Users/eugene/Downloads/knoesis_observations_csv_date_sorted/") }}")
+    println("Time: ${measureTimeMillis{ taxi(sender,"/Users/eugene/Documents/Programming/data/2016_green_taxi_trip_data.csv") }}")
 
     sender.close()
     context.close()
 }
 
-fun srbench(sender:ZMQ.Socket) {
+fun taxi(sender:ZMQ.Socket,filePath:String) {
     val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
     val sdf = SimpleDateFormat(DATE_FORMAT)
-    File("/Users/eugene/Downloads/knoesis_observations_csv_date_sorted/").walkTopDown()
+    val br = BufferedReader(FileReader(filePath))
+    br.readLine() //header
+    for(line in br.lines()) {
+        val parts = line.split(",")
+        if(parts.size>21) {
+            val event = buildTritanEvent {
+                type = INSERT
+                name = "taxi"
+                rows = buildRows {
+                    addRow(buildRow {
+                        timestamp = (sdf.parse(parts[1]).time/1000)
+                        addValue(parts[0].toLong())
+                        addValue(sdf.parse(parts[2]).time/1000)
+                        if(parts[3]=="true")
+                            addValue(1)
+                        else
+                            addValue(0)
+                        addValue(parts[4].toLong())
+                        addValue(java.lang.Double.doubleToLongBits(parts[5].toDouble()))
+                        addValue(java.lang.Double.doubleToLongBits(parts[6].toDouble()))
+                        addValue(java.lang.Double.doubleToLongBits(parts[7].toDouble()))
+                        addValue(java.lang.Double.doubleToLongBits(parts[8].toDouble()))
+                        addValue(parts[9].toLong())
+                        addValue(java.lang.Double.doubleToLongBits(parts[10].toDouble()))
+                        addValue(java.lang.Double.doubleToLongBits(parts[11].toDouble()))
+                        addValue(java.lang.Double.doubleToLongBits(parts[12].toDouble()))
+                        addValue(java.lang.Double.doubleToLongBits(parts[13].toDouble()))
+                        addValue(java.lang.Double.doubleToLongBits(parts[14].toDouble()))
+                        addValue(java.lang.Double.doubleToLongBits(parts[15].toDouble()))
+                        addValue(java.lang.Double.doubleToLongBits(parts[17].toDouble()))
+                        addValue(java.lang.Double.doubleToLongBits(parts[18].toDouble()))
+                        addValue(parts[19].toLong())
+                        if(parts[20].isEmpty())
+                            addValue(1)
+                        else
+                            addValue(parts[20].toLong())
+                        addValue(sdf.parse(parts[21]).time/1000)
+                    })
+                }
+            }
+            sender.send(event.toByteArray())
+        }
+    }
+    br.close()
+
+    sender.send(buildTritanEvent {
+        type = CLOSE
+        name = "taxi"
+    }.toByteArray())
+}
+
+fun srbench(sender:ZMQ.Socket,filePath:String) {
+    val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
+    val sdf = SimpleDateFormat(DATE_FORMAT)
+    File(filePath).walkTopDown()
             .filter { !it.name.startsWith(".") && it.isFile && it.name.endsWith(".csv") }.forEach {
         val br = BufferedReader(FileReader(it.absolutePath))
         val header = br.readLine().split(",") //header
@@ -87,8 +142,8 @@ fun srbench(sender:ZMQ.Socket) {
     }
 }
 
-fun shelburne(sender:ZMQ.Socket) {
-    val br = BufferedReader(FileReader("/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"))
+fun shelburne(sender:ZMQ.Socket,filePath:String) {
+    val br = BufferedReader(FileReader(filePath))
     br.readLine() //header
     for(line in br.lines()) {
         var addThis = true
@@ -96,7 +151,7 @@ fun shelburne(sender:ZMQ.Socket) {
         if(parts.size>6) {
             val event = buildTritanEvent {
                 type = INSERT
-                name = "shelburne_fpc"
+                name = "shelburne"
                 rows = buildRows {
                     addRow(buildRow {
                         timestamp = (parts[0].toLong() / 1000000)
@@ -117,6 +172,6 @@ fun shelburne(sender:ZMQ.Socket) {
 
     sender.send(buildTritanEvent {
         type = CLOSE
-        name = "shelburne_fpc"
+        name = "shelburne"
     }.toByteArray())
 }

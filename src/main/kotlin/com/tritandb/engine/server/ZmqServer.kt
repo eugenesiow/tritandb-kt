@@ -49,6 +49,7 @@ class ZmqServer(val config:Configuration) {
             CLOSE -> {
                 val c = C.getValue(tEvent.name).compressor
                 c.close()
+                C.remove(tEvent.name)
                 println("closed")
             }
             else -> {

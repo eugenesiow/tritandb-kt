@@ -4,3 +4,5 @@
 *.lock
 
 .idea/workspace.xml
+
+*.csv
