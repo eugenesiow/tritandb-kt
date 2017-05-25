@@ -3,12 +3,11 @@ package com.tritandb.engine.experimental
 import com.tritandb.engine.tsc.Compressor
 import com.tritandb.engine.util.BitOutput
 
-
 /**
  * TritanDb
  * Created by eugene on 25/05/2017.
  */
-class CompressorDelta(timestamp:Long, val out: BitOutput, var columns:Int): Compressor {
+class CompressorDeltaRice(timestamp:Long, val out: BitOutput, var columns:Int): Compressor {
     private var oldDelta:Long = -1L
     private var storedTimestamp:Long = timestamp
     private var rleCounter = 1
@@ -26,7 +25,7 @@ class CompressorDelta(timestamp:Long, val out: BitOutput, var columns:Int): Comp
      * @param values LongArray of values for the next row in the series, use java.lang.Double.doubleToRawLongBits function to convert from double to long bits
      */
     override fun addRow(timestamp:Long, values:List<Long>) {
-           compressTimestamp(timestamp)
+        compressTimestamp(timestamp)
     }
 
     /**
@@ -41,29 +40,29 @@ class CompressorDelta(timestamp:Long, val out: BitOutput, var columns:Int): Comp
 
     private fun compressTimestamp(timestamp:Long) {
         val newDelta = (timestamp - storedTimestamp)
-        if(oldDelta!=-1L) {
-            if(newDelta==oldDelta) {
-                rleCounter++
-            } else {
-                writeUnsignedLeb128(rleCounter.toLong())
-                writeUnsignedLeb128(oldDelta)
-                rleCounter = 1
+        if(newDelta>=0) {
+            if (oldDelta != -1L) {
+//            println("${newDelta}:${rleCounter}")
+                if (newDelta == oldDelta) {
+                    rleCounter++
+                } else {
+                    riceEncode(rleCounter.toLong(), 2)
+                    riceEncode(oldDelta, 6)
+                    rleCounter = 1
+                }
             }
+            storedTimestamp = timestamp
+            oldDelta = newDelta
+        } else {
+            println("${newDelta}:error! out of order series.")
         }
-        storedTimestamp = timestamp
-        oldDelta = newDelta
     }
 
-    fun writeUnsignedLeb128(value: Long) {
-        var value = value
-        var remaining = value.ushr(7)
-
-        while (remaining != 0L) {
-            out.writeBits((value and 0x7f or 0x80),8)
-            value = remaining
-            remaining = remaining ushr 7
-        }
-
-        out.writeBits((value and 0x7f),8)
+    fun riceEncode(value: Long, bits: Int) {
+//        println("${value.ushr(bits)}:${value}")
+        for(i in 1..value.ushr(bits))
+            out.writeBit(true)
+        out.writeBit(false)
+        out.writeBits(value, bits)
     }
 }
