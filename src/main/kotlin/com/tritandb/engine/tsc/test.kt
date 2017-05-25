@@ -1,5 +1,6 @@
 package com.tritandb.engine.tsc
 
+import com.tritandb.engine.experimental.DecompressorDelta
 import com.tritandb.engine.experimental.DecompressorFpc
 import com.tritandb.engine.util.BitReader
 import java.io.File
@@ -27,8 +28,26 @@ fun main(args : Array<String>) {
 //        println()
 //    }
 //    i.close()
-    println("Time: ${measureTimeMillis{readShelburne("data/shelburne.tsc")}}")
+    println("Time: ${measureTimeMillis{readDelta("data/shelburne.tsc")}}")
+//    println("Time: ${measureTimeMillis{readShelburne("data/shelburne.tsc")}}")
 //    println("Time: ${measureTimeMillis{readShelburneFPC("data/shelburne_fpc.tsc")}}")
+}
+
+fun readDelta(filePath:String) {
+    val i: InputStream = File(filePath).inputStream()
+    val bi: BitReader = BitReader(i)
+    val d: DecompressorDelta = DecompressorDelta(bi)
+    var count = 0
+//    File("${filePath}.csv").printWriter().use { out ->
+        for (r in d.readRows()) {
+            print("${count++}:${r.timestamp}")
+            for (pair in r.getRow()) {
+                print(", ${pair.getDoubleValue()}")
+            }
+            println()
+        }
+//    }
+    i.close()
 }
 
 fun readShelburne(filePath:String) {

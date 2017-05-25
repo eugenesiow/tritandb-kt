@@ -11,7 +11,9 @@ import com.google.protobuf.ByteOutput
  * Created by eugene on 25/05/2017.
  */
 class CompressorDelta(timestamp:Long, val out: BitOutput, var columns:Int): Compressor {
+    private var oldDelta:Long = -1L
     private var storedTimestamp:Long = timestamp
+    private var rleCounter = 1
     init{
         addHeader(timestamp)
     }
@@ -41,8 +43,17 @@ class CompressorDelta(timestamp:Long, val out: BitOutput, var columns:Int): Comp
 
     private fun compressTimestamp(timestamp:Long) {
         val newDelta = (timestamp - storedTimestamp)
-        writeUnsignedLeb128(newDelta)
+        if(oldDelta!=-1L) {
+            if(newDelta==oldDelta) {
+                rleCounter++
+            } else {
+                writeUnsignedLeb128(rleCounter.toLong())
+                writeUnsignedLeb128(oldDelta)
+                rleCounter = 1
+            }
+        }
         storedTimestamp = timestamp
+        oldDelta = newDelta
     }
 
     fun writeUnsignedLeb128(value: Long) {
