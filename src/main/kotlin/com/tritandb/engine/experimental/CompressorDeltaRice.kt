@@ -47,7 +47,7 @@ class CompressorDeltaRice(timestamp:Long, val out: BitOutput, var columns:Int): 
                     rleCounter++
                 } else {
                     riceEncode(rleCounter.toLong(), 2)
-                    riceEncode(oldDelta, 6)
+                    riceEncode(oldDelta, 16)
                     rleCounter = 1
                 }
             }
