@@ -33,9 +33,12 @@ class CompressorDelta(timestamp:Long, val out: BitOutput, var columns:Int): Comp
      * Closes the block and flushes the remaining byte to OutputStream.
      */
     override fun close() {
-        out.writeBits(0x0F, 4)
-        out.writeBits(0xFFFFFFFF, 32)
-        out.writeBit(false) //false
+        writeUnsignedLeb128(rleCounter.toLong())
+        writeUnsignedLeb128(oldDelta)
+        rleCounter = 1
+//        out.writeBits(0x0F, 4)
+//        out.writeBits(0xFFFFFFFF, 32)
+//        out.writeBit(false) //false
         out.flush()
     }
 

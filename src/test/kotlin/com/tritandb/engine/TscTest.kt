@@ -1,7 +1,9 @@
 package com.tritandb.engine
 
 import com.nhaarman.mockito_kotlin.*
+import com.tritandb.engine.experimental.CompressorDelta
 import com.tritandb.engine.experimental.CompressorFpc
+import com.tritandb.engine.experimental.DecompressorDelta
 import com.tritandb.engine.experimental.DecompressorFpc
 import com.tritandb.engine.tsc.CompressorFlat
 import com.tritandb.engine.tsc.DecompressorFlat
@@ -80,6 +82,37 @@ class CompressorTest {
         assertEquals((row.get(0).timestamp),1)
         assertEquals((row.get(0).value),1)
         assertEquals((row.get(1).value),2)
+    }
+}
+
+class CompressorTsTest {
+    @Test fun compressTsDelta() {
+        val o: ByteArrayOutputStream = ByteArrayOutputStream()
+        val timestamp = 1496150168244L
+        val c = CompressorDelta(timestamp, BitByteBufferWriter(o), 0)
+        c.addRow(timestamp, listOf())
+        c.addRow(timestamp+1000, listOf())
+        c.addRow(timestamp+2000, listOf())
+        c.addRow(timestamp+3000, listOf())
+        c.addRow(timestamp+4501, listOf())
+        c.addRow(timestamp+6000, listOf())
+        c.close()
+        o.close()
+        val i: InputStream = ByteArrayInputStream(o.toByteArray())
+        val d = DecompressorDelta(BitReader(i))
+        val it = d.readRows().iterator()
+        var r = it.next()
+        assertEquals(r.timestamp,timestamp)
+        r = it.next()
+        assertEquals(r.timestamp,timestamp+1000)
+        r = it.next()
+        assertEquals(r.timestamp,timestamp+2000)
+        r = it.next()
+        assertEquals(r.timestamp,timestamp+3000)
+        r = it.next()
+        assertEquals(r.timestamp,timestamp+4501)
+        r = it.next()
+        assertEquals(r.timestamp,timestamp+6000)
     }
 }
 
