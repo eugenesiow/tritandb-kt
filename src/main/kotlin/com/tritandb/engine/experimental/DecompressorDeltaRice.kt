@@ -2,6 +2,7 @@ package com.tritandb.engine.experimental
 
 import com.tritandb.engine.util.BitReader
 import main.kotlin.com.tritandb.engine.tsc.data.Row
+import java.io.IOException
 import kotlin.coroutines.experimental.buildIterator
 
 /**
@@ -35,6 +36,7 @@ class DecompressorDeltaRice(val input: BitReader) {
             rleCounter = readRice(2)
 //            println("rle:${rleCounter}")
             storedDelta = readRice(16)
+//            println("storedDelta:${storedDelta}")
         }
         storedTimestamp += storedDelta
         rleCounter--
@@ -43,10 +45,9 @@ class DecompressorDeltaRice(val input: BitReader) {
         storedVals = LongArray(0)
     }
     private fun readRice(bits:Int):Int {
-        var bit = input.readBit()
-        var count = 1
-        while(bit!=false) {
-//            println("loop")
+        var bit = try {input.readBit()} catch (e: IOException) {endOfStream = true}
+        var count = 0
+        while(bit==true) {
             count++
             bit = input.readBit()
             if(count>=Integer.MAX_VALUE) {
@@ -54,8 +55,9 @@ class DecompressorDeltaRice(val input: BitReader) {
                 break
             }
         }
-//        println("${count}")
-        return (count-1).shl(bits) + input.readBits(bits).toInt()
+        var remainder = 0
+        try { remainder = input.readBits(bits).toInt() } catch (e: IOException) {endOfStream = true}
+        return (count).shl(bits) + remainder
     }
 
 }

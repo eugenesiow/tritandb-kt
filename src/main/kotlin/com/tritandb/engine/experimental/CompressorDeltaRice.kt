@@ -11,6 +11,7 @@ class CompressorDeltaRice(timestamp:Long, val out: BitOutput, var columns:Int): 
     private var oldDelta:Long = -1L
     private var storedTimestamp:Long = timestamp
     private var rleCounter = 1
+    var count = 0
     init{
         addHeader(timestamp)
     }
@@ -25,6 +26,7 @@ class CompressorDeltaRice(timestamp:Long, val out: BitOutput, var columns:Int): 
      * @param values LongArray of values for the next row in the series, use java.lang.Double.doubleToRawLongBits function to convert from double to long bits
      */
     override fun addRow(timestamp:Long, values:List<Long>) {
+        count++
         compressTimestamp(timestamp)
     }
 
@@ -32,9 +34,12 @@ class CompressorDeltaRice(timestamp:Long, val out: BitOutput, var columns:Int): 
      * Closes the block and flushes the remaining byte to OutputStream.
      */
     override fun close() {
-        out.writeBits(0x0F, 4)
-        out.writeBits(0xFFFFFFFF, 32)
-        out.writeBit(false) //false
+        riceEncode(rleCounter.toLong(), 2)
+        riceEncode(oldDelta, 16)
+        rleCounter = 1
+//        out.writeBits(0x0F, 4)
+//        out.writeBits(0xFFFFFFFF, 32)
+//        out.writeBit(false) //false
         out.flush()
     }
 
@@ -59,10 +64,13 @@ class CompressorDeltaRice(timestamp:Long, val out: BitOutput, var columns:Int): 
     }
 
     fun riceEncode(value: Long, bits: Int) {
-//        println("${value.ushr(bits)}:${value}")
-        for(i in 1..value.ushr(bits))
+        val postiveBits = value.ushr(bits)
+//        println("${count}:${postiveBits}:${value}:${bits}")
+        for(i in 1..postiveBits) {
             out.writeBit(true)
+        }
         out.writeBit(false)
-        out.writeBits(value, bits)
+        val remainder = value and (1L.shl(bits)-1)
+        out.writeBits(remainder, bits)
     }
 }

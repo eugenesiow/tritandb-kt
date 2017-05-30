@@ -37,11 +37,13 @@ fun main(args : Array<String>) {
 fun readDelta(filePath:String) {
     val i: InputStream = File(filePath).inputStream()
     val bi: BitReader = BitReader(i)
-    val d: DecompressorDelta = DecompressorDelta(bi)
+    val d: DecompressorDeltaRice = DecompressorDeltaRice(bi)
     var count = 0
 //    File("${filePath}.csv").printWriter().use { out ->
         for (r in d.readRows()) {
             print("${count++}:${r.timestamp}")
+//            if(count>40)
+//                break
             for (pair in r.getRow()) {
                 print(", ${pair.getDoubleValue()}")
             }

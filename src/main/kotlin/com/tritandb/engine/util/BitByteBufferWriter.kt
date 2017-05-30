@@ -20,6 +20,7 @@ class BitByteBufferWriter(val output: OutputStream): BitOutput {
     }
 
     private fun flipByte() {
+//        println(b)
         if (bitsLeft == 0) {
             if(!bb.hasRemaining()) {
                 writeBB()

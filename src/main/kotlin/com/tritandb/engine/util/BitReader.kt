@@ -1,5 +1,6 @@
 package com.tritandb.engine.util
 
+import java.io.IOException
 import java.io.InputStream
 
 /**
@@ -36,9 +37,9 @@ class BitReader(val input: InputStream) {
         if (bitsLeft == 0) {
             val i = input.read()
             b = i
-//            if (i == -1) {
-//                throw IOException("Stream was closed")
-//            }
+            if (i == -1) {
+                throw IOException("Stream was closed")
+            }
             bitsLeft = java.lang.Byte.SIZE
         }
     }
