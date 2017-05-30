@@ -34,6 +34,10 @@ class DecompressorDeltaRice(val input: BitReader) {
     private fun nextTimestamp() {
         if(rleCounter==0) {
             rleCounter = readRice(2)
+            if(rleCounter==0) {
+                endOfStream = true
+                return //need to take into account nextValue
+            }
 //            println("rle:${rleCounter}")
             storedDelta = readRice(16)
 //            println("storedDelta:${storedDelta}")
@@ -55,9 +59,9 @@ class DecompressorDeltaRice(val input: BitReader) {
                 break
             }
         }
-        var remainder = 0
-        try { remainder = input.readBits(bits).toInt() } catch (e: IOException) {endOfStream = true}
-        return (count).shl(bits) + remainder
+//        var remainder = 0
+//        try { remainder = input.readBits(bits).toInt() } catch (e: IOException) {endOfStream = true}
+        return (count).shl(bits) + input.readBits(bits).toInt()
     }
 
 }
