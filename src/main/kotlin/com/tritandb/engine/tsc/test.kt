@@ -3,6 +3,7 @@ package com.tritandb.engine.tsc
 import com.tritandb.engine.experimental.DecompressorDelta
 import com.tritandb.engine.experimental.DecompressorDeltaRice
 import com.tritandb.engine.experimental.DecompressorFpc
+import com.tritandb.engine.experimental.DecompressorTs
 import com.tritandb.engine.util.BitReader
 import java.io.File
 import java.io.InputStream
@@ -37,7 +38,7 @@ fun main(args : Array<String>) {
 fun readDelta(filePath:String) {
     val i: InputStream = File(filePath).inputStream()
     val bi: BitReader = BitReader(i)
-    val d: DecompressorDeltaRice = DecompressorDeltaRice(bi)
+    val d: DecompressorTs = DecompressorTs(bi)
     var count = 0
 //    File("${filePath}.csv").printWriter().use { out ->
         for (r in d.readRows()) {

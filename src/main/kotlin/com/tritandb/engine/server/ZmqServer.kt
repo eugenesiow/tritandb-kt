@@ -64,7 +64,7 @@ class ZmqServer(val config:Configuration) {
             val o:OutputStream = File("${config[server.dataDir]}/${name}.tsc").outputStream()
             val b:BitOutput = BitByteBufferWriter(o)
 //            val b:BitOutput = BitWriter(o)
-            val c:CompressorDeltaRice = CompressorDeltaRice(timestamp,b,valueCount)
+            val c:CompressorTs= CompressorTs(timestamp,b,valueCount)
             val f: FileCompressor = FileCompressor(c,b,o)
             C.put(name,f)
             return f.compressor

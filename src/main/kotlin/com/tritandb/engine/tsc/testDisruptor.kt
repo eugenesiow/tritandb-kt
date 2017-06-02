@@ -156,6 +156,7 @@ fun shelburne(sender:ZMQ.Socket,filePath:String) {
                 rows = buildRows {
                     addRow(buildRow {
                         timestamp = (parts[0].toLong() / 1000000)
+//                        timestamp = (parts[0].toLong())
                         for(i in 1..6) {
                             if (parts[i] == "")
                                 addThis = false

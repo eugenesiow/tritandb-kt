@@ -10,6 +10,7 @@ import kotlin.coroutines.experimental.buildIterator
 */
 class DecompressorFlat(val input: BitReader) {
     private val FIRST_DELTA_BITS:Int = 27
+    private val DELTA_BITS = 32
     private var storedLeadingZerosRow:IntArray = IntArray(1)
     private var storedTrailingZerosRow:IntArray = IntArray(1)
     private var storedVals:LongArray = LongArray(1)
@@ -89,7 +90,7 @@ class DecompressorFlat(val input: BitReader) {
             0x02 -> toRead = 7 // '10'
             0x06 -> toRead = 9 // '110'
             0x0e -> toRead = 12
-            0x0F -> toRead = 32
+            0x0F -> toRead = DELTA_BITS
         }
         return toRead
     }
@@ -99,7 +100,7 @@ class DecompressorFlat(val input: BitReader) {
         val toRead = bitsToRead()
         if (toRead > 0) {
             deltaDelta = input.readBits(toRead)
-            if (toRead == 32) {
+            if (toRead == DELTA_BITS) {
                 if (deltaDelta.toInt() == 0xFFFFFFFF.toInt()) {
                     // End of stream
                     endOfStream = true
@@ -115,7 +116,6 @@ class DecompressorFlat(val input: BitReader) {
                     12 -> deltaDelta -=2047
                 }
             }
-            deltaDelta = deltaDelta.toInt().toLong()
         }
         storedDelta += deltaDelta
         storedTimestamp += storedDelta
