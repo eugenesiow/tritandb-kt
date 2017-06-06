@@ -1,7 +1,7 @@
 package com.tritandb.engine.tsc
 
 import com.tritandb.engine.util.BitReader
-import main.kotlin.com.tritandb.engine.tsc.data.Row
+import com.tritandb.engine.tsc.data.Row
 import kotlin.coroutines.experimental.buildIterator
 
 /**
