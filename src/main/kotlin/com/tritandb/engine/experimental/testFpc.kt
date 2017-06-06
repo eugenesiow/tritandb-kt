@@ -1,5 +1,6 @@
 package com.tritandb.engine.experimental
 
+import com.tritandb.engine.experimental.valueC.FpcCompressor
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -18,7 +19,7 @@ fun main(args: Array<String>) {
 }
 
 fun readShelburne() {
-    val c:FpcCompressor = FpcCompressor()
+    val c: FpcCompressor = FpcCompressor()
     println(c.decodeVal(File("test.tsc").inputStream()))
 }
 
@@ -33,7 +34,7 @@ fun writeSrbench() {
             previousVals.add(0.0)
         var addThis = false
         val channel = Channels.newChannel(File("data_fpc/${stationName}.tsc").outputStream())
-        val c:FpcCompressor = FpcCompressor()
+        val c: FpcCompressor = FpcCompressor()
 
         for(line in br.lines()) {
             addThis = true
@@ -73,7 +74,7 @@ fun writeShelburne() {
     val br = BufferedReader(FileReader("/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"))
     br.readLine() //header
     val channel = Channels.newChannel(File("test.tsc").outputStream())
-    val c:FpcCompressor = FpcCompressor()
+    val c: FpcCompressor = FpcCompressor()
     for(line in br.lines()) {
         val parts = line.split(",")
         if(parts.size>6) {

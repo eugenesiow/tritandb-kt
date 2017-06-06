@@ -1,9 +1,7 @@
 package com.tritandb.engine.tsc
 
-import com.tritandb.engine.experimental.DecompressorDelta
-import com.tritandb.engine.experimental.DecompressorDeltaRice
-import com.tritandb.engine.experimental.DecompressorFpc
-import com.tritandb.engine.experimental.DecompressorTs
+import com.tritandb.engine.experimental.valueC.DecompressorFpc
+import com.tritandb.engine.experimental.timestampC.DecompressorTs
 import com.tritandb.engine.util.BitReader
 import java.io.File
 import java.io.InputStream

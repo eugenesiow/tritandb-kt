@@ -1,7 +1,7 @@
-package com.tritandb.engine.experimental
+package com.tritandb.engine.experimental.timestampC
 
+import com.tritandb.engine.tsc.data.Row
 import com.tritandb.engine.util.BitReader
-import main.kotlin.com.tritandb.engine.tsc.data.Row
 import kotlin.coroutines.experimental.buildIterator
 
 
@@ -22,7 +22,7 @@ class DecompressorDelta(val input: BitReader) {
         storedTimestamp = input.readBits(64)
     }
     fun readRows():Iterator<Row> = buildIterator {
-        while(!endOfStream) {
+        while (!endOfStream) {
             nextRow()
             if (!endOfStream) yield(Row(storedTimestamp, storedVals))
         }

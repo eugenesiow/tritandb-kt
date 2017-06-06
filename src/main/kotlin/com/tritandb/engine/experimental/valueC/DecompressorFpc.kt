@@ -1,8 +1,6 @@
-package com.tritandb.engine.experimental
+package com.tritandb.engine.experimental.valueC
 
 import com.tritandb.engine.util.BitReader
-import main.kotlin.com.tritandb.engine.tsc.data.Row
-import kotlin.coroutines.experimental.buildIterator
 
 /**
  * TritanDb
@@ -29,10 +27,10 @@ class DecompressorFpc(val input: BitReader) {
         storedVals = LongArray(columns)
         blockTimestamp = input.readBits(64)
     }
-    fun readRows():Iterator<Row> = buildIterator {
-        while(!endOfStream) {
+    fun readRows():Iterator<main.kotlin.com.tritandb.engine.tsc.data.Row> = kotlin.coroutines.experimental.buildIterator {
+        while (!endOfStream) {
             nextRow()
-            if (!endOfStream) yield(Row(storedTimestamp, storedVals))
+            if (!endOfStream) yield(main.kotlin.com.tritandb.engine.tsc.data.Row(storedTimestamp, storedVals))
         }
     }
     private fun nextRow() {

@@ -1,4 +1,4 @@
-package com.tritandb.engine.experimental
+package com.tritandb.engine.experimental.valueC
 
 import com.tritandb.engine.tsc.Compressor
 import com.tritandb.engine.util.BitOutput
@@ -12,8 +12,8 @@ class CompressorFpDeltaDelta(timestamp:Long, val out: BitOutput, var columns:Int
     private val FIRST_DELTA_BITS = 27
     private var storedTimestamp = -1L
     private var storedDelta = 0L
-    private var valueDelta = LongArray(columns)
-    private var storedValue = LongArray(columns)
+    private var valueDelta = mutableListOf<DoubleParts>()
+    private var storedValue = mutableListOf<DoubleParts>()
     private var blockTimestamp:Long = timestamp
     init{
         addHeader(timestamp)
@@ -42,13 +42,50 @@ class CompressorFpDeltaDelta(timestamp:Long, val out: BitOutput, var columns:Int
     }
 
     private fun encode(value: Long, i:Int) {
-        val newDelta = (value - storedValue[i])
-        val deltaD = newDelta - valueDelta[i]
+        val (sign, exponent, mantissa) = splitDouble(value)
+        val newDeltaEx = (exponent - storedValue[i].exponent)
+        val newDeltaMt = (mantissa - storedValue[i].mantissa)
+        val deltaDEx = newDeltaEx - valueDelta[i].exponent
+        val deltaDMt = newDeltaMt - valueDelta[i].mantissa
 
+        out.writeBit(sign) //write the sign bit
+        if (deltaDEx == 0)
+        {
+            out.writeBit(false)
+        } else {
+            out.writeBit(true)
+            out.writeBits(deltaDEx.toLong(),11)
+        }
+
+        if (deltaDMt == 0L)
+        {
+            out.writeBit(false)
+        } else if (deltaDMt >= -63 && deltaDMt <= 64)
+        {
+            out.writeBits(0x02, 2) // store '10'
+            out.writeBits(deltaDMt + 63, 7) // Using 7 bits, store the value..
+        }
+        else if (deltaDMt >= -8388607 && deltaDMt <= 8388608)
+        {
+            out.writeBits(0x06, 3) // store '1110'
+            out.writeBits(deltaDMt + 8388607, 24) // Use 24 bits
+        }
+        else if (deltaDMt >= -2147483647 && deltaDMt <= 2147483648)
+        {
+            out.writeBits(0x0E, 4) // store '1110'
+            out.writeBits(deltaDMt + 2147483647, 32) // Use 32 bits
+        } else
+        {
+            out.writeBits(0x0F, 4) // Store '1111'
+            out.writeBits(deltaDMt, 58)
+        }
+
+        valueDelta[i] = DoubleParts(sign, newDeltaEx, newDeltaMt)
+        storedValue[i] = DoubleParts(sign, exponent, mantissa)
     }
 
-    private fun splitDouble(value:Long):DoubleParts {
-        return DoubleParts(value.ushr(63)>0,value.and(0x7ff0000000000000L).toInt(),value.and(0x000fffffffffffffL))
+    private fun splitDouble(value:Long): DoubleParts {
+        return DoubleParts(value.ushr(63) > 0, value.and(0x7ff0000000000000L).toInt(), value.and(0x000fffffffffffffL))
     }
 
     private fun writeFirstRow(timestamp:Long, values:List<Long>) {
@@ -57,8 +94,8 @@ class CompressorFpDeltaDelta(timestamp:Long, val out: BitOutput, var columns:Int
         out.writeBits(storedDelta, FIRST_DELTA_BITS)
         for (i in 0..columns - 1)
         {
-            storedValue[i] = values[i]
-            valueDelta[i] = values[i]
+            storedValue.add(splitDouble(values[i]))
+            valueDelta.add(splitDouble(values[i]))
             out.writeBits(values[i], 64)
         }
     }

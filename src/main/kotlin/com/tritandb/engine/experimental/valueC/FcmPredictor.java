@@ -8,7 +8,7 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package com.tritandb.engine.experimental;
+package com.tritandb.engine.experimental.valueC;
 
 public class FcmPredictor {
 

@@ -1,19 +1,17 @@
-package com.tritandb.engine.experimental
+package com.tritandb.engine.experimental.timestampC
 
 import com.tritandb.engine.tsc.Compressor
 import com.tritandb.engine.util.BitOutput
 
 /**
  * TritanDb
- * Created by eugene on 02/06/2017.
+ * Created by eugene on 25/05/2017.
  */
-class CompressorDeltaAdaptiveRice(timestamp:Long, val out: BitOutput, var columns:Int): Compressor {
+class CompressorDeltaRice(timestamp:Long, val out: BitOutput, var columns:Int): Compressor {
     private var oldDelta:Long = -1L
     private var storedTimestamp:Long = timestamp
     private var rleCounter = 1
-    private var kRle = 2
-    private var kVal = 12
-    //    var count = 0
+//    var count = 0
     init{
         addHeader(timestamp)
     }
@@ -36,11 +34,9 @@ class CompressorDeltaAdaptiveRice(timestamp:Long, val out: BitOutput, var column
      * Closes the block and flushes the remaining byte to OutputStream.
      */
     override fun close() {
-        riceEncode(rleCounter.toLong(), kRle)
-        riceEncode(oldDelta, kVal)
-        kRle = recalculate(rleCounter.toLong(), kRle)
-        kVal = recalculate(oldDelta, kVal)
-        riceEncode(0, kRle) //encode RLE 0 to end
+        riceEncode(rleCounter.toLong(), 2)
+        riceEncode(oldDelta, 12)
+        riceEncode(0, 2) //encode RLE 0 to end
         out.flush()
     }
 
@@ -52,10 +48,8 @@ class CompressorDeltaAdaptiveRice(timestamp:Long, val out: BitOutput, var column
                 if (newDelta == oldDelta) {
                     rleCounter++
                 } else {
-                    riceEncode(rleCounter.toLong(), kRle)
-                    riceEncode(oldDelta, kVal)
-                    kRle = recalculate(rleCounter.toLong(), kRle)
-                    kVal = recalculate(oldDelta, kVal)
+                    riceEncode(rleCounter.toLong(), 2)
+                    riceEncode(oldDelta, 12)
                     rleCounter = 1
                 }
             }
@@ -75,25 +69,5 @@ class CompressorDeltaAdaptiveRice(timestamp:Long, val out: BitOutput, var column
         out.writeBit(false)
         val remainder = value and (1L.shl(bits)-1)
         out.writeBits(remainder, bits)
-    }
-
-    fun recalculate(u:Long, k:Int): Int {
-        val p = u.ushr(k)
-        if(p==0L) {
-            return k-1
-        } else if(p>1) {
-            return k+getP(p)
-        }
-        return k
-    }
-
-    fun getP(value:Long):Int {
-        var value = value
-        var count = 0
-        while (value > 0) {
-            count++
-            value = value.shr(1)
-        }
-        return count
     }
 }

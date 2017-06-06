@@ -1,4 +1,4 @@
-package main.kotlin.com.tritandb.engine.tsc.data
+package com.tritandb.engine.tsc.data
 
 /**
  * Created by eugene on 11/05/2017.

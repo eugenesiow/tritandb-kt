@@ -5,16 +5,14 @@ import com.lmax.disruptor.EventHandler
 import com.lmax.disruptor.dsl.Disruptor
 import com.lmax.disruptor.util.DaemonThreadFactory
 import com.natpryce.konfig.*
-import com.tritandb.engine.experimental.*
+import com.tritandb.engine.experimental.timestampC.CompressorTs
 import com.tritandb.engine.tsc.Compressor
-import com.tritandb.engine.tsc.CompressorFlat
 import com.tritandb.engine.tsc.data.DisruptorEvent
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent
 import com.tritandb.engine.tsc.FileCompressor
 import com.tritandb.engine.util.BitByteBufferWriter
 import com.tritandb.engine.util.BitOutput
-import com.tritandb.engine.util.BitWriter
 import org.zeromq.ZMQ
 import java.io.File
 import java.io.OutputStream
@@ -64,7 +62,7 @@ class ZmqServer(val config:Configuration) {
             val o:OutputStream = File("${config[server.dataDir]}/${name}.tsc").outputStream()
             val b:BitOutput = BitByteBufferWriter(o)
 //            val b:BitOutput = BitWriter(o)
-            val c:CompressorTs= CompressorTs(timestamp,b,valueCount)
+            val c: CompressorTs = CompressorTs(timestamp,b,valueCount)
             val f: FileCompressor = FileCompressor(c,b,o)
             C.put(name,f)
             return f.compressor

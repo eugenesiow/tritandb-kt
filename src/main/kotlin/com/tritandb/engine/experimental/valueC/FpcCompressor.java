@@ -8,11 +8,10 @@
  * Contributors:
  *     Michael Kutschke - initial API and implementation
  ******************************************************************************/
-package com.tritandb.engine.experimental;
+package com.tritandb.engine.experimental.valueC;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 public class FpcCompressor {

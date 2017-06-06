@@ -1,4 +1,4 @@
-package com.tritandb.engine.experimental
+package com.tritandb.engine.experimental.timestampC
 
 import com.tritandb.engine.tsc.Compressor
 import com.tritandb.engine.util.BitOutput
