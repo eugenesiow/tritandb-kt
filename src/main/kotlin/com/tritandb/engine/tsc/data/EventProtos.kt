@@ -2,13 +2,13 @@ package com.tritandb.engine.tsc.data
 
 import com.tritandb.engine.tsc.data.EventProtos.*
 
-public inline fun buildRow(fn: Row.Builder.() -> Unit): Row {
-    val builder = Row.newBuilder()
+public inline fun buildRow(fn: EventProtos.Row.Builder.() -> Unit): EventProtos.Row {
+    val builder = EventProtos.Row.newBuilder()
     builder.fn()
     return builder.build()
 }
-public inline fun buildRows(fn: Rows.Builder.() -> Unit): Rows {
-    val builder = Rows.newBuilder()
+public inline fun buildRows(fn: EventProtos.Rows.Builder.() -> Unit): EventProtos.Rows {
+    val builder = EventProtos.Rows.newBuilder()
     builder.fn()
     return builder.build()
 }

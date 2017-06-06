@@ -39,7 +39,7 @@ class DecompressorDeltaRice(val input: BitReader) {
                 return //need to take into account nextValue
             }
 //            println("rle:${rleCounter}")
-            storedDelta = readRice(16)
+            storedDelta = readRice(12)
 //            println("storedDelta:${storedDelta}")
         }
         storedTimestamp += storedDelta
