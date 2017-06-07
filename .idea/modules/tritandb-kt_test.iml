@@ -6,7 +6,7 @@
         <compilerSettings />
         <compilerArguments>
           <option name="destination" value="$MODULE_DIR$/../../build/kotlin-classes/test" />
-          <option name="classpath" value="$MODULE_DIR$/../../build/classes/main:/Users/eugene/Documents/workspace/tritandb-kt/build/resources/main:/Users/eugene/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.1.2-2/2b22828f027e103dcd45f3aa240338bfdb53d16b/kotlin-stdlib-1.1.2-2.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-reflect/1.1.2-2/4d5466446af234c9dde2f7debbac8b4eb9534a15/kotlin-reflect-1.1.2-2.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/com.lmax/disruptor/3.3.6/9bfca4ee4f691f3737b3f4f006d0c4770f178eb/disruptor-3.3.6.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/com.google.protobuf/protobuf-java/3.3.0/9f301d1a27501b1afcb2ed16aad428337dabf9e4/protobuf-java-3.3.0.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/com.natpryce/konfig/1.6.1.0/deb3fb0a440eced4ed52de0d1d5be4f2e9ab3f13/konfig-1.6.1.0.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/org.zeromq/jeromq/0.4.0/e2b29317d64f78618f23c7d2fdda31ef7223f2b/jeromq-0.4.0.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/com.nhaarman/mockito-kotlin/1.4.0/24ed05c208a545589b24c1fbc81b710d3b79c5a8/mockito-kotlin-1.4.0.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-test/1.1.2-2/5df5b0edbe06217411883e978c97e08aeba5e561/kotlin-test-1.1.2-2.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-test-junit/1.1.2-2/877962ffccd12659ff42314960466132d343cd01/kotlin-test-junit-1.1.2-2.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/2.7.21/23e9f7bfb9717e849a05b84c29ee3ac723f1a653/mockito-core-2.7.21.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.6.11/8a8f9409e27f1d62c909c7eef2aa7b3a580b4901/byte-buddy-1.6.11.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.6.11/200d9c012befccd211ff91082a151257b1dc084/byte-buddy-agent-1.6.11.jar:/Users/eugene/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/2.5/612ecb799912ccf77cba9b3ed8c813da086076e9/objenesis-2.5.jar" />
+          <option name="classpath" value="$MODULE_DIR$/../../build/classes/main:/Users/eugenesiow/Documents/workspace/tritandb-kt/build/resources/main:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.1.2-2/2b22828f027e103dcd45f3aa240338bfdb53d16b/kotlin-stdlib-1.1.2-2.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-reflect/1.1.2-2/4d5466446af234c9dde2f7debbac8b4eb9534a15/kotlin-reflect-1.1.2-2.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/com.lmax/disruptor/3.3.6/9bfca4ee4f691f3737b3f4f006d0c4770f178eb/disruptor-3.3.6.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/com.google.protobuf/protobuf-java/3.3.0/9f301d1a27501b1afcb2ed16aad428337dabf9e4/protobuf-java-3.3.0.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/com.natpryce/konfig/1.6.1.0/deb3fb0a440eced4ed52de0d1d5be4f2e9ab3f13/konfig-1.6.1.0.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/org.zeromq/jeromq/0.4.0/e2b29317d64f78618f23c7d2fdda31ef7223f2b/jeromq-0.4.0.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/com.nhaarman/mockito-kotlin/1.4.0/24ed05c208a545589b24c1fbc81b710d3b79c5a8/mockito-kotlin-1.4.0.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-test/1.1.2-2/5df5b0edbe06217411883e978c97e08aeba5e561/kotlin-test-1.1.2-2.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/org.jetbrains.spek/spek-api/1.1.2/879088ec3b4fc9c636920a60aaac642bfb4d4824/spek-api-1.1.2.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.0.0-M4/50f95d68c674a30374c5f50e6ad5212d2c1a3cec/junit-jupiter-api-5.0.0-M4.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/org.mockito/mockito-core/2.7.21/23e9f7bfb9717e849a05b84c29ee3ac723f1a653/mockito-core-2.7.21.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.0.0-M2/e2caa64702a83336d3dd32c7f69c1f092156df6d/opentest4j-1.0.0-M2.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.0.0-M4/359eb461814bd7356de541d131d45473d394a168/junit-platform-commons-1.0.0-M4.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.6.11/8a8f9409e27f1d62c909c7eef2aa7b3a580b4901/byte-buddy-1.6.11.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.6.11/200d9c012befccd211ff91082a151257b1dc084/byte-buddy-agent-1.6.11.jar:/Users/eugenesiow/.gradle/caches/modules-2/files-2.1/org.objenesis/objenesis/2.5/612ecb799912ccf77cba9b3ed8c813da086076e9/objenesis-2.5.jar" />
           <option name="noStdlib" value="true" />
           <option name="noReflect" value="true" />
           <option name="moduleName" value="tritandb-kt_main" />
@@ -45,22 +45,16 @@
     <orderEntry type="library" name="Gradle: org.zeromq:jeromq:0.4.0" level="project" />
     <orderEntry type="library" name="Gradle: com.nhaarman:mockito-kotlin:1.4.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test:1.1.2-2" level="project" />
-    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-test-junit:1.1.2-2" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.spek:spek-api:1.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.junit.jupiter:junit-jupiter-api:5.0.0-M4" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
     <orderEntry type="library" name="Gradle: org.mockito:mockito-core:2.7.21" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.jetbrains.spek:spek-junit-platform-engine:1.1.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.opentest4j:opentest4j:1.0.0-M2" level="project" />
+    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-commons:1.0.0-M4" level="project" />
     <orderEntry type="library" name="Gradle: net.bytebuddy:byte-buddy:1.6.11" level="project" />
     <orderEntry type="library" name="Gradle: net.bytebuddy:byte-buddy-agent:1.6.11" level="project" />
     <orderEntry type="library" name="Gradle: org.objenesis:objenesis:2.5" level="project" />
-    <orderEntry type="module-library" scope="TEST">
-      <library name="JUnit4">
-        <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit-4.12.jar!/" />
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/hamcrest-core-1.3.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
   </component>
   <component name="TestModuleProperties" production-module="tritandb-kt_main" />
 </module>

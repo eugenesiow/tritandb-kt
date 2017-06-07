@@ -9,9 +9,11 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4'
     }
 }
 
+apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'kotlin'
 
 repositories {
@@ -19,6 +21,7 @@ repositories {
 }
 
 dependencies {
+
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect"
     compile "com.lmax:disruptor:3.3.6"
@@ -28,7 +31,9 @@ dependencies {
 
     testCompile 'com.nhaarman:mockito-kotlin:1.4.0'
     testCompile "org.jetbrains.kotlin:kotlin-test"
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit"
+    testCompile 'org.jetbrains.spek:spek-api:1.1.2'
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M4'
+    testRuntime 'org.jetbrains.spek:spek-junit-platform-engine:1.1.2'
 }
 kotlin {
     experimental {

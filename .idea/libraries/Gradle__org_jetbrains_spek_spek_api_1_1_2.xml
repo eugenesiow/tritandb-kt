@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.spek:spek-api:1.1.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.spek/spek-api/1.1.2/879088ec3b4fc9c636920a60aaac642bfb4d4824/spek-api-1.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.spek/spek-api/1.1.2/c5ef9f173e6a225435782c2392afa98ff4ede844/spek-api-1.1.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

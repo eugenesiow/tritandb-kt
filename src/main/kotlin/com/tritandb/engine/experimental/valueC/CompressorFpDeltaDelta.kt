@@ -47,6 +47,8 @@ class CompressorFpDeltaDelta(timestamp:Long, val out: BitOutput, var columns:Int
         val newDeltaMt = (mantissa - storedValue[i].mantissa)
         val deltaDEx = newDeltaEx - valueDelta[i].exponent
         val deltaDMt = newDeltaMt - valueDelta[i].mantissa
+//        println(deltaDEx)
+//        println(deltaDMt)
 
         out.writeBit(sign) //write the sign bit
         if (deltaDEx == 0)
