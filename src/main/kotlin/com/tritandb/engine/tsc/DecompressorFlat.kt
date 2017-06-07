@@ -1,16 +1,16 @@
 package com.tritandb.engine.tsc
 
-import com.tritandb.engine.util.BitReader
 import com.tritandb.engine.tsc.data.Row
+import com.tritandb.engine.util.BitInput
+import java.io.IOException
 import kotlin.coroutines.experimental.buildIterator
 
 /**
 * TritanDb
 * Created by eugene on 11/05/2017.
 */
-class DecompressorFlat(val input: BitReader) {
-    private val FIRST_DELTA_BITS:Int = 27
-    private val DELTA_BITS = 32
+class DecompressorFlat(val input: BitInput):Decompressor {
+    private val FIRST_DELTA_BITS:Int = 64
     private var storedLeadingZerosRow:IntArray = IntArray(1)
     private var storedTrailingZerosRow:IntArray = IntArray(1)
     private var storedVals:LongArray = LongArray(1)
@@ -47,9 +47,13 @@ class DecompressorFlat(val input: BitReader) {
 //        nextRow()
 //        return !endOfStream
 //    }
-    fun readRows():Iterator<Row> = buildIterator {
+    override fun readRows():Iterator<Row> = buildIterator {
         while(!endOfStream) {
-            nextRow()
+            try {
+                nextRow()
+            } catch(e: IOException) {
+                println(storedTimestamp)
+            }
             if (!endOfStream) yield(Row(storedTimestamp, storedVals))
         }
     }
@@ -88,9 +92,11 @@ class DecompressorFlat(val input: BitReader) {
             0x00 -> {}
 //            0x02 -> toRead = 6 // '10'
             0x02 -> toRead = 7 // '10'
-            0x06 -> toRead = 9 // '110'
-            0x0e -> toRead = 12
-            0x0F -> toRead = DELTA_BITS
+//            0x06 -> toRead = 9 // '110'
+//            0x0e -> toRead = 12
+            0x06 -> toRead = 24 // '110'
+            0x0e -> toRead = 32
+            0x0F -> toRead = FIRST_DELTA_BITS
         }
         return toRead
     }
@@ -100,8 +106,8 @@ class DecompressorFlat(val input: BitReader) {
         val toRead = bitsToRead()
         if (toRead > 0) {
             deltaDelta = input.readBits(toRead)
-            if (toRead == DELTA_BITS) {
-                if (deltaDelta.toInt() == 0xFFFFFFFF.toInt()) {
+            if (toRead == FIRST_DELTA_BITS) {
+                if (deltaDelta == 0xFFFFFFFFFFFFFFF) {
                     // End of stream
                     endOfStream = true
                     return
@@ -112,8 +118,10 @@ class DecompressorFlat(val input: BitReader) {
                 when(toRead) {
 //                    6 -> deltaDelta -=31
                     7 -> deltaDelta -= 63
-                    9 -> deltaDelta -=255
-                    12 -> deltaDelta -=2047
+//                    9 -> deltaDelta -=255
+//                    12 -> deltaDelta -=2047
+                    24 -> deltaDelta -=8388607
+                    32 -> deltaDelta -=2147483647
                 }
             }
         }

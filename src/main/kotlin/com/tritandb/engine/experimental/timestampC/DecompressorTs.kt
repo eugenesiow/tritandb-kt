@@ -74,7 +74,7 @@ class DecompressorTs(val input: com.tritandb.engine.util.BitReader) {
             deltaDelta = input.readBits(toRead)
 //            println(deltaDelta)
             if (toRead == FIRST_DELTA_BITS) {
-                if (deltaDelta.toInt() == 0xFFFFFFFF.toInt()) {
+                if (deltaDelta == 0xFFFFFFFFFFFFFFFL) {
                     // End of stream
                     endOfStream = true
                     return

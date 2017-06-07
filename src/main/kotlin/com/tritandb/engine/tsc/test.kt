@@ -28,8 +28,8 @@ fun main(args : Array<String>) {
 //        println()
 //    }
 //    i.close()
-    println("Time: ${measureTimeMillis{readDelta("data/shelburne.tsc")}}")
-//    println("Time: ${measureTimeMillis{readShelburne("data/shelburne.tsc")}}")
+//    println("Time: ${measureTimeMillis{readDelta("data/shelburne.tsc")}}")
+    println("Time: ${measureTimeMillis{readShelburne("data/shelburne.tsc")}}")
 //    println("Time: ${measureTimeMillis{readShelburneFPC("data/shelburne_fpc.tsc")}}")
 }
 
@@ -52,7 +52,7 @@ fun readDelta(filePath:String) {
     i.close()
 }
 
-fun readShelburne(filePath:String) {
+fun readShelburneToFile(filePath:String) {
     val i: InputStream = File(filePath).inputStream()
     val bi: BitReader = BitReader(i)
     val d: DecompressorFlat = DecompressorFlat(bi)
@@ -66,6 +66,22 @@ fun readShelburne(filePath:String) {
             out.println()
         }
     }
+    i.close()
+}
+
+fun readShelburne(filePath:String) {
+    val i: InputStream = File(filePath).inputStream()
+    val bi: BitReader = BitReader(i)
+    val d: DecompressorFlat = DecompressorFlat(bi)
+
+    for (r in d.readRows()) {
+        print("${r.timestamp}")
+        for (pair in r.getRow()) {
+            print(", ${pair.getDoubleValue()}")
+        }
+        println()
+    }
+
     i.close()
 }
 

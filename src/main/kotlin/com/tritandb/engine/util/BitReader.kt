@@ -2,12 +2,13 @@ package com.tritandb.engine.util
 
 import java.io.IOException
 import java.io.InputStream
+import java.nio.ByteBuffer
 
 /**
 * TritanDb
 * Created by eugenesiow on 10/05/2017.
 */
-class BitReader(val input: InputStream) {
+class BitReader(val input: InputStream):BitInput {
 
     var b = 0
     var bitsLeft = 0
@@ -15,43 +16,26 @@ class BitReader(val input: InputStream) {
     init {
         flipByte()
     }
+    /**
+     * Reads the next bit and returns a boolean representing it.
 
-//    var pos = 0
-//        private set
-//
-//    private var mark = 0
-//    private var nextByte = 0
-//    private var remainingBits = 0
-
-//    fun mark(readLimit: Int = 8) {
-//        mark = pos;
-//        input.mark(readLimit)
-//    }
-//
-//    fun reset() {
-//        pos = mark;
-//        input.reset()
-//    }
-
-    fun flipByte() {
-        if (bitsLeft == 0) {
-            val i = input.read()
-            b = i
-            if (i == -1) {
-                throw IOException("Stream was closed")
-            }
-            bitsLeft = java.lang.Byte.SIZE
-        }
-    }
-
-    fun readBit():Boolean {
-        val bit:Int = (b shr bitsLeft - 1 and 1)
+     * @return true if the next bit is 1, otherwise 0.
+     */
+    override fun readBit(): Boolean {
+        val bit = (b shr bitsLeft - 1 and 1)
         bitsLeft--
         flipByte()
         return bit == 1
     }
 
-    fun readBits(bits: Int): Long {
+    /**
+     * Reads a long from the next X bits that represent the least significant bits in the long value.
+
+     * @param bits How many next bits are read from the stream
+     * *
+     * @return long value that was read from the stream
+     */
+    override fun readBits(bits: Int): Long {
         var numBits = bits
         var value = 0L
         while(numBits>0) {
@@ -70,6 +54,18 @@ class BitReader(val input: InputStream) {
             flipByte()
         }
         return value
+    }
+
+    private fun flipByte() {
+        if (bitsLeft == 0) {
+            val i = input.read()
+            b = i
+            if (i == -1) {
+                throw IOException("Stream was closed")
+            }
+
+            bitsLeft = java.lang.Byte.SIZE
+        }
     }
 
 }

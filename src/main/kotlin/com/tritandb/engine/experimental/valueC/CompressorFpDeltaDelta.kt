@@ -15,6 +15,12 @@ class CompressorFpDeltaDelta(timestamp:Long, val out: BitOutput, var columns:Int
     private var valueDelta = mutableListOf<DoubleParts>()
     private var storedValue = mutableListOf<DoubleParts>()
     private var blockTimestamp:Long = timestamp
+//    private var count48 = 0
+//    private var count32 = 0
+//    private var count58 = 0
+    private var count7 = 0
+    private var count0 = 0
+
     init{
         addHeader(timestamp)
     }
@@ -54,32 +60,39 @@ class CompressorFpDeltaDelta(timestamp:Long, val out: BitOutput, var columns:Int
         if (deltaDEx == 0)
         {
             out.writeBit(false)
+//            count0++
         } else {
             out.writeBit(true)
-            out.writeBits(deltaDEx.toLong(),11)
+            out.writeBits(deltaDEx.toLong() + 1023,11)
+//            count7++
         }
 
         if (deltaDMt == 0L)
         {
             out.writeBit(false)
+//            count0++
         } else if (deltaDMt >= -63 && deltaDMt <= 64)
         {
             out.writeBits(0x02, 2) // store '10'
             out.writeBits(deltaDMt + 63, 7) // Using 7 bits, store the value..
-        }
-        else if (deltaDMt >= -8388607 && deltaDMt <= 8388608)
-        {
-            out.writeBits(0x06, 3) // store '1110'
-            out.writeBits(deltaDMt + 8388607, 24) // Use 24 bits
+//            count7++
         }
         else if (deltaDMt >= -2147483647 && deltaDMt <= 2147483648)
         {
-            out.writeBits(0x0E, 4) // store '1110'
+            out.writeBits(0x06, 3) // store '110'
             out.writeBits(deltaDMt + 2147483647, 32) // Use 32 bits
+//            count32++
+
+        } else if (deltaDMt >= -140737488355327 && deltaDMt <= 140737488355328)
+        {
+            out.writeBits(0x0E, 4) // store '1110'
+            out.writeBits(deltaDMt + 140737488355327, 48) // Use 24 bits
+//            count48++
         } else
         {
             out.writeBits(0x0F, 4) // Store '1111'
-            out.writeBits(deltaDMt, 58)
+            out.writeBits(deltaDMt + 144115188075855871, 58)
+//            count58++
         }
 
         valueDelta[i] = DoubleParts(sign, newDeltaEx, newDeltaMt)
@@ -111,6 +124,8 @@ class CompressorFpDeltaDelta(timestamp:Long, val out: BitOutput, var columns:Int
         out.writeBits(0xFFFFFFFF, 32)
         out.writeBit(false) //false
         out.flush()
+//        println("${count0} ${count7}")
+//        println("${count0} ${count7} ${count32} ${count48} ${count58}")
     }
     /**
      * Stores up to millisecond accuracy, if seconds are used, delta-delta scale automagically
