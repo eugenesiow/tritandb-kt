@@ -8,9 +8,7 @@ import com.tritandb.engine.tsc.data.EventProtos
 import com.tritandb.engine.tsc.data.buildRow
 import com.tritandb.engine.tsc.data.buildRows
 import com.tritandb.engine.tsc.data.buildTritanEvent
-import com.tritandb.engine.util.BitByteBufferWriter
-import com.tritandb.engine.util.BitOutput
-import com.tritandb.engine.util.BitReader
+import com.tritandb.engine.util.*
 import java.io.*
 import java.lang.Double
 import kotlin.system.measureTimeMillis
@@ -24,16 +22,18 @@ fun main(args : Array<String>) {
     val outputFilePath = "data/shelburne.tsc"
     val filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"
 //    val filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"
-    var o: OutputStream = File(outputFilePath).outputStream()
-    var out: BitOutput = BitByteBufferWriter(o)
-    var c: Compressor = CompressorFlat(0,out,6)
-    println("${measureTimeMillis{writeFileShelburne(filePath,c)}}")
-    c.close()
-//    val i: InputStream = File(outputFilePath).inputStream()
-//    val bi: BitReader = BitReader(i)
-//    val d: DecompressorFlat = DecompressorFlat(bi)
-//    println("${measureTimeMillis{readFileShelburne(outputFilePath,d)}}")
-//    i.close()
+
+//    var o: OutputStream = File(outputFilePath).outputStream()
+//    var out: BitOutput = BitByteBufferWriter(o)
+//    var c: Compressor = CompressorFlat(0,out,6)
+//    println("${measureTimeMillis{writeFileShelburne(filePath,c)}}")
+//    c.close()
+
+    val i: InputStream = File(outputFilePath).inputStream()
+    val bi: BitInput = BitByteBufferReader(i)
+    val d: DecompressorFlat = DecompressorFlat(bi)
+    println("${measureTimeMillis{readFileShelburne(outputFilePath,d)}}")
+    i.close()
 //
 //    o = File(outputFilePath).outputStream()
 //    out = BitByteBufferWriter(o)

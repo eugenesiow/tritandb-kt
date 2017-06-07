@@ -15,7 +15,7 @@ class DecompressorFlat(val input: BitInput):Decompressor {
     private var storedTrailingZerosRow:IntArray = IntArray(1)
     private var storedVals:LongArray = LongArray(1)
     private var storedTimestamp = -1L
-    private var storedDelta:Long = 0
+    private var storedDelta = 0L
     private var columns = 0
     private var blockTimestamp:Long = 0
     private var endOfStream = false
@@ -52,7 +52,7 @@ class DecompressorFlat(val input: BitInput):Decompressor {
             try {
                 nextRow()
             } catch(e: IOException) {
-                println(storedTimestamp)
+                println("${storedTimestamp} ${storedDelta}")
             }
             if (!endOfStream) yield(Row(storedTimestamp, storedVals))
         }
@@ -61,7 +61,7 @@ class DecompressorFlat(val input: BitInput):Decompressor {
         if (storedTimestamp == -1L) {
             // First item to read
             storedDelta = input.readBits(FIRST_DELTA_BITS)
-            if (storedDelta == ((1 shl 27) - 1).toLong()) {
+            if (storedDelta == 0x7FFFFFFFFFFFFFFF) {
                 endOfStream = true
                 return
             }
@@ -102,12 +102,12 @@ class DecompressorFlat(val input: BitInput):Decompressor {
     }
     private fun nextTimestamp() {
         // Next, read timestamp
-        var deltaDelta:Long = 0
+        var deltaDelta = 0L
         val toRead = bitsToRead()
         if (toRead > 0) {
             deltaDelta = input.readBits(toRead)
             if (toRead == FIRST_DELTA_BITS) {
-                if (deltaDelta == 0xFFFFFFFFFFFFFFF) {
+                if (deltaDelta == 0x7FFFFFFFFFFFFFFF) {
                     // End of stream
                     endOfStream = true
                     return

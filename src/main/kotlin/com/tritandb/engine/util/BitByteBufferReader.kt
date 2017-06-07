@@ -22,8 +22,10 @@ class BitByteBufferReader(val input: InputStream):BitInput {
 
     fun flipByte() {
         if(bytesLeft==0) {
-            bb.put(input.readBytes(DEFAULT_ALLOCATION))
-            bytesLeft=bb.position()
+            var data = ByteArray(DEFAULT_ALLOCATION)
+            input.read(data,0, data.size)
+            bb.put(data)
+            bytesLeft=bb.position()-1
             bb.flip()
         }
 
@@ -34,6 +36,10 @@ class BitByteBufferReader(val input: InputStream):BitInput {
 //                throw IOException("Stream was closed")
 //            }
             bitsLeft = java.lang.Byte.SIZE
+            bytesLeft--
+            if(bytesLeft==0) { //TODO:check correctness
+                bb.position(0)
+            }
         }
     }
 

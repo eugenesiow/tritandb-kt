@@ -60,9 +60,8 @@ class CompressorFlat(timestamp:Long, val out: BitOutput, var columns:Int):Compre
      * Closes the block and flushes the remaining byte to OutputStream.
      */
     override fun close() {
-        // These are selected to test interoperability and correctness of the solution, this can be read with go-tsz
         out.writeBits(0x0F, 4)
-        out.writeBits(0xFFFFFFFFFFFFFFF, 64)
+        out.writeBits(0x7FFFFFFFFFFFFFFF, 64)
         out.writeBit(false) //false
         out.flush()
     }
