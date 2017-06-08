@@ -34,9 +34,9 @@ class DecompressorDelta(val input: BitReader) {
     private fun nextTimestamp() {
         if(rleCounter==0) {
             rleCounter = readUnsignedLeb128()
-            println("rle:${rleCounter}")
+//            println("rle:${rleCounter}")
             storedDelta = readUnsignedLeb128()
-            println("storedDelta:${storedDelta}")
+//            println("storedDelta:${storedDelta}")
         }
         storedTimestamp += storedDelta
         rleCounter--

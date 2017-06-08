@@ -9,7 +9,7 @@ import kotlin.experimental.or
  * Created by eugene on 22/05/2017.
  */
 class CompressorFpc(timestamp:Long, val out: BitOutput, var columns:Int): Compressor {
-    private val FIRST_DELTA_BITS = 27
+    private val FIRST_DELTA_BITS = 64
     private var storedTimestamp = -1L
     private var storedDelta = 0L
     private var blockTimestamp:Long = timestamp
@@ -102,9 +102,8 @@ class CompressorFpc(timestamp:Long, val out: BitOutput, var columns:Int): Compre
      * Closes the block and flushes the remaining byte to OutputStream.
      */
     override fun close() {
-        // These are selected to test interoperability and correctness of the solution, this can be read with go-tsz
         out.writeBits(0x0F, 4)
-        out.writeBits(0xFFFFFFFF, 32)
+        out.writeBits(0x7FFFFFFFFFFFFFFF, 64)
         out.writeBit(false) //false
         out.flush()
     }
@@ -133,20 +132,20 @@ class CompressorFpc(timestamp:Long, val out: BitOutput, var columns:Int): Compre
             out.writeBits(0x02, 2) // store '10'
             out.writeBits(deltaD + 63, 7) // Using 7 bits, store the value..
         }
-        else if (deltaD >= -255 && deltaD <= 256)
+        else if (deltaD >= -8388607 && deltaD <= 8388608)
         {
-            out.writeBits(0x06, 3) // store '110'
-            out.writeBits(deltaD + 255, 9) // Use 9 bits
+            out.writeBits(0x06, 3) // store '1110'
+            out.writeBits(deltaD + 8388607, 24) // Use 12 bits
         }
-        else if (deltaD >= -2047 && deltaD <= 2048)
+        else if (deltaD >= -2147483647 && deltaD <= 2147483648)
         {
             out.writeBits(0x0E, 4) // store '1110'
-            out.writeBits(deltaD + 2047, 12) // Use 12 bits
+            out.writeBits(deltaD + 2147483647, 32) // Use 12 bits
         }
         else
         {
             out.writeBits(0x0F, 4) // Store '1111'
-            out.writeBits(deltaD, 32) // Store delta using 32 bits
+            out.writeBits(deltaD, FIRST_DELTA_BITS) // Store delta using 32 bits
         }
         storedDelta = newDelta
         storedTimestamp = timestamp

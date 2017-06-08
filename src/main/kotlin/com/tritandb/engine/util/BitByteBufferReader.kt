@@ -1,6 +1,5 @@
 package com.tritandb.engine.util
 
-import java.io.IOException
 import java.io.InputStream
 import java.nio.ByteBuffer
 
@@ -22,8 +21,9 @@ class BitByteBufferReader(val input: InputStream):BitInput {
 
     fun flipByte() {
         if(bytesLeft==0) {
+//            bb.clear()
             bb.position(0)
-            var data = ByteArray(DEFAULT_ALLOCATION)
+            val data = ByteArray(DEFAULT_ALLOCATION)
             input.read(data,0, data.size)
             bb.put(data)
             bytesLeft=bb.position()
