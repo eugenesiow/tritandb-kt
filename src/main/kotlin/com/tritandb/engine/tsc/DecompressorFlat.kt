@@ -32,6 +32,9 @@ class DecompressorFlat(val input: BitInput):Decompressor {
             storedTrailingZerosRow[i] = 0
         }
         blockTimestamp = input.readBits(64)
+        if(columns==0) {
+            endOfStream = true
+        }
     }
 //    fun readRow(): Row? {
 //        next()
@@ -61,7 +64,7 @@ class DecompressorFlat(val input: BitInput):Decompressor {
         if (storedTimestamp == -1L) {
             // First item to read
             storedDelta = input.readBits(FIRST_DELTA_BITS)
-            if (storedDelta == 0x7FFFFFFFFFFFFFFF) {
+            if (storedDelta.ushr(FIRST_DELTA_BITS-4).toInt()==0x0F && storedDelta.shl(4).ushr(4) == 0x07FFFFFFFFFFFFFF) {
                 endOfStream = true
                 return
             }

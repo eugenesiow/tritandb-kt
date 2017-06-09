@@ -142,32 +142,33 @@ fun main(args : Array<String>) {
 
     outputFilePath = "data/"
     filePath = "/Users/eugene/Downloads/knoesis_observations_csv_date_sorted/"
+//    filePath = "/Users/eugene/Downloads/knoesis_empty/"
 
-    println("Write gor")
-    for(x in 1..10) {
-        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"gor") }}")
-    }
-
-    println("Read gor")
-    for(x in 1..10) {
-        println("${measureTimeMillis { readFileSrBench(outputFilePath,"gor") }}")
-    }
-
-//    println("Write FP Delta")
+//    println("Write gor")
+////    for(x in 1..10) {
+//        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"gor") }}")
+////    }
+//
+//    println("Read gor")
 //    for(x in 1..10) {
-//        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"fpdelta") }}")
+//        println("${measureTimeMillis { readFileSrBench(outputFilePath,"gor") }}")
 //    }
 
+    println("Write FP Delta")
+//    for(x in 1..10) {
+        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"fpdelta") }}")
+//    }
+//
 //    println("Read FP Delta")
 //    for(x in 1..10) {
 //        println("${measureTimeMillis { readFileSrBench(outputFilePath,"fpdelta") }}")
 //    }
-
+//
 //    println("Write FPC")
 //    for(x in 1..10) {
 //        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"fpc") }}")
 //    }
-
+//
 //    println("Read FPC")
 //    for(x in 1..10) {
 //        println("${measureTimeMillis { readFileSrBench(outputFilePath,"fpc") }}")
@@ -203,6 +204,7 @@ fun readFileSrBench(folderPath:String,cType:String) {
             .filter { !it.name.startsWith(".") && it.isFile && it.name.endsWith(".tsc") }.forEach {
         val i: InputStream = File(it.absolutePath).inputStream()
         val bi: BitInput = BitByteBufferReader(i)
+//        println(it.absolutePath)
         var d:Decompressor = DecompressorFlat(bi)
         when(cType) {
             "gor" ->  d = DecompressorFlat(bi)
@@ -211,11 +213,11 @@ fun readFileSrBench(folderPath:String,cType:String) {
         }
         File("${it.absolutePath}.csv").printWriter().use { out ->
             for (r in d.readRows()) {
-//            out.print("${r.timestamp}")
+//                out.print("${r.timestamp}")
                 for (pair in r.getRow()) {
-//                out.print(", ${pair.getDoubleValue()}")
+//                    out.print(", ${pair.getDoubleValue()}")
                 }
-//            out.println()
+//                out.println()
             }
         }
         i.close()
@@ -230,7 +232,7 @@ fun writeFileSrBench(filePath:String, outputFilePath:String,cType:String) {
         val br = BufferedReader(FileReader(it.absolutePath))
         val header = br.readLine().split(",") //header
         val stationName = it.name.replace(".csv","")
-        val o: OutputStream = File(outputFilePath + stationName).outputStream()
+        val o: OutputStream = File(outputFilePath + stationName + ".tsc").outputStream()
         val out: BitOutput = BitByteBufferWriter(o)
         val previousVals:MutableList<Long> = mutableListOf()
         for(i in 0..header.size-1)
