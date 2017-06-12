@@ -1,19 +1,42 @@
 package com.tritandb.engine.tsc
 
-import com.tritandb.engine.util.BitOutput
+import com.tritandb.engine.util.BitByteBufferWriter
+import org.mapdb.BTreeMap
+import java.io.ByteArrayOutputStream
+import org.mapdb.DBMaker
+import org.mapdb.DB
+import org.mapdb.Serializer
+
 
 /**
-* TritanDb
-* Created by eugenesiow on 10/05/2017.
-*/
-class CompressorFlat(val timestamp:Long, val out: BitOutput, val columns:Int):Compressor {
+ * TritanDb
+ * Created by eugene on 12/06/2017.
+ */
+class CompressorTree(val fileName:String, val columns:Int) {
+    data class RowWrite(val value:Long, val bits:Int)
+
+    val o = ByteArrayOutputStream()
+    var out = BitByteBufferWriter(o)
+    var currentBits = 0
+    val MAX_BITS = 4096 * 8
+    var rowBits = 0
     private val FIRST_DELTA_BITS = 64
     private var storedLeadingZerosRow:IntArray = IntArray(columns)
     private var storedTrailingZerosRow:IntArray = IntArray(columns)
     private val storedVals:LongArray = LongArray(columns)
     private var storedTimestamp = -1L
     private var storedDelta = 0L
-    private var blockTimestamp:Long = timestamp
+    private var blockTimestamp:Long = 0L
+    private val db = DBMaker
+            .fileDB(fileName)
+            .fileMmapEnable()
+            .make()
+    private val map = db.treeMap("map")
+            .keySerializer(Serializer.LONG_DELTA)
+            .valueSerializer(Serializer.BYTE_ARRAY)
+            .createOrOpen()
+    private val row = mutableListOf<RowWrite>()
+
     init{
         //setup for rows
         for (i in 0..columns - 1)
@@ -21,13 +44,42 @@ class CompressorFlat(val timestamp:Long, val out: BitOutput, val columns:Int):Co
             storedLeadingZerosRow[i] = Integer.MAX_VALUE
             storedTrailingZerosRow[i] = 0
         }
-        addHeader(timestamp)
+        addHeader()
     }
-    private fun addHeader(timestamp:Long) {
-        // One byte: length of the first delta
-        // One byte: precision of timestamps
-        out.writeBits(columns.toLong(), 32)
-        out.writeBits(timestamp, 64)
+    private fun addHeader() {
+        rowWriter(columns.toLong(),32)
+    }
+
+    private fun rowWriter(value:Long, bits:Int) {
+        row.add(RowWrite(value,bits))
+        rowBits += bits
+    }
+
+    private fun rowFlush() {
+        if(currentBits + rowBits > MAX_BITS) {
+            close()
+            map.put(blockTimestamp,o.toByteArray())
+            currentBits = 0
+            o.reset()
+            out = BitByteBufferWriter(o)
+            addHeader()
+            blockTimestamp = storedTimestamp
+                    //TODO: RESET everything
+            writeRowToOutput()
+        } else {
+            currentBits += rowBits
+        }
+        rowBits = 0
+    }
+
+    private fun writeRowToOutput() {
+        for((value, bits) in row) {
+            if(bits >1) {
+                out.writeBits(value, bits)
+            } else {
+                if(value ==0L) out.writeBit(false) else out.writeBit(true)
+            }
+        }
     }
 
     /**
@@ -36,7 +88,7 @@ class CompressorFlat(val timestamp:Long, val out: BitOutput, val columns:Int):Co
      * @param timestamp Timestamp in miliseconds
      * @param values LongArray of values for the next row in the series, use java.lang.Double.doubleToRawLongBits function to convert from double to long bits
      */
-    override fun addRow(timestamp:Long, values:List<Long>) {
+    fun addRow(timestamp:Long, values:List<Long>) {
         if (storedTimestamp == -1L) {
             writeFirstRow(timestamp, values)
         }
@@ -47,19 +99,20 @@ class CompressorFlat(val timestamp:Long, val out: BitOutput, val columns:Int):Co
     }
 
     private fun writeFirstRow(timestamp:Long, values:List<Long>) {
+        blockTimestamp = timestamp
         storedDelta = timestamp - blockTimestamp
         storedTimestamp = timestamp
-        out.writeBits(storedDelta, FIRST_DELTA_BITS)
+        rowWriter(storedDelta, FIRST_DELTA_BITS)
         for (i in 0..columns - 1)
         {
             storedVals[i] = values[i]
-            out.writeBits(storedVals[i], 64)
+            rowWriter(storedVals[i], 64)
         }
     }
     /**
      * Closes the block and flushes the remaining byte to OutputStream.
      */
-    override fun close() {
+    fun close() {
         out.writeBits(0x0F, 4)
         out.writeBits(0x7FFFFFFFFFFFFFFF, 64)
         out.writeBit(false) //false
@@ -78,32 +131,32 @@ class CompressorFlat(val timestamp:Long, val out: BitOutput, val columns:Int):Co
         // If delta is zero, write single 0 bit
         if (deltaD == 0L)
         {
-            out.writeBit(false)
+            rowWriter(0,1)
         }
 //        else if (deltaD >= -31 && deltaD <= 32)
 //        {
-//            out.writeBits(0x02, 2) // store '10'
-//            out.writeBits(deltaD + 31, 6) // Using 7 bits, store the value..
+//            rowWriter(0x02, 2) // store '10'
+//            rowWriter(deltaD + 31, 6) // Using 7 bits, store the value..
 //        }
         else if (deltaD >= -63 && deltaD <= 64)
         {
-            out.writeBits(0x02, 2) // store '10'
-            out.writeBits(deltaD + 63, 7) // Using 7 bits, store the value..
+            rowWriter(0x02, 2) // store '10'
+            rowWriter(deltaD + 63, 7) // Using 7 bits, store the value..
         }
         else if (deltaD >= -8388607 && deltaD <= 8388608)
         {
-            out.writeBits(0x06, 3) // store '1110'
-            out.writeBits(deltaD + 8388607, 24) // Use 12 bits
+            rowWriter(0x06, 3) // store '1110'
+            rowWriter(deltaD + 8388607, 24) // Use 12 bits
         }
         else if (deltaD >= -2147483647 && deltaD <= 2147483648)
         {
-            out.writeBits(0x0E, 4) // store '1110'
-            out.writeBits(deltaD + 2147483647, 32) // Use 12 bits
+            rowWriter(0x0E, 4) // store '1110'
+            rowWriter(deltaD + 2147483647, 32) // Use 12 bits
         }
         else
         {
-            out.writeBits(0x0F, 4) // Store '1111'
-            out.writeBits(deltaD, FIRST_DELTA_BITS) // Store delta using 32 bits
+            rowWriter(0x0F, 4) // Store '1111'
+            rowWriter(deltaD, FIRST_DELTA_BITS) // Store delta using 32 bits
         }
         storedDelta = newDelta
         storedTimestamp = timestamp
@@ -114,7 +167,7 @@ class CompressorFlat(val timestamp:Long, val out: BitOutput, val columns:Int):Co
             val xor = storedVals[i] xor values[i]
             if (xor == 0L) {
                 // Write 0
-                out.writeBit(false)
+                rowWriter(0,1)
             }
             else {
                 var leadingZeros = java.lang.Long.numberOfLeadingZeros(xor)
@@ -136,6 +189,7 @@ class CompressorFlat(val timestamp:Long, val out: BitOutput, val columns:Int):Co
             }
             storedVals[i] = values[i]
         }
+        rowFlush()
     }
     /**
      * If there at least as many leading zeros and as many trailing zeros as previous value, control bit = 0 (type a)
@@ -145,9 +199,9 @@ class CompressorFlat(val timestamp:Long, val out: BitOutput, val columns:Int):Co
      * @param col The column index
      */
     private fun writeExistingLeadingRow(xor:Long, col:Int) {
-        out.writeBit(false)
+        rowWriter(0,1)
         val significantBits = 64 - storedLeadingZerosRow[col] - storedTrailingZerosRow[col]
-        out.writeBits(xor.ushr(storedTrailingZerosRow[col]), significantBits)
+        rowWriter(xor.ushr(storedTrailingZerosRow[col]), significantBits)
     }
 
     /**
@@ -162,13 +216,12 @@ class CompressorFlat(val timestamp:Long, val out: BitOutput, val columns:Int):Co
      * @param col The column index
      */
     private fun writeNewLeadingRow(xor:Long, leadingZeros:Int, trailingZeros:Int, col:Int) {
-        out.writeBit(true)
-        out.writeBits(leadingZeros.toLong(), 5) // Number of leading zeros in the next 5 bits
+        rowWriter(1,1)
+        rowWriter(leadingZeros.toLong(), 5) // Number of leading zeros in the next 5 bits
         val significantBits = 64 - leadingZeros - trailingZeros
-        out.writeBits(significantBits.toLong(), 6) // Length of meaningful bits in the next 6 bits
-        out.writeBits(xor.ushr(trailingZeros), significantBits) // Store the meaningful bits of XOR
+        rowWriter(significantBits.toLong(), 6) // Length of meaningful bits in the next 6 bits
+        rowWriter(xor.ushr(trailingZeros), significantBits) // Store the meaningful bits of XOR
         storedLeadingZerosRow[col] = leadingZeros
         storedTrailingZerosRow[col] = trailingZeros
     }
-
 }

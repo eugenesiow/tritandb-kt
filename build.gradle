@@ -28,6 +28,7 @@ dependencies {
     compile 'com.google.protobuf:protobuf-java:3.3.0'
     compile 'com.natpryce:konfig:1.6.1.0'
     compile 'org.zeromq:jeromq:0.4.0'
+    compile 'org.mapdb:mapdb:3.0.4'
 
     testCompile 'com.nhaarman:mockito-kotlin:1.4.0'
     testCompile "org.jetbrains.kotlin:kotlin-test"

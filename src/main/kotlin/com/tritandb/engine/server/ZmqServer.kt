@@ -8,6 +8,7 @@ import com.natpryce.konfig.*
 import com.tritandb.engine.experimental.timestampC.CompressorTs
 import com.tritandb.engine.experimental.valueC.CompressorFpDeltaDelta
 import com.tritandb.engine.tsc.Compressor
+import com.tritandb.engine.tsc.CompressorFlat
 import com.tritandb.engine.tsc.data.DisruptorEvent
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent
@@ -63,7 +64,7 @@ class ZmqServer(val config:Configuration) {
             val o:OutputStream = File("${config[server.dataDir]}/${name}.tsc").outputStream()
             val b:BitOutput = BitByteBufferWriter(o)
 //            val b:BitOutput = BitWriter(o)
-            val c: CompressorFpDeltaDelta = CompressorFpDeltaDelta(timestamp,b,valueCount)
+            val c: Compressor = CompressorFlat(timestamp,b,valueCount)
             val f: FileCompressor = FileCompressor(c,b,o)
             C.put(name,f)
             return f.compressor

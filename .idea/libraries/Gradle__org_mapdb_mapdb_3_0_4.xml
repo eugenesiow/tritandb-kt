@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.mapdb:mapdb:3.0.4">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mapdb/mapdb/3.0.4/36d8fefc69caec455e5154c99e367b93ccf6970c/mapdb-3.0.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mapdb/mapdb/3.0.4/e5d2b83b2b4b21588f225d9900e03f970b9c55e5/mapdb-3.0.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

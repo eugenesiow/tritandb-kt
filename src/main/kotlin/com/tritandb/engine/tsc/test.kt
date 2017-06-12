@@ -2,9 +2,11 @@ package com.tritandb.engine.tsc
 
 import com.tritandb.engine.experimental.valueC.DecompressorFpc
 import com.tritandb.engine.experimental.timestampC.DecompressorTs
+import com.tritandb.engine.query.op.RangeFlat
 import com.tritandb.engine.util.BitReader
 import java.io.File
 import java.io.InputStream
+import java.util.*
 import kotlin.system.measureTimeMillis
 
 /**
@@ -29,8 +31,39 @@ fun main(args : Array<String>) {
 //    }
 //    i.close()
 //    println("Time: ${measureTimeMillis{readDelta("data/shelburne.tsc")}}")
-    println("Time: ${measureTimeMillis{readShelburne("data/shelburne.tsc")}}")
+//    println("Time: ${measureTimeMillis{readShelburne("data/shelburne.tsc")}}")
+
+    queryShelburne("data/shelburne.tsc")
+
 //    println("Time: ${measureTimeMillis{readShelburneFPC("data/shelburne_fpc.tsc")}}")
+}
+
+fun queryShelburne(filePath: String) {
+    val fixedSeed = 100L
+    val rand = Random(fixedSeed)
+    val max = 1406141325958
+    val min = 1271692742104
+    val range = ((max + 1 - min )/100).toInt()
+    for(i in 1..21) {
+        val a = (rand.nextInt(range))*100L + min
+        val b = (rand.nextInt(range))*100L + min
+        var start = a
+        var end = b
+        if(a>b) {
+            start = b
+            end = a
+        }
+//        println("Time: ${measureTimeMillis { rangeShelburne(filePath,start,end) }}, Start: ${start}, End: ${end}")
+//        println("${start},${end},${measureTimeMillis { rangeShelburne(filePath,start,end) }}")
+        println("${measureTimeMillis { rangeShelburne(filePath,start,end) }}")
+    }
+
+}
+
+fun rangeShelburne(filePath: String, start: Long, end: Long) {
+    for(r in RangeFlat(filePath).run(start,end)) {
+
+    }
 }
 
 fun readDelta(filePath:String) {
