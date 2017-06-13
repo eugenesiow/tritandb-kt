@@ -7,7 +7,7 @@ import java.nio.ByteBuffer
  * TritanDb
  * Created by eugene on 13/06/2017.
  */
-class BufferReader(val input: ByteBuffer) {
+class BufferReader(val input: ByteBuffer):BitInput {
     var b:Byte = 0
     var bitsLeft = 0
 
@@ -28,7 +28,7 @@ class BufferReader(val input: ByteBuffer) {
         }
     }
 
-    fun readBit():Boolean {
+    override fun readBit():Boolean {
         val bit:Int = (b.toInt() shr bitsLeft - 1 and 1)
         bitsLeft--
 //        if(bitsLeft == 0 && input.remaining()==0) return true
@@ -40,7 +40,7 @@ class BufferReader(val input: ByteBuffer) {
 //        return input.remaining()==0
 //    }
 
-    fun readBits(bits: Int): Long {
+    override fun readBits(bits: Int): Long {
         var numBits = bits
         var value = 0L
         while(numBits>0) {

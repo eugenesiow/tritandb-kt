@@ -3,6 +3,7 @@ package com.tritandb.engine.tsc
 import com.tritandb.engine.experimental.valueC.DecompressorFpc
 import com.tritandb.engine.experimental.timestampC.DecompressorTs
 import com.tritandb.engine.query.op.RangeFlat
+import com.tritandb.engine.query.op.RangeTree
 import com.tritandb.engine.util.BitReader
 import java.io.File
 import java.io.InputStream
@@ -55,9 +56,16 @@ fun queryShelburne(filePath: String) {
         }
 //        println("Time: ${measureTimeMillis { rangeShelburne(filePath,start,end) }}, Start: ${start}, End: ${end}")
 //        println("${start},${end},${measureTimeMillis { rangeShelburne(filePath,start,end) }}")
-        println("${measureTimeMillis { rangeShelburne(filePath,start,end) }}")
+//        println("${measureTimeMillis { rangeShelburne(filePath,start,end) }}")
+        println("${measureTimeMillis { rangeShelburneTree(filePath,start,end) }}")
     }
 
+}
+
+fun rangeShelburneTree(filePath: String, start: Long, end: Long) {
+    for(r in RangeTree(filePath).run(start,end)) {
+
+    }
 }
 
 fun rangeShelburne(filePath: String, start: Long, end: Long) {

@@ -15,7 +15,8 @@ class CompressorTree(fileName:String, val columns:Int) {
     var altCurrentBits = 0
     var count = 0
     var currentBits = 0
-    val MAX_BYTES = 2097152
+//    val MAX_BYTES = 2097152
+    val MAX_BYTES = 1048576
     val MAX_BITS = MAX_BYTES * 8
     var out = BufferWriter(MAX_BYTES)
     var rowBits = 0
@@ -30,6 +31,10 @@ class CompressorTree(fileName:String, val columns:Int) {
             .fileDB(fileName)
             .fileMmapEnable()
             .make()
+//    private val map = db.hashMap("map")
+//            .keySerializer(Serializer.LONG_DELTA)
+//            .valueSerializer(Serializer.BYTE_ARRAY)
+//            .createOrOpen()
     private val map = db.treeMap("map")
             .keySerializer(Serializer.LONG_DELTA)
             .valueSerializer(Serializer.BYTE_ARRAY)
@@ -59,6 +64,7 @@ class CompressorTree(fileName:String, val columns:Int) {
         if(currentBits + rowBits > MAX_BITS) {
             closeBlock()
             map.put(blockTimestamp,out.toByteArray())
+            db.commit()
             currentBits = 0
             rowBits = 0
             for (i in 0..columns - 1)
@@ -139,13 +145,14 @@ class CompressorTree(fileName:String, val columns:Int) {
 //        out.writeBits(0x7FFFFFFFFFFFFFFF, 64)
 //        out.writeBit(false) //false
         out.flush()
-        db.commit()
     }
     /**
      * Closes the block and flushes the remaining byte to OutputStream.
      */
     fun close() {
-        closeBlock()
+        rowFlush() //write in the last block
+        map.put(blockTimestamp,out.toByteArray())
+        db.commit()
         db.close()
     }
     /**

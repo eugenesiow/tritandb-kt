@@ -4,15 +4,10 @@ import com.tritandb.engine.experimental.valueC.CompressorFpDeltaDelta
 import com.tritandb.engine.experimental.valueC.CompressorFpc
 import com.tritandb.engine.experimental.valueC.DecompressorFpDeltaDelta
 import com.tritandb.engine.experimental.valueC.DecompressorFpc
-import com.tritandb.engine.tsc.data.EventProtos
-import com.tritandb.engine.tsc.data.buildRow
-import com.tritandb.engine.tsc.data.buildRows
-import com.tritandb.engine.tsc.data.buildTritanEvent
 import com.tritandb.engine.util.BitByteBufferReader
 import com.tritandb.engine.util.BitByteBufferWriter
 import com.tritandb.engine.util.BitInput
 import com.tritandb.engine.util.BitOutput
-import org.zeromq.ZMQ
 import java.io.*
 import java.lang.Double
 import java.text.SimpleDateFormat
@@ -29,16 +24,17 @@ fun main(args : Array<String>) {
 //    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"
 
 //    println("Write gor tree")
-////    for(x in 1..10) {
+//    for(x in 1..10) {
+//        File(outputFilePath).delete()
 //        val c: CompressorTree = CompressorTree(outputFilePath, 6)
 //        println("${measureTimeMillis { writeFileShelburneTree(filePath, c) }}")
-////    }
+//    }
 
     println("Read gor tree")
-//    for(x in 1..10) {
-        val d: DecompressorTree = DecompressorTree(outputFilePath)
-        println("${measureTimeMillis { readFileShelburneTree(outputFilePath, d) }}")
-//    }
+    for(x in 1..10) {
+        val d: Decompressor = DecompressorTree(outputFilePath)
+        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
+    }
 
 
 //    println("Write gor")
@@ -366,20 +362,4 @@ fun readFileShelburne(filePath:String, d:Decompressor) { //works for each
 //            out.println()
         }
     }
-}
-
-fun readFileShelburneTree(filePath:String, d:DecompressorTree) { //works for each
-    var count = 0
-//    File("${filePath}.csv").printWriter().use { out ->
-        for (r in d.readRows()) {
-            print("${count++}:${r.timestamp}")
-//            out.print("${r.timestamp}")
-            for (pair in r.getRow()) {
-                print(", ${pair.getDoubleValue()}")
-//                out.print(", ${pair.getDoubleValue()}")
-            }
-            println()
-//            out.println()
-        }
-//    }
 }
