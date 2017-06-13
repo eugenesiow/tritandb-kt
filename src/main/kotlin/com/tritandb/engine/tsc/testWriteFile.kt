@@ -26,7 +26,20 @@ import kotlin.system.measureTimeMillis
 fun main(args : Array<String>) {
     var outputFilePath = "data/shelburne.tsc"
     var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"
-//    val filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"
+//    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"
+
+//    println("Write gor tree")
+////    for(x in 1..10) {
+//        val c: CompressorTree = CompressorTree(outputFilePath, 6)
+//        println("${measureTimeMillis { writeFileShelburneTree(filePath, c) }}")
+////    }
+
+    println("Read gor tree")
+//    for(x in 1..10) {
+        val d: DecompressorTree = DecompressorTree(outputFilePath)
+        println("${measureTimeMillis { readFileShelburneTree(outputFilePath, d) }}")
+//    }
+
 
 //    println("Write gor")
 //    for(x in 1..10) {
@@ -154,9 +167,9 @@ fun main(args : Array<String>) {
 //        println("${measureTimeMillis { readFileSrBench(outputFilePath,"gor") }}")
 //    }
 
-    println("Write FP Delta")
-//    for(x in 1..10) {
-        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"fpdelta") }}")
+//    println("Write FP Delta")
+////    for(x in 1..10) {
+//        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"fpdelta") }}")
 //    }
 //
 //    println("Read FP Delta")
@@ -174,6 +187,29 @@ fun main(args : Array<String>) {
 //        println("${measureTimeMillis { readFileSrBench(outputFilePath,"fpc") }}")
 //    }
 
+}
+
+fun writeFileShelburneTree(filePath:String,c:CompressorTree) {
+    val br = BufferedReader(FileReader(filePath))
+    br.readLine() //header
+    for(line in br.lines()) {
+        var addThis = true
+        val parts = line.split(",")
+        if(parts.size>6) {
+            val list = mutableListOf<Long>()
+            for(i in 1..6) {
+                if (parts[i] == "")
+                    addThis = false
+                else
+                    list.add(Double.doubleToLongBits(parts[i].toDouble()))
+            }
+
+            if(addThis)
+                c.addRow((parts[0].toLong() / 1000000),list)
+        }
+    }
+    br.close()
+    c.close()
 }
 
 fun writeFileShelburne(filePath:String,c:Compressor) {
@@ -330,4 +366,20 @@ fun readFileShelburne(filePath:String, d:Decompressor) { //works for each
 //            out.println()
         }
     }
+}
+
+fun readFileShelburneTree(filePath:String, d:DecompressorTree) { //works for each
+    var count = 0
+//    File("${filePath}.csv").printWriter().use { out ->
+        for (r in d.readRows()) {
+            print("${count++}:${r.timestamp}")
+//            out.print("${r.timestamp}")
+            for (pair in r.getRow()) {
+                print(", ${pair.getDoubleValue()}")
+//                out.print(", ${pair.getDoubleValue()}")
+            }
+            println()
+//            out.println()
+        }
+//    }
 }

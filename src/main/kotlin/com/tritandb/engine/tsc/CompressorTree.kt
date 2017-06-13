@@ -1,10 +1,7 @@
 package com.tritandb.engine.tsc
 
-import com.tritandb.engine.util.BitByteBufferWriter
-import org.mapdb.BTreeMap
-import java.io.ByteArrayOutputStream
+import com.tritandb.engine.util.BufferWriter
 import org.mapdb.DBMaker
-import org.mapdb.DB
 import org.mapdb.Serializer
 
 
@@ -12,13 +9,15 @@ import org.mapdb.Serializer
  * TritanDb
  * Created by eugene on 12/06/2017.
  */
-class CompressorTree(val fileName:String, val columns:Int) {
+class CompressorTree(fileName:String, val columns:Int) {
     data class RowWrite(val value:Long, val bits:Int)
 
-    val o = ByteArrayOutputStream()
-    var out = BitByteBufferWriter(o)
+    var altCurrentBits = 0
+    var count = 0
     var currentBits = 0
-    val MAX_BITS = 4096 * 8
+    val MAX_BYTES = 2097152
+    val MAX_BITS = MAX_BYTES * 8
+    var out = BufferWriter(MAX_BYTES)
     var rowBits = 0
     private val FIRST_DELTA_BITS = 64
     private var storedLeadingZerosRow:IntArray = IntArray(columns)
@@ -56,30 +55,51 @@ class CompressorTree(val fileName:String, val columns:Int) {
     }
 
     private fun rowFlush() {
+//        println("$currentBits,${currentBits+rowBits},${MAX_BITS - currentBits - rowBits},${altCurrentBits}")
         if(currentBits + rowBits > MAX_BITS) {
-            close()
-            map.put(blockTimestamp,o.toByteArray())
+            closeBlock()
+            map.put(blockTimestamp,out.toByteArray())
             currentBits = 0
-            o.reset()
-            out = BitByteBufferWriter(o)
+            rowBits = 0
+            for (i in 0..columns - 1)
+            {
+                storedLeadingZerosRow[i] = Integer.MAX_VALUE
+                storedTrailingZerosRow[i] = 0
+            }
+            out = BufferWriter(MAX_BYTES)
+            row.clear()
             addHeader()
-            blockTimestamp = storedTimestamp
-                    //TODO: RESET everything
-            writeRowToOutput()
+            writeFirstRow(storedTimestamp,storedVals.toList())
         } else {
-            currentBits += rowBits
+            writeRowToOutput()
         }
+        currentBits += rowBits
         rowBits = 0
     }
 
     private fun writeRowToOutput() {
+        var rowBitsCheck = 0
         for((value, bits) in row) {
+//            println("numBits:$bits,value:$value,compress")
             if(bits >1) {
-                out.writeBits(value, bits)
+//                try {
+                    out.writeBits(value, bits)
+//                } catch(e:Exception) {
+//                    e.printStackTrace()
+//                    println("exception:$currentBits,$rowBits,$count,${out.toByteArray().size}")
+//                }
             } else {
-                if(value ==0L) out.writeBit(false) else out.writeBit(true)
+                if(value==0L) out.writeBit(false) else out.writeBit(true)
             }
+            rowBitsCheck += bits
         }
+        altCurrentBits += rowBitsCheck
+        if(rowBitsCheck!=rowBits)
+            println("rowcheck:${rowBitsCheck},${rowBits},${currentBits},$storedTimestamp$row")
+        row.clear()
+
+        if(out.totalBits!=currentBits+rowBits)
+            println("unqeuals:${rowBitsCheck},${rowBits},${out.totalBits},${currentBits},$storedTimestamp,$count")
     }
 
     /**
@@ -89,8 +109,11 @@ class CompressorTree(val fileName:String, val columns:Int) {
      * @param values LongArray of values for the next row in the series, use java.lang.Double.doubleToRawLongBits function to convert from double to long bits
      */
     fun addRow(timestamp:Long, values:List<Long>) {
+        count++
         if (storedTimestamp == -1L) {
             writeFirstRow(timestamp, values)
+            currentBits += rowBits
+            rowBits = 0
         }
         else {
             compressTimestamp(timestamp)
@@ -108,15 +131,22 @@ class CompressorTree(val fileName:String, val columns:Int) {
             storedVals[i] = values[i]
             rowWriter(storedVals[i], 64)
         }
+        writeRowToOutput()
+    }
+
+    fun closeBlock() {
+//        out.writeBits(0x0F, 4)
+//        out.writeBits(0x7FFFFFFFFFFFFFFF, 64)
+//        out.writeBit(false) //false
+        out.flush()
+        db.commit()
     }
     /**
      * Closes the block and flushes the remaining byte to OutputStream.
      */
     fun close() {
-        out.writeBits(0x0F, 4)
-        out.writeBits(0x7FFFFFFFFFFFFFFF, 64)
-        out.writeBit(false) //false
-        out.flush()
+        closeBlock()
+        db.close()
     }
     /**
      * Stores up to millisecond accuracy, if seconds are used, delta-delta scale automagically
@@ -179,7 +209,7 @@ class CompressorTree(val fileName:String, val columns:Int) {
                     leadingZeros = 31
                 }
                 // Store bit '1'
-                out.writeBit(true)
+                rowWriter(1,1)
                 if (leadingZeros >= storedLeadingZerosRow[i] && trailingZeros >= storedTrailingZerosRow[i]) {
                     writeExistingLeadingRow(xor, i)
                 }
