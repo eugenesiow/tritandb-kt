@@ -38,6 +38,7 @@ class DecompressorTreeChunk(val blockTimestamp:Long, val input:BitInput):Decompr
 
     private fun setupHeader() {
         columns = input.readBits(32).toInt()
+//        println(columns)
         storedLeadingZerosRow = IntArray(columns)
         storedTrailingZerosRow = IntArray(columns)
         storedVals = LongArray(columns)

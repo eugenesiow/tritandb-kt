@@ -1,22 +1,23 @@
 package com.tritandb.engine.tsc
 
 import com.tritandb.engine.util.BufferWriter
-import org.mapdb.DBMaker
-import org.mapdb.Serializer
-
+import java.io.File
+import java.nio.ByteBuffer
 
 /**
  * TritanDb
- * Created by eugene on 12/06/2017.
+ * Created by eugene on 14/06/2017.
  */
-class CompressorTree(fileName:String, val columns:Int):Compressor {
+class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
     data class RowWrite(val value:Long, val bits:Int)
 
+    val o = File(fileName).outputStream()
+    val idx = File(fileName+".idx").outputStream()
     var altCurrentBits = 0
     var count = 0
     var currentBits = 0
-//    val MAX_BYTES = 2097152
-    val MAX_BYTES = 1048576
+//    val MAX_BYTES = 0x200000 //2097152
+    val MAX_BYTES = 0x100000 //1048576
     val MAX_BITS = MAX_BYTES * 8
     var out = BufferWriter(MAX_BYTES)
     var rowBits = 0
@@ -27,18 +28,7 @@ class CompressorTree(fileName:String, val columns:Int):Compressor {
     private var storedTimestamp = -1L
     private var storedDelta = 0L
     private var blockTimestamp:Long = 0L
-    private val db = DBMaker
-            .fileDB(fileName)
-            .fileMmapEnable()
-            .make()
-//    private val map = db.hashMap("map")
-//            .keySerializer(Serializer.LONG_DELTA)
-//            .valueSerializer(Serializer.BYTE_ARRAY)
-//            .createOrOpen()
-    private val map = db.treeMap("map")
-            .keySerializer(Serializer.LONG)
-            .valueSerializer(Serializer.BYTE_ARRAY)
-            .createOrOpen()
+
     private val row = mutableListOf<RowWrite>()
 
     init{
@@ -59,12 +49,27 @@ class CompressorTree(fileName:String, val columns:Int):Compressor {
         rowBits += bits
     }
 
+    fun longToBytes(x: Long): ByteArray {
+        val buffer = ByteBuffer.allocate(java.lang.Long.BYTES)
+        buffer.putLong(x)
+        return buffer.array()
+    }
+
+    fun intToBytes(x: Int): ByteArray {
+        val buffer = ByteBuffer.allocate(java.lang.Integer.BYTES)
+        buffer.putInt(x)
+        return buffer.array()
+    }
+
     private fun rowFlush() {
 //        println("$currentBits,${currentBits+rowBits},${MAX_BITS - currentBits - rowBits},${altCurrentBits}")
         if(currentBits + rowBits > MAX_BITS) {
             closeBlock()
-            map.put(blockTimestamp,out.toByteArray())
-            db.commit()
+            val ba = out.toByteArray()
+//            println(ba.size)
+            o.write(ba) //write byte buffer chunk
+            idx.write(longToBytes(blockTimestamp))
+            idx.write(intToBytes(ba.size))
             currentBits = 0
             rowBits = 0
             for (i in 0..columns - 1)
@@ -89,7 +94,7 @@ class CompressorTree(fileName:String, val columns:Int):Compressor {
 //            println("numBits:$bits,value:$value,compress")
             if(bits >1) {
 //                try {
-                    out.writeBits(value, bits)
+                out.writeBits(value, bits)
 //                } catch(e:Exception) {
 //                    e.printStackTrace()
 //                    println("exception:$currentBits,$rowBits,$count,${out.toByteArray().size}")
@@ -151,10 +156,20 @@ class CompressorTree(fileName:String, val columns:Int):Compressor {
      */
     override fun close() {
         rowFlush() //write in the last block
-        map.put(blockTimestamp,out.toByteArray())
-        db.commit()
-        db.close()
+        val ba = out.toByteArray()
+        o.write(ba)
+        closeIndex(ba.size)
+        o.close()
+        idx.close()
     }
+
+    private fun closeIndex(byteSize:Int) {
+        idx.write(longToBytes(blockTimestamp))
+        idx.write(intToBytes(byteSize))
+        idx.write(longToBytes(0x7FFFFFFFFFFFFFFF))
+        idx.write(intToBytes(0x7FFFFFFF))
+    }
+
     /**
      * Stores up to millisecond accuracy, if seconds are used, delta-delta scale automagically
      *

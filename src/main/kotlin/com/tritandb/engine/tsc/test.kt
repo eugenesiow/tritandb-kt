@@ -55,7 +55,7 @@ fun queryShelburne(filePath: String) {
             end = a
         }
 //        println("Time: ${measureTimeMillis { rangeShelburne(filePath,start,end) }}, Start: ${start}, End: ${end}")
-//        println("${start},${end},${measureTimeMillis { rangeShelburne(filePath,start,end) }}")
+//        println("${start},${end},${measureTimeMillis { rangeShelburneTree(filePath,start,end) }}")
 //        println("${measureTimeMillis { rangeShelburne(filePath,start,end) }}")
         println("${measureTimeMillis { rangeShelburneTree(filePath,start,end) }}")
     }

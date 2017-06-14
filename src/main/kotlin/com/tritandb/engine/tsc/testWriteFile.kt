@@ -23,18 +23,31 @@ fun main(args : Array<String>) {
     var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"
 //    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"
 
-//    println("Write gor tree")
+//    println("Write gor flat chunk")
+////    for(x in 1..10) {
+//    File(outputFilePath).delete()
+//    val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 6)
+//    println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
+////    }
+
+//    println("Read gor flat chunk")
 //    for(x in 1..10) {
-//        File(outputFilePath).delete()
-//        val c: CompressorTree = CompressorTree(outputFilePath, 6)
-//        println("${measureTimeMillis { writeFileShelburneTree(filePath, c) }}")
+//        val d: Decompressor = DecompressorFlatChunk(outputFilePath)
+//        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
 //    }
 
-    println("Read gor tree")
-    for(x in 1..10) {
-        val d: Decompressor = DecompressorTree(outputFilePath)
-        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
-    }
+    println("Write gor tree")
+//    for(x in 1..10) {
+        File(outputFilePath).delete()
+        val c: CompressorTree = CompressorTree(outputFilePath, 6)
+        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
+//    }
+
+//    println("Read gor tree")
+//    for(x in 1..10) {
+//        val d: Decompressor = DecompressorTree(outputFilePath)
+//        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
+//    }
 
 
 //    println("Write gor")
@@ -185,30 +198,8 @@ fun main(args : Array<String>) {
 
 }
 
-fun writeFileShelburneTree(filePath:String,c:CompressorTree) {
-    val br = BufferedReader(FileReader(filePath))
-    br.readLine() //header
-    for(line in br.lines()) {
-        var addThis = true
-        val parts = line.split(",")
-        if(parts.size>6) {
-            val list = mutableListOf<Long>()
-            for(i in 1..6) {
-                if (parts[i] == "")
-                    addThis = false
-                else
-                    list.add(Double.doubleToLongBits(parts[i].toDouble()))
-            }
-
-            if(addThis)
-                c.addRow((parts[0].toLong() / 1000000),list)
-        }
-    }
-    br.close()
-    c.close()
-}
-
 fun writeFileShelburne(filePath:String,c:Compressor) {
+//    val bw = BufferedWriter(FileWriter(filePath+".test.csv")) //write a test output
     val br = BufferedReader(FileReader(filePath))
     br.readLine() //header
     for(line in br.lines()) {
@@ -223,11 +214,18 @@ fun writeFileShelburne(filePath:String,c:Compressor) {
                     list.add(Double.doubleToLongBits(parts[i].toDouble()))
             }
 
-            if(addThis)
-                c.addRow((parts[0].toLong() / 1000000),list)
+            if(addThis) {
+                c.addRow((parts[0].toLong() / 1000000), list)
+//                //write a test output
+//                bw.append("${(parts[0].toLong() / 1000000)}")
+//                for(i in 1..6) {bw.append(",${parts[i]}")}
+//                bw.append("\n")
+            }
+
         }
     }
     br.close()
+//    bw.close() //write a test output
     c.close()
 }
 

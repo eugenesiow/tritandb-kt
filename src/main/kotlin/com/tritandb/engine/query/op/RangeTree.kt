@@ -1,6 +1,8 @@
 package com.tritandb.engine.query.op
 
 import com.tritandb.engine.tsc.Decompressor
+import com.tritandb.engine.tsc.DecompressorFlatChunk
+import com.tritandb.engine.tsc.DecompressorHash
 import com.tritandb.engine.tsc.DecompressorTree
 import com.tritandb.engine.tsc.data.Row
 import kotlin.coroutines.experimental.buildIterator
@@ -17,6 +19,7 @@ class RangeTree(val filePath:String) {
             if(r.timestamp>=start) {
                 yield(r)
                 if(r.timestamp>end) {
+                    d.close()
                     break
                 }
             }

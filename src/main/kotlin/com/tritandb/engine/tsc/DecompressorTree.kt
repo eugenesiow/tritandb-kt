@@ -5,6 +5,7 @@ import com.tritandb.engine.util.BufferReader
 import org.mapdb.DBMaker
 import org.mapdb.Serializer
 import java.nio.ByteBuffer
+import kotlin.Long.Companion.MAX_VALUE
 import kotlin.coroutines.experimental.buildIterator
 
 /**
@@ -16,10 +17,6 @@ class DecompressorTree(fileName:String):Decompressor {
             .fileDB(fileName)
             .fileMmapEnable()
             .make()
-//    private val map = db.hashMap("map")
-//            .keySerializer(Serializer.LONG_DELTA)
-//            .valueSerializer(Serializer.BYTE_ARRAY)
-//            .createOrOpen()
     private val map = db.treeMap("map")
             .keySerializer(Serializer.LONG_DELTA)
             .valueSerializer(Serializer.BYTE_ARRAY)
@@ -33,28 +30,45 @@ class DecompressorTree(fileName:String):Decompressor {
         map.close()
     }
 
+    fun close() {
+        map.close()
+    }
+
     fun readRange(start:Long,end:Long):Iterator<Row>  = buildIterator {
-        var previousKey = 0L
-        var startKey = 0L
+////        var previousKey = 0L
+        val keys = sortedSetOf<Long>()
+        var startKey = MAX_VALUE
         var endKey = 0L
+////        for(k in map.keys) {
+////            if(previousKey==0L)
+////                previousKey = k!!
+////            if (k != null) {
+////                if(k>start)
+////                    startKey = previousKey
+////                else if(k==start)
+////                    startKey = k
+////
+////                if(k>=end)
+////                    endKey = previousKey
+////            }
+////
+////            previousKey = k!!
+////        }
         for(k in map.keys) {
-            if(previousKey==0L)
-                previousKey = k!!
-            if (k != null) {
-                if(k>start)
-                    startKey = previousKey
-                else if(k==start)
+            if(k!! in start..end) {
+                if(k<startKey)
                     startKey = k
-
-                if(k>=end)
-                    endKey = previousKey
+                if(k >endKey)
+                    endKey = k
             }
-
-            previousKey = k!!
+        }
+        if(startKey>endKey) {
+            val tempEnd = endKey
+            endKey = start
+            startKey = tempEnd
         }
         map.subMap(startKey,endKey).forEach({
-            for(r in DecompressorTreeChunk(it.key, BufferReader(ByteBuffer.wrap(it.value))).readRows())
-                yield(r)
+            yieldAll(DecompressorTreeChunk(it.key, BufferReader(ByteBuffer.wrap(it.value))).readRows())
         })
         map.close()
     }
