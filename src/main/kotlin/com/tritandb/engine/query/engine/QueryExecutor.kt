@@ -27,9 +27,7 @@ class QueryExecutor {
 
         val v = SparqlOpVisitor()
         v.setModel(makeData())
-        println("Time: ${measureTimeMillis{OpWalker.walk(op, v)}}")
-
-
+        println("Walk Time: ${measureTimeMillis{OpWalker.walk(op, v)}}")
 
         // The stage generator to be used for a query execution
         // is read from the context.  There is a global context, which

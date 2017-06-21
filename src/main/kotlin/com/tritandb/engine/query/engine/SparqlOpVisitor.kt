@@ -2,6 +2,8 @@ package com.tritandb.engine.query.engine
 
 import org.apache.jena.query.DatasetFactory
 import org.apache.jena.rdf.model.Model
+import org.apache.jena.riot.Lang
+import org.apache.jena.riot.RDFParserBuilder
 import org.apache.jena.sparql.algebra.OpVisitor
 import org.apache.jena.sparql.algebra.op.*
 import org.apache.jena.sparql.engine.ExecutionContext
@@ -10,6 +12,9 @@ import org.apache.jena.sparql.engine.binding.Binding
 import org.apache.jena.sparql.engine.iterator.QueryIterRoot
 import org.apache.jena.sparql.engine.main.QC
 import org.apache.jena.sparql.util.Context
+import org.apache.jena.sparql.graph.GraphFactory
+
+
 
 
 /**
@@ -21,9 +26,12 @@ class SparqlOpVisitor: OpVisitor {
 
     override fun visit(opBGP: OpBGP?) {
         val context = Context()
-        val execCxt = ExecutionContext(context, DatasetFactory.create(model).asDatasetGraph().defaultGraph, null, QC.getFactory(context))
+//        val graph = GraphFactory.createGraphMem()
+//        RDFParserBuilder.create().lang(Lang.TTL).fromString(testdata).parse(graph)
+        val execCxt = ExecutionContext(context, DatasetFactory.create(model).asDatasetGraph().defaultGraph, null, null)
         // Wrap with something to check for closed iterators.
-        var qIter:QueryIterator = QueryIterRoot.create(execCxt)
+//        var qIter:QueryIterator = QueryIterRootAlt.create(DatasetFactory.create(model).asDatasetGraph().defaultGraph)
+        var qIter:QueryIterator = QueryIterRootAlt.create(execCxt)
         for (triple in opBGP!!.pattern.list) {
             qIter = QueryIteratorAlt(qIter, triple, execCxt)
         }

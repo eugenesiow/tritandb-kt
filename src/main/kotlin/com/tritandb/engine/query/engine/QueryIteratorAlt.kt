@@ -9,7 +9,6 @@ import org.apache.jena.sparql.engine.QueryIterator
 import org.apache.jena.sparql.engine.binding.Binding
 import org.apache.jena.sparql.engine.binding.BindingFactory
 import org.apache.jena.sparql.engine.binding.BindingMap
-import org.apache.jena.sparql.engine.iterator.QueryIterRepeatApply
 import org.apache.jena.util.iterator.ClosableIterator
 import org.apache.jena.util.iterator.NiceIterator
 
