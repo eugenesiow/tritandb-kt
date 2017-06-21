@@ -28,12 +28,12 @@ class SparqlOpVisitor: OpVisitor {
         val context = Context()
 //        val graph = GraphFactory.createGraphMem()
 //        RDFParserBuilder.create().lang(Lang.TTL).fromString(testdata).parse(graph)
-        val execCxt = ExecutionContext(context, DatasetFactory.create(model).asDatasetGraph().defaultGraph, null, null)
+//        val execCxt = ExecutionContext(context, DatasetFactory.create(model).asDatasetGraph().defaultGraph, null, null)
         // Wrap with something to check for closed iterators.
-//        var qIter:QueryIterator = QueryIterRootAlt.create(DatasetFactory.create(model).asDatasetGraph().defaultGraph)
-        var qIter:QueryIterator = QueryIterRootAlt.create(execCxt)
+        var qIter:QueryIterator = QueryIterRootAlt.create(DatasetFactory.create(model).asDatasetGraph().defaultGraph)
+//        var qIter:QueryIterator = QueryIterRootAlt.create(execCxt)
         for (triple in opBGP!!.pattern.list) {
-            qIter = QueryIteratorAlt(qIter, triple, execCxt)
+            qIter = QueryIteratorAlt(qIter, triple, DatasetFactory.create(model).asDatasetGraph().defaultGraph)
         }
         while(qIter.hasNext())
             bgpBindings.add(qIter.next())

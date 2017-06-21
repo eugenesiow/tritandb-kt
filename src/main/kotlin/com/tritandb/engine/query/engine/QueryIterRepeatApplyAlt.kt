@@ -2,6 +2,7 @@ package com.tritandb.engine.query.engine
 
 import org.apache.jena.atlas.lib.Lib
 import org.apache.jena.atlas.logging.Log
+import org.apache.jena.graph.Graph
 import org.apache.jena.sparql.engine.ExecutionContext
 import org.apache.jena.sparql.engine.QueryIterator
 import org.apache.jena.sparql.engine.binding.Binding
@@ -14,7 +15,7 @@ import java.util.NoSuchElementException
  */
 
 abstract class QueryIterRepeatApplyAlt(input: QueryIterator,
-                                    context: ExecutionContext) : QueryIter1Alt(input, context) {
+                                       g: Graph) : QueryIter1Alt(input, g) {
     internal var count = 0
     protected var currentStage: QueryIterator? = null
         private set

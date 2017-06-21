@@ -2,6 +2,7 @@ package com.tritandb.engine.query.engine
 
 import org.apache.jena.atlas.io.IndentedWriter
 import org.apache.jena.atlas.lib.Lib
+import org.apache.jena.graph.Graph
 import org.apache.jena.sparql.engine.ExecutionContext
 import org.apache.jena.sparql.engine.binding.Binding
 import org.apache.jena.sparql.serializer.SerializationContext
@@ -11,7 +12,7 @@ import java.util.*
  * Created by eugenesiow on 21/06/2017.
  */
 
-open class QueryIterYieldNAlt(protected var limitYielded: Int, b: Binding, context: ExecutionContext? = null) : QueryIterAlt(context!!) {
+open class QueryIterYieldNAlt(protected var limitYielded: Int, b: Binding, g: Graph) : QueryIterAlt(g) {
     protected var countYielded = 0
     var binding: Binding
         protected set

@@ -2,6 +2,7 @@ package com.tritandb.engine.query.engine
 
 import org.apache.jena.atlas.io.IndentedWriter
 import org.apache.jena.atlas.lib.Lib
+import org.apache.jena.graph.Graph
 import org.apache.jena.sparql.engine.ExecutionContext
 import org.apache.jena.sparql.engine.QueryIterator
 import org.apache.jena.sparql.engine.iterator.QueryIter
@@ -11,7 +12,7 @@ import org.apache.jena.sparql.serializer.SerializationContext
 /**
  * Created by eugenesiow on 21/06/2017.
  */
-abstract class QueryIter1Alt(input: QueryIterator, execCxt: ExecutionContext) : QueryIterAlt(execCxt) {
+abstract class QueryIter1Alt(input: QueryIterator, g: Graph) : QueryIterAlt(g) {
     protected var input: QueryIterator? = null
         private set
 

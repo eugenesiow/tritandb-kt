@@ -1,6 +1,7 @@
 package com.tritandb.engine.query.engine
 
 import org.apache.jena.atlas.io.IndentedWriter
+import org.apache.jena.graph.Graph
 import org.apache.jena.sparql.core.Var
 import org.apache.jena.sparql.engine.ExecutionContext
 import org.apache.jena.sparql.engine.QueryIterator
@@ -10,16 +11,16 @@ import org.apache.jena.sparql.serializer.SerializationContext
 /**
  * Created by eugenesiow on 21/06/2017.
  */
-abstract class QueryIterAlt(execCxt: ExecutionContext): QueryIteratorBase() {
+abstract class QueryIterAlt(val graph: Graph): QueryIteratorBase() {
     // Volatile just to make it safe to concurrent updates
     // It does not matter too much if it is wrong - it's used as a label.
     @Volatile internal var iteratorCounter = 0
     private val iteratorNumber = iteratorCounter++
 
-    private var tracker: ExecutionContext?
+//    private var tracker: ExecutionContext?
 
     init {
-        tracker = execCxt
+//        tracker = execCxt
 //        register()
     }
 
@@ -46,9 +47,9 @@ abstract class QueryIterAlt(execCxt: ExecutionContext): QueryIteratorBase() {
 //        deregister()
     }
 
-    fun getExecContext(): ExecutionContext? {
-        return tracker
-    }
+//    fun getExecContext(): ExecutionContext? {
+//        return tracker
+//    }
 
     fun getIteratorNumber(): Int {
         return iteratorNumber

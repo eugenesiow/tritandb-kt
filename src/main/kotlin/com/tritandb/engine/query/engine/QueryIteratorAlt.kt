@@ -1,5 +1,6 @@
 package com.tritandb.engine.query.engine
 
+import org.apache.jena.graph.Graph
 import org.apache.jena.graph.Node
 import org.apache.jena.graph.Triple
 import org.apache.jena.sparql.ARQInternalErrorException
@@ -17,14 +18,13 @@ import org.apache.jena.util.iterator.NiceIterator
  */
 
 class QueryIteratorAlt(input: QueryIterator,
-                             private val pattern: Triple,
-                             cxt: ExecutionContext) : QueryIterRepeatApplyAlt(input, cxt) {
+                             private val pattern: Triple, g: Graph) : QueryIterRepeatApplyAlt(input, g) {
 
     override fun nextStage(binding: Binding): QueryIterator {
-        return TripleMapper(binding, pattern, getExecContext()!!)
+        return TripleMapper(binding, pattern, graph)
     }
 
-    internal class TripleMapper(private val binding: Binding, pattern: Triple, cxt: ExecutionContext) : QueryIterAlt(cxt) {
+    internal class TripleMapper(private val binding: Binding, pattern: Triple, g: Graph) : QueryIterAlt(g) {
         private val s: Node
         private val p: Node
         private val o: Node
@@ -40,7 +40,8 @@ class QueryIteratorAlt(input: QueryIterator,
             val s2 = tripleNode(s)
             val p2 = tripleNode(p)
             val o2 = tripleNode(o)
-            val graph = cxt.activeGraph
+//            val graph = cxt.activeGraph
+            val graph = g
             this.graphIter = graph.find(s2, p2, o2)
         }
 
