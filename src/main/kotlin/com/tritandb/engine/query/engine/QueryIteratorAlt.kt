@@ -9,7 +9,6 @@ import org.apache.jena.sparql.engine.QueryIterator
 import org.apache.jena.sparql.engine.binding.Binding
 import org.apache.jena.sparql.engine.binding.BindingFactory
 import org.apache.jena.sparql.engine.binding.BindingMap
-import org.apache.jena.sparql.engine.iterator.QueryIter
 import org.apache.jena.sparql.engine.iterator.QueryIterRepeatApply
 import org.apache.jena.util.iterator.ClosableIterator
 import org.apache.jena.util.iterator.NiceIterator
@@ -20,13 +19,13 @@ import org.apache.jena.util.iterator.NiceIterator
 
 class QueryIteratorAlt(input: QueryIterator,
                              private val pattern: Triple,
-                             cxt: ExecutionContext) : QueryIterRepeatApply(input, cxt) {
+                             cxt: ExecutionContext) : QueryIterRepeatApplyAlt(input, cxt) {
 
     override fun nextStage(binding: Binding): QueryIterator {
-        return TripleMapper(binding, pattern, execContext)
+        return TripleMapper(binding, pattern, getExecContext()!!)
     }
 
-    internal class TripleMapper(private val binding: Binding, pattern: Triple, cxt: ExecutionContext) : QueryIter(cxt) {
+    internal class TripleMapper(private val binding: Binding, pattern: Triple, cxt: ExecutionContext) : QueryIterAlt(cxt) {
         private val s: Node
         private val p: Node
         private val o: Node
