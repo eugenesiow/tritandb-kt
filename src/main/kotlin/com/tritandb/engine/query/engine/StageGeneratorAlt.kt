@@ -1,6 +1,7 @@
 package com.tritandb.engine.query.engine
 
 import org.apache.jena.sparql.core.BasicPattern
+import org.apache.jena.sparql.core.Var
 import org.apache.jena.sparql.engine.ExecutionContext
 import org.apache.jena.sparql.engine.QueryIterator
 import org.apache.jena.sparql.engine.main.StageGenerator
@@ -30,6 +31,7 @@ class StageGeneratorAlt:StageGenerator {
             qIter = QueryIteratorAlt(qIter, triple, execCxt)
         }
         println("after:$qIter:after:${execCxt.activeGraph}")
+        println("$qIter:${qIter.next().get(Var.alloc("v"))}")
         return qIter
     }
 }
