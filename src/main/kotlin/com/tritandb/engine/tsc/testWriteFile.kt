@@ -19,33 +19,44 @@ import kotlin.system.measureTimeMillis
 */
 
 fun main(args : Array<String>) {
-    var outputFilePath = "data/shelburne.tsc"
-    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"
+//    var outputFilePath = "data/shelburne.tsc"
+//    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"
+    var filePath = "/Users/eugene/Documents/Programming/data/2016_green_taxi_trip_data_sorted.csv"
+    var outputFilePath = "data/taxi.tsc"
 //    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"
 
 //    println("Write gor flat chunk")
-////    for(x in 1..10) {
-//    File(outputFilePath).delete()
-//    val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 6)
-//    println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
-////    }
-
+//    for(x in 1..10) {
+//        File(outputFilePath).delete()
+//        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 6)
+//        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 20)
+////        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
+//        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
+//    }
+//
 //    println("Read gor flat chunk")
 //    for(x in 1..10) {
 //        val d: Decompressor = DecompressorFlatChunk(outputFilePath)
-//        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
+////        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
+//        println("${measureTimeMillis { readFileTaxi(outputFilePath, d) }}")
 //    }
 
     println("Write gor tree")
 //    for(x in 1..10) {
         File(outputFilePath).delete()
-        val c: CompressorTree = CompressorTree(outputFilePath, 6)
-        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
+        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 20)
+//        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6)
+//        val c: CompressorTree = CompressorTree(outputFilePath, 6)
+//        val c: CompressorTree = CompressorTree(outputFilePath, 20)
+        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
+//        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
 //    }
 
 //    println("Read gor tree")
 //    for(x in 1..10) {
 //        val d: Decompressor = DecompressorTree(outputFilePath)
+////        val d: Decompressor = DecompressorHash(outputFilePath)
+////        println("${measureTimeMillis { readFileTaxi(outputFilePath, d) }}")
 //        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
 //    }
 
@@ -349,10 +360,27 @@ fun writeFileTaxi(filePath:String, c:Compressor) {
     c.close()
 }
 
+fun readFileTaxi(filePath:String, d:Decompressor) { //works for each
+//    var count = 0
+    File("${filePath}.csv").printWriter().use { out ->
+        for (r in d.readRows()) {
+//            count++
+//            println("${r.timestamp}")
+//            out.print("${r.timestamp}")
+            for (pair in r.getRow()) {
+//                out.print(", ${pair.getDoubleValue()}")
+            }
+//            out.println()
+        }
+//        println(count)
+    }
+}
+
 fun readFileShelburne(filePath:String, d:Decompressor) { //works for each
 //    var count = 0
     File("${filePath}.csv").printWriter().use { out ->
         for (r in d.readRows()) {
+//            println("${r.timestamp}")
 //            out.print("${r.timestamp}")
             for (pair in r.getRow()) {
 //                out.print(", ${pair.getDoubleValue()}")

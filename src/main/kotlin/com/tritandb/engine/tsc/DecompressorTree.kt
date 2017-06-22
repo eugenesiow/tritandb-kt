@@ -2,6 +2,10 @@ package com.tritandb.engine.tsc
 
 import com.tritandb.engine.tsc.data.Row
 import com.tritandb.engine.util.BufferReader
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import org.mapdb.DBMaker
 import org.mapdb.Serializer
 import java.nio.ByteBuffer
@@ -18,15 +22,31 @@ class DecompressorTree(fileName:String):Decompressor {
             .fileMmapEnable()
             .make()
     private val map = db.treeMap("map")
-            .keySerializer(Serializer.LONG_DELTA)
+            .keySerializer(Serializer.LONG)
             .valueSerializer(Serializer.BYTE_ARRAY)
             .createOrOpen()
 
     override fun readRows():Iterator<Row> = buildIterator {
         map.forEach({
-            for(r in DecompressorTreeChunk(it.key, BufferReader(ByteBuffer.wrap(it.value))).readRows())
+            for (r in DecompressorTreeChunk(it.key, BufferReader(ByteBuffer.wrap(it.value))).readRows())
                 yield(r)
         })
+        map.close()
+    }
+
+    fun readRowsPar():Iterator<Row> = buildIterator {
+        val jobs = arrayListOf<Job>()
+        map.forEach({
+            jobs += launch(CommonPool) {
+                for (r in DecompressorTreeChunk(it.key, BufferReader(ByteBuffer.wrap(it.value))).readRows())
+                    yield(r)
+            }
+        })
+        runBlocking {
+            jobs.forEach {
+                it.join()
+            }
+        }
         map.close()
     }
 

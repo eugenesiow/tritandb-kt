@@ -1,6 +1,10 @@
 package com.tritandb.engine.tsc
 
 import com.tritandb.engine.util.BufferWriter
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import org.mapdb.DBMaker
 import org.mapdb.Serializer
 
@@ -12,6 +16,7 @@ import org.mapdb.Serializer
 class CompressorTree(fileName:String, val columns:Int):Compressor {
     data class RowWrite(val value:Long, val bits:Int)
 
+    private val jobs = arrayListOf<Job>()
     var altCurrentBits = 0
     var count = 0
     var currentBits = 0
@@ -30,13 +35,15 @@ class CompressorTree(fileName:String, val columns:Int):Compressor {
     private val db = DBMaker
             .fileDB(fileName)
             .fileMmapEnable()
+//            .transactionEnable()
             .make()
 //    private val map = db.hashMap("map")
-//            .keySerializer(Serializer.LONG_DELTA)
+//            .keySerializer(Serializer.LONG)
 //            .valueSerializer(Serializer.BYTE_ARRAY)
 //            .createOrOpen()
     private val map = db.treeMap("map")
             .keySerializer(Serializer.LONG)
+            .valuesOutsideNodesEnable()
             .valueSerializer(Serializer.BYTE_ARRAY)
             .createOrOpen()
     private val row = mutableListOf<RowWrite>()
@@ -61,10 +68,13 @@ class CompressorTree(fileName:String, val columns:Int):Compressor {
 
     private fun rowFlush() {
 //        println("$currentBits,${currentBits+rowBits},${MAX_BITS - currentBits - rowBits},${altCurrentBits}")
-        if(currentBits + rowBits > MAX_BITS) {
+        if(currentBits + rowBits >= MAX_BITS) {
             closeBlock()
-            map.put(blockTimestamp,out.toByteArray())
-            db.commit()
+            val ba = out.toByteArray().clone()
+            jobs += launch(CommonPool) {
+                map.put(blockTimestamp, ba)
+//                db.commit()
+            }
             currentBits = 0
             rowBits = 0
             for (i in 0..columns - 1)
@@ -151,9 +161,19 @@ class CompressorTree(fileName:String, val columns:Int):Compressor {
      */
     override fun close() {
         rowFlush() //write in the last block
-        map.put(blockTimestamp,out.toByteArray())
-        db.commit()
+        val ba = out.toByteArray().clone()
+        jobs += launch(CommonPool) {
+            map.put(blockTimestamp, ba)
+            db.commit()
+        }
+        runBlocking {
+            jobs.forEach {
+                it.join()
+                db.commit()
+            }
+        }
         db.close()
+//        db.close()
     }
     /**
      * Stores up to millisecond accuracy, if seconds are used, delta-delta scale automagically
