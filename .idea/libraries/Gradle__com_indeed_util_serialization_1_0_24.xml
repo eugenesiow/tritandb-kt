@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.indeed:util-serialization:1.0.24">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.indeed/util-serialization/1.0.24/7140d825d3c521a1122c21f34e116723fe40b8/util-serialization-1.0.24.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.indeed/util-serialization/1.0.24/e4f972c37a8f7be44e6ababf33f59e37237f7e29/util-serialization-1.0.24-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

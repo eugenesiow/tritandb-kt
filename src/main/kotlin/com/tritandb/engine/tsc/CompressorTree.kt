@@ -13,7 +13,7 @@ import org.mapdb.Serializer
  * TritanDb
  * Created by eugene on 12/06/2017.
  */
-class CompressorTree(fileName:String, val columns:Int):Compressor {
+class CompressorTree(fileName:String, val columns:Int, val name:String):Compressor {
     data class RowWrite(val value:Long, val bits:Int)
 
     private val jobs = arrayListOf<Job>()
@@ -34,6 +34,8 @@ class CompressorTree(fileName:String, val columns:Int):Compressor {
     private var blockTimestamp:Long = 0L
     private val db = DBMaker
             .fileDB(fileName)
+//            .readOnly()
+            .concurrencyDisable()
             .fileMmapEnable()
 //            .transactionEnable()
             .make()
@@ -41,7 +43,7 @@ class CompressorTree(fileName:String, val columns:Int):Compressor {
 //            .keySerializer(Serializer.LONG)
 //            .valueSerializer(Serializer.BYTE_ARRAY)
 //            .createOrOpen()
-    private val map = db.treeMap("map")
+    private val map = db.treeMap(name)
             .keySerializer(Serializer.LONG)
             .valuesOutsideNodesEnable()
             .valueSerializer(Serializer.BYTE_ARRAY)

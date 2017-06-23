@@ -8,6 +8,12 @@ import com.tritandb.engine.util.BitByteBufferReader
 import com.tritandb.engine.util.BitByteBufferWriter
 import com.tritandb.engine.util.BitInput
 import com.tritandb.engine.util.BitOutput
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
+import org.mapdb.DBMaker
+import org.mapdb.Serializer
 import java.io.*
 import java.lang.Double
 import java.text.SimpleDateFormat
@@ -23,16 +29,25 @@ fun main(args : Array<String>) {
 //    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"
     var filePath = "/Users/eugene/Documents/Programming/data/2016_green_taxi_trip_data_sorted.csv"
     var outputFilePath = "data/taxi.tsc"
+//    var outputFilePath = "data/"
+//    var filePath = "/Users/eugene/Downloads/knoesis_observations_csv_date_sorted/"
 //    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"
 
 //    println("Write gor flat chunk")
-//    for(x in 1..10) {
-//        File(outputFilePath).delete()
-//        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 6)
-//        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 20)
-////        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
-//        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
-//    }
+////    for(x in 1..10) {
+////        File(outputFilePath).delete()
+//        File(outputFilePath).deleteRecursively()
+//        File(outputFilePath).mkdir()
+//////        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 6)
+//////        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 20)
+//////        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
+//////        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
+////        println("${measureTimeMillis { writeFileChunkSrBench(filePath,outputFilePath,"flat") }}")
+//    println("${measureTimeMillis { writeFileChunkSrBenchParallel(filePath,outputFilePath,"treeseq") }}")
+////        File(outputFilePath).deleteRecursively()
+////        File(outputFilePath).mkdir()
+////        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"gor") }}")
+////    }
 //
 //    println("Read gor flat chunk")
 //    for(x in 1..10) {
@@ -42,19 +57,25 @@ fun main(args : Array<String>) {
 //    }
 
     println("Write gor tree")
-//    for(x in 1..10) {
-        File(outputFilePath).delete()
-        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 20)
+    for(x in 1..10) {
+//        File(outputFilePath).delete()
+        File(outputFilePath).deleteRecursively()
+        File(outputFilePath).mkdir()
+//        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 20)
 //        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6)
 //        val c: CompressorTree = CompressorTree(outputFilePath, 6)
-//        val c: CompressorTree = CompressorTree(outputFilePath, 20)
+//        val c: CompressorTree = CompressorTree(outputFilePath, 20, "map")
+//        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 6, "map")
+        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 20, "map")
+//        println("${measureTimeMillis { writeFileChunkSrBench(filePath, outputFilePath, "lsmseq") }}")
         println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
 //        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
-//    }
+    }
 
 //    println("Read gor tree")
 //    for(x in 1..10) {
-//        val d: Decompressor = DecompressorTree(outputFilePath)
+//        val d: Decompressor = DecompressorLSMTree(outputFilePath)
+////        val d: Decompressor = DecompressorTree(outputFilePath)
 ////        val d: Decompressor = DecompressorHash(outputFilePath)
 ////        println("${measureTimeMillis { readFileTaxi(outputFilePath, d) }}")
 //        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
@@ -262,6 +283,132 @@ fun readFileSrBench(folderPath:String,cType:String) {
             }
         }
         i.close()
+    }
+}
+
+fun writeFileChunkSrBenchParallel(filePath:String, outputFilePath:String,cType:String) {
+    val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
+    val jobs = arrayListOf<Job>()
+    val outSingle = outputFilePath + "data.tsc"
+    val db = DBMaker
+            .fileDB(outSingle)
+            .fileMmapEnable()
+            .make()
+    File(filePath).walkTopDown()
+            .filter { !it.name.startsWith(".") && it.isFile && it.name.endsWith(".csv") }.forEach {
+        val br = BufferedReader(FileReader(it.absolutePath))
+        val header = br.readLine().split(",") //header
+        val stationName = it.name.replace(".csv","")
+
+        jobs += launch(CommonPool) {
+            val sdf = SimpleDateFormat(DATE_FORMAT)
+//            val map = db.hashMap(stationName)
+//                .keySerializer(Serializer.LONG)
+//                .valueSerializer(Serializer.BYTE_ARRAY)
+//                .createOrOpen()
+            val map = db.treeMap(stationName)
+                .keySerializer(Serializer.LONG)
+//                .valuesOutsideNodesEnable()
+                .valueSerializer(Serializer.BYTE_ARRAY)
+                .createOrOpen()
+            val previousVals:MutableList<Long> = mutableListOf()
+            for(i in 0..header.size-1)
+                previousVals.add(0)
+            var c: Compressor
+            when(cType) {
+                else -> c = CompressorTreeSeqParallel(map, header.size-1)
+            }
+//        var addThis = false
+            for(line in br.lines()) {
+//            addThis = true
+                val parts = line.split(",")
+                if(parts.size>header.size-1) {
+                    val list = mutableListOf<Long>()
+                    val timestamp = (sdf.parse(parts[0]).time/1000)
+                    for(i in 1..header.size-1) {
+                        if (parts[i] == "")
+                            list.add(previousVals[i])
+                        else {
+                            var value:Long = 0
+                            if(parts[i]=="true")
+                                value = 1L
+                            else if(parts[i]=="false")
+                                value = 0L
+                            else
+                                value = java.lang.Double.doubleToLongBits(parts[i].toDouble())
+                            list.add(value)
+                            previousVals[i] = value
+                        }
+
+                    }
+                    c.addRow(timestamp,list)
+                } else {
+                    println(line)
+                }
+            }
+            br.close()
+            c.close()
+        }
+    }
+    runBlocking {
+        jobs.forEach {
+            it.join()
+            db.commit()
+        }
+        db.close()
+    }
+}
+
+fun writeFileChunkSrBench(filePath:String, outputFilePath:String,cType:String) {
+    val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
+    val sdf = SimpleDateFormat(DATE_FORMAT)
+    File(filePath).walkTopDown()
+            .filter { !it.name.startsWith(".") && it.isFile && it.name.endsWith(".csv") }.forEach {
+        val br = BufferedReader(FileReader(it.absolutePath))
+        val header = br.readLine().split(",") //header
+        val stationName = it.name.replace(".csv","")
+        val outSingle = outputFilePath + "data.tsc"
+        val out = outputFilePath + stationName + ".tsc"
+        val previousVals:MutableList<Long> = mutableListOf()
+        for(i in 0..header.size-1)
+            previousVals.add(0)
+        var c: Compressor
+        when(cType) {
+//            "flat" ->  c = CompressorFlatChunk(out, header.size-1)
+            "tree" -> c = CompressorTree(outSingle, header.size-1, stationName)
+            "treeseq" -> c = CompressorTreeSeq(outSingle, header.size-1, stationName)
+            else -> c = CompressorFlatChunk(out, header.size-1)
+        }
+//        var addThis = false
+        for(line in br.lines()) {
+//            addThis = true
+            val parts = line.split(",")
+            if(parts.size>header.size-1) {
+                val list = mutableListOf<Long>()
+                val timestamp = (sdf.parse(parts[0]).time/1000)
+                for(i in 1..header.size-1) {
+                    if (parts[i] == "")
+                        list.add(previousVals[i])
+                    else {
+                        var value:Long = 0
+                        if(parts[i]=="true")
+                            value = 1L
+                        else if(parts[i]=="false")
+                            value = 0L
+                        else
+                            value = java.lang.Double.doubleToLongBits(parts[i].toDouble())
+                        list.add(value)
+                        previousVals[i] = value
+                    }
+
+                }
+                c.addRow(timestamp,list)
+            } else {
+                println(line)
+            }
+        }
+        br.close()
+        c.close()
     }
 }
 

@@ -1,10 +1,6 @@
 package com.tritandb.engine.tsc
 
 import com.tritandb.engine.util.BufferWriter
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
 import org.mapdb.DBMaker
 import org.mapdb.Serializer
 
@@ -12,10 +8,9 @@ import org.mapdb.Serializer
  * TritanDb
  * Created by eugene on 22/06/2017.
  */
-class CompressorTreeSeq(fileName:String, val columns:Int):Compressor {
+class CompressorTreeSeq(fileName:String, val columns:Int, val name:String):Compressor {
     data class RowWrite(val value:Long, val bits:Int)
 
-    private val jobs = arrayListOf<Job>()
     var altCurrentBits = 0
     var count = 0
     var currentBits = 0
@@ -36,15 +31,15 @@ class CompressorTreeSeq(fileName:String, val columns:Int):Compressor {
             .fileMmapEnable()
 //            .transactionEnable()
             .make()
-    private val map = db.hashMap("map")
+    private val map = db.hashMap(name)
             .keySerializer(Serializer.LONG)
             .valueSerializer(Serializer.BYTE_ARRAY)
             .createOrOpen()
-//        private val map = db.treeMap("map")
-//            .keySerializer(Serializer.LONG)
-//            .valuesOutsideNodesEnable()
-//            .valueSerializer(Serializer.BYTE_ARRAY)
-//            .createOrOpen()
+//    private val map = db.treeMap(name)
+//        .keySerializer(Serializer.LONG)
+//        .valuesOutsideNodesEnable()
+//        .valueSerializer(Serializer.BYTE_ARRAY)
+//        .createOrOpen()
     private val row = mutableListOf<RowWrite>()
 
     init{

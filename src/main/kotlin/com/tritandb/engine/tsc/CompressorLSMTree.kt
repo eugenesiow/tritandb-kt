@@ -1,23 +1,25 @@
 package com.tritandb.engine.tsc
 
+import com.indeed.lsmtree.core.StorageType
+import com.indeed.lsmtree.core.StoreBuilder
+import com.indeed.util.serialization.LongSerializer
+import com.indeed.util.serialization.array.ByteArraySerializer
 import com.tritandb.engine.util.BufferWriter
 import java.io.File
-import java.nio.ByteBuffer
 
 /**
  * TritanDb
- * Created by eugene on 14/06/2017.
+ * Created by eugene on 23/06/2017.
  */
-class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
+class CompressorLSMTree(fileName:String, val columns:Int, val name:String):Compressor {
     data class RowWrite(val value:Long, val bits:Int)
 
-    val o = File(fileName).outputStream()
-    val idx = File(fileName+".idx").outputStream()
     var altCurrentBits = 0
     var count = 0
     var currentBits = 0
-//    val MAX_BYTES = 0x200000 //2097152
-    val MAX_BYTES = 0x100000 //1048576
+    //    val MAX_BYTES = 2097152
+//    val MAX_BYTES = 1048576
+    val MAX_BYTES = 32768
     val MAX_BITS = MAX_BYTES * 8
     var out = BufferWriter(MAX_BYTES)
     var rowBits = 0
@@ -28,7 +30,7 @@ class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
     private var storedTimestamp = -1L
     private var storedDelta = 0L
     private var blockTimestamp:Long = 0L
-
+    private val map = StoreBuilder(File(fileName), LongSerializer(), ByteArraySerializer()).setCodec(null).setStorageType(StorageType.INLINE).build()
     private val row = mutableListOf<RowWrite>()
 
     init{
@@ -49,27 +51,11 @@ class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
         rowBits += bits
     }
 
-    fun longToBytes(x: Long): ByteArray {
-        val buffer = ByteBuffer.allocate(java.lang.Long.BYTES)
-        buffer.putLong(x)
-        return buffer.array()
-    }
-
-    fun intToBytes(x: Int): ByteArray {
-        val buffer = ByteBuffer.allocate(java.lang.Integer.BYTES)
-        buffer.putInt(x)
-        return buffer.array()
-    }
-
     private fun rowFlush() {
 //        println("$currentBits,${currentBits+rowBits},${MAX_BITS - currentBits - rowBits},${altCurrentBits}")
         if(currentBits + rowBits >= MAX_BITS) {
             closeBlock()
-            val ba = out.toByteArray()
-//            println(ba.size)
-            o.write(ba) //write byte buffer chunk
-            idx.write(longToBytes(blockTimestamp))
-            idx.write(intToBytes(ba.size))
+            map.put(blockTimestamp, out.toByteArray())
             currentBits = 0
             rowBits = 0
             for (i in 0..columns - 1)
@@ -156,20 +142,10 @@ class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
      */
     override fun close() {
         rowFlush() //write in the last block
-        val ba = out.toByteArray()
-        o.write(ba)
-        o.close()
-        closeIndex(ba.size)
-        idx.close()
+        map.put(blockTimestamp, out.toByteArray())
+        map.close()
+        map.waitForCompactions()
     }
-
-    private fun closeIndex(byteSize:Int) {
-        idx.write(longToBytes(blockTimestamp))
-        idx.write(intToBytes(byteSize))
-        idx.write(longToBytes(0x7FFFFFFFFFFFFFFF))
-        idx.write(intToBytes(0x7FFFFFFF))
-    }
-
     /**
      * Stores up to millisecond accuracy, if seconds are used, delta-delta scale automagically
      *
