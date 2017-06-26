@@ -12,10 +12,15 @@ class BufferWriter(val allocation:Int) {
     val bb = ByteBuffer.allocateDirect(allocation)
     var bitsLeft = java.lang.Byte.SIZE
     var b:Byte
+//    var debug = false
 
     init{
         b = bb.get(bb.position())
     }
+
+//    fun debugMode() {
+//        debug = !debug
+//    }
 
     private fun flipByte() {
         if (bitsLeft == 0) {
@@ -50,6 +55,8 @@ class BufferWriter(val allocation:Int) {
     fun writeBits(value: Long, numBits: Int) {
         var bits = numBits
         while (bits > 0) {
+//            if(debug)
+//                println("bitsLeft: $bitsLeft $bits $b $value")
             val bitsToWrite = if (bits > bitsLeft) bitsLeft else bits
             if (bits > bitsLeft) {
                 val shift = bits - bitsLeft
@@ -58,6 +65,8 @@ class BufferWriter(val allocation:Int) {
                 val shift = bitsLeft - bits
                 b = b or (value shl shift).toByte()
             }
+//            if(debug)
+//                println("bitsLeft: $bitsLeft $bits $b $value")
             bits -= bitsToWrite
             bitsLeft -= bitsToWrite
             flipByte()
@@ -69,5 +78,10 @@ class BufferWriter(val allocation:Int) {
     fun flush() {
         bitsLeft = 0
         flipByte() // Causes write
+//        //close block if possible
+//        if(bb.remaining())
+//        writeBits(0xFF, 8)
+////        out.writeBits(0x7FFFFFFFFFFFFFFF, 64)
+////        out.writeBit(false) //false
     }
 }

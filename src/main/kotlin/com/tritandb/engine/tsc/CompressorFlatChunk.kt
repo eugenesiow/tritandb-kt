@@ -17,7 +17,8 @@ class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
     var count = 0
     var currentBits = 0
 //    val MAX_BYTES = 0x200000 //2097152
-    val MAX_BYTES = 0x100000 //1048576
+//    val MAX_BYTES = 0x100000 //1048576
+    val MAX_BYTES = 32768 //1048576
     val MAX_BITS = MAX_BYTES * 8
     var out = BufferWriter(MAX_BYTES)
     var rowBits = 0
@@ -105,12 +106,12 @@ class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
             rowBitsCheck += bits
         }
         altCurrentBits += rowBitsCheck
-        if(rowBitsCheck!=rowBits)
-            println("rowcheck:${rowBitsCheck},${rowBits},${currentBits},$storedTimestamp$row")
+//        if(rowBitsCheck!=rowBits)
+//            println("rowcheck:${rowBitsCheck},${rowBits},${currentBits},$storedTimestamp$row")
         row.clear()
 
-        if(out.totalBits!=currentBits+rowBits)
-            println("unqeuals:${rowBitsCheck},${rowBits},${out.totalBits},${currentBits},$storedTimestamp,$count")
+//        if(out.totalBits!=currentBits+rowBits)
+//            println("unqeuals:${rowBitsCheck},${rowBits},${out.totalBits},${currentBits},$storedTimestamp,$count")
     }
 
     /**
@@ -146,7 +147,9 @@ class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
     }
 
     fun closeBlock() {
-//        out.writeBits(0x0F, 4)
+        val bitsLeft = MAX_BITS-currentBits
+        if(bitsLeft>4)
+            out.writeBits(0x0F, 4)
 //        out.writeBits(0x7FFFFFFFFFFFFFFF, 64)
 //        out.writeBit(false) //false
         out.flush()
@@ -156,6 +159,9 @@ class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
      */
     override fun close() {
         rowFlush() //write in the last block
+        val bitsLeft = MAX_BITS-currentBits
+        if(bitsLeft>4)
+            out.writeBits(0x0F, 4)
         val ba = out.toByteArray()
         o.write(ba)
         o.close()
@@ -270,8 +276,8 @@ class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
     private fun writeNewLeadingRow(xor:Long, leadingZeros:Int, trailingZeros:Int, col:Int) {
         rowWriter(1,1)
         rowWriter(leadingZeros.toLong(), 5) // Number of leading zeros in the next 5 bits
-        val significantBits = 64 - leadingZeros - trailingZeros
-        rowWriter(significantBits.toLong(), 6) // Length of meaningful bits in the next 6 bits
+        var significantBits = 64 - leadingZeros - trailingZeros
+        rowWriter(significantBits.toLong().and(0x3F), 6) // Length of meaningful bits in the next 6 bits
         rowWriter(xor.ushr(trailingZeros), significantBits) // Store the meaningful bits of XOR
         storedLeadingZerosRow[col] = leadingZeros
         storedTrailingZerosRow[col] = trailingZeros

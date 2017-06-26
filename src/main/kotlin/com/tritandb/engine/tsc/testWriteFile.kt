@@ -25,52 +25,52 @@ import kotlin.system.measureTimeMillis
 */
 
 fun main(args : Array<String>) {
-//    var outputFilePath = "data/shelburne.tsc"
-//    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"
-    var filePath = "/Users/eugene/Documents/Programming/data/2016_green_taxi_trip_data_sorted.csv"
-    var outputFilePath = "data/taxi.tsc"
+    var outputFilePath = "data/shelburne.tsc"
+    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv"
+//    var filePath = "/Users/eugene/Documents/Programming/data/2016_green_taxi_trip_data_sorted.csv"
+//    var outputFilePath = "data/taxi.tsc"
 //    var outputFilePath = "data/"
 //    var filePath = "/Users/eugene/Downloads/knoesis_observations_csv_date_sorted/"
 //    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"
 
-//    println("Write gor flat chunk")
-////    for(x in 1..10) {
-////        File(outputFilePath).delete()
+    println("Write gor flat chunk")
+//    for(x in 1..10) {
+        File(outputFilePath).delete()
 //        File(outputFilePath).deleteRecursively()
 //        File(outputFilePath).mkdir()
-//////        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 6)
-//////        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 20)
-//////        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
-//////        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
-////        println("${measureTimeMillis { writeFileChunkSrBench(filePath,outputFilePath,"flat") }}")
+        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 6)
+//        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 20)
+        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
+//        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
+//        println("${measureTimeMillis { writeFileChunkSrBench(filePath,outputFilePath,"flat") }}")
 //    println("${measureTimeMillis { writeFileChunkSrBenchParallel(filePath,outputFilePath,"treeseq") }}")
-////        File(outputFilePath).deleteRecursively()
-////        File(outputFilePath).mkdir()
-////        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"gor") }}")
-////    }
-//
-//    println("Read gor flat chunk")
+//        File(outputFilePath).deleteRecursively()
+//        File(outputFilePath).mkdir()
+//        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"gor") }}")
+//    }
+
+    println("Read gor flat chunk")
 //    for(x in 1..10) {
-//        val d: Decompressor = DecompressorFlatChunk(outputFilePath)
-////        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
+        val d: Decompressor = DecompressorFlatChunk(outputFilePath)
+        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
 //        println("${measureTimeMillis { readFileTaxi(outputFilePath, d) }}")
 //    }
 
-    println("Write gor tree")
-    for(x in 1..10) {
-//        File(outputFilePath).delete()
-        File(outputFilePath).deleteRecursively()
-        File(outputFilePath).mkdir()
-//        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 20)
-//        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6)
-//        val c: CompressorTree = CompressorTree(outputFilePath, 6)
-//        val c: CompressorTree = CompressorTree(outputFilePath, 20, "map")
-//        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 6, "map")
-        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 20, "map")
-//        println("${measureTimeMillis { writeFileChunkSrBench(filePath, outputFilePath, "lsmseq") }}")
-        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
-//        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
-    }
+//    println("Write gor tree")
+//    for(x in 1..10) {
+////        File(outputFilePath).delete()
+//        File(outputFilePath).deleteRecursively()
+//        File(outputFilePath).mkdir()
+////        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 20)
+////        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6)
+////        val c: CompressorTree = CompressorTree(outputFilePath, 6)
+////        val c: CompressorTree = CompressorTree(outputFilePath, 20, "map")
+////        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 6, "map")
+//        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 20, "map")
+////        println("${measureTimeMillis { writeFileChunkSrBench(filePath, outputFilePath, "lsmseq") }}")
+//        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
+////        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
+//    }
 
 //    println("Read gor tree")
 //    for(x in 1..10) {
@@ -83,22 +83,22 @@ fun main(args : Array<String>) {
 
 
 //    println("Write gor")
-//    for(x in 1..10) {
+////    for(x in 1..10) {
 //        val o: OutputStream = File(outputFilePath).outputStream()
 //        val out: BitOutput = BitByteBufferWriter(o)
 //        val c: Compressor = CompressorFlat(0, out, 6)
 //        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
 //        c.close()
-//    }
+////    }
 
 //    println("Read gor")
-//    for(x in 1..10) {
+////    for(x in 1..10) {
 //        var i: InputStream = File(outputFilePath).inputStream()
 //        var bi: BitInput = BitByteBufferReader(i)
 //        var d: Decompressor = DecompressorFlat(bi)
 //        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
 //        i.close()
-//    }
+////    }
 
 //    println("Write FPC Delta")
 //    for(x in 1..10) {
@@ -231,7 +231,7 @@ fun main(args : Array<String>) {
 }
 
 fun writeFileShelburne(filePath:String,c:Compressor) {
-//    val bw = BufferedWriter(FileWriter(filePath+".test.csv")) //write a test output
+    val bw = BufferedWriter(FileWriter(filePath+".test.csv")) //write a test output
     val br = BufferedReader(FileReader(filePath))
     br.readLine() //header
     for(line in br.lines()) {
@@ -248,16 +248,16 @@ fun writeFileShelburne(filePath:String,c:Compressor) {
 
             if(addThis) {
                 c.addRow((parts[0].toLong() / 1000000), list)
-//                //write a test output
-//                bw.append("${(parts[0].toLong() / 1000000)}")
-//                for(i in 1..6) {bw.append(",${parts[i]}")}
-//                bw.append("\n")
+                //write a test output
+                bw.append("${(parts[0].toLong() / 1000000)}")
+                for(i in 1..6) {bw.append(",${parts[i].toDouble()}")}
+                bw.append("\n")
             }
 
         }
     }
     br.close()
-//    bw.close() //write a test output
+    bw.close() //write a test output
     c.close()
 }
 
@@ -528,11 +528,11 @@ fun readFileShelburne(filePath:String, d:Decompressor) { //works for each
     File("${filePath}.csv").printWriter().use { out ->
         for (r in d.readRows()) {
 //            println("${r.timestamp}")
-//            out.print("${r.timestamp}")
+            out.print("${r.timestamp}")
             for (pair in r.getRow()) {
-//                out.print(", ${pair.getDoubleValue()}")
+                out.print(",${pair.getDoubleValue()}")
             }
-//            out.println()
+            out.println()
         }
     }
 }

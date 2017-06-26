@@ -32,6 +32,7 @@ class DecompressorTreeChunk(val blockTimestamp:Long, val input:BitInput):Decompr
 //                    println("${storedTimestamp} ${storedDelta}")
             }
             if (!endOfStream) yield(Row(storedTimestamp, storedVals))
+//            else yield(Row(storedTimestamp, listOf<Long>(0,0,0,0,0,0).toLongArray()))
         }
 //            println("ended")
     }

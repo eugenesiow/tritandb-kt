@@ -2,6 +2,7 @@
 *.class
 *.bin
 *.lock
+*.idx
 
 .idea/workspace.xml
 
