@@ -33,44 +33,56 @@ fun main(args : Array<String>) {
 //    var filePath = "/Users/eugene/Downloads/knoesis_observations_csv_date_sorted/"
 //    var filePath = "/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv"
 
-    println("Write gor flat chunk")
+//    println("Write gor flat chunk")
+//    for(x in listOf(4,8,16,32,64,128,256)) {
+////    for(x in 1..10) {
+//        File(outputFilePath).delete()
+////        File(outputFilePath).deleteRecursively()
+////        File(outputFilePath).mkdir()
+//        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 6, 4096 * x)
+////        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 20)
+//        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
+////        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
+////        println("${measureTimeMillis { writeFileChunkSrBench(filePath,outputFilePath,"flat", 4096 * x) }}")
+////        println("$x:${folderSize(File(outputFilePath))}")
+//        println("$x:${File(outputFilePath).length()}")
+////    println("${measureTimeMillis { writeFileChunkSrBenchParallel(filePath,outputFilePath,"treeseq") }}")
+////        File(outputFilePath).deleteRecursively()
+////        File(outputFilePath).mkdir()
+////        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"gor") }}")
+////    }
+//    }
+
+
+//    println("Read gor flat chunk")
+////    for(x in 1..10) {
+//        val d: Decompressor = DecompressorFlatChunk(outputFilePath)
+//        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
+////        println("${measureTimeMillis { readFileTaxi(outputFilePath, d) }}")
+////    }
+
+    println("Write gor tree")
+//    for(x in listOf(4,8,16,32,64,128,256)) {
+    for(x in listOf(4,8,16,32)) {
 //    for(x in 1..10) {
         File(outputFilePath).delete()
 //        File(outputFilePath).deleteRecursively()
 //        File(outputFilePath).mkdir()
-        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 6)
-//        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 20)
+//        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6, "map", 4096 * x)
+//        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 20, "map", 4096 * x)
+//        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6)
+        val c: CompressorTree = CompressorTree(outputFilePath, 6, "map", 4096 * x)
+//        val c: CompressorTree = CompressorTree(outputFilePath, 20, "map", 4096 * x)
+//        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 6, "map", 4096 * x)
+//        val c: CompressorLSMTree = CompressorLSMTree(outputFilePath, 20, "map", 4096 * x)
+//        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 20, "map", 4096 * x)
+//        println("${measureTimeMillis { writeFileChunkSrBench(filePath, outputFilePath, "lsmseq") }}")
+//        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
         println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
-//        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
-//        println("${measureTimeMillis { writeFileChunkSrBench(filePath,outputFilePath,"flat") }}")
-//    println("${measureTimeMillis { writeFileChunkSrBenchParallel(filePath,outputFilePath,"treeseq") }}")
-//        File(outputFilePath).deleteRecursively()
-//        File(outputFilePath).mkdir()
-//        println("${measureTimeMillis { writeFileSrBench(filePath,outputFilePath,"gor") }}")
+        println("$x:${File(outputFilePath).length()}")
+//        println("$x:${folderSize(File(outputFilePath))}")
 //    }
-
-    println("Read gor flat chunk")
-//    for(x in 1..10) {
-        val d: Decompressor = DecompressorFlatChunk(outputFilePath)
-        println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
-//        println("${measureTimeMillis { readFileTaxi(outputFilePath, d) }}")
-//    }
-
-//    println("Write gor tree")
-//    for(x in 1..10) {
-////        File(outputFilePath).delete()
-//        File(outputFilePath).deleteRecursively()
-//        File(outputFilePath).mkdir()
-////        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 20)
-////        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6)
-////        val c: CompressorTree = CompressorTree(outputFilePath, 6)
-////        val c: CompressorTree = CompressorTree(outputFilePath, 20, "map")
-////        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 6, "map")
-//        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 20, "map")
-////        println("${measureTimeMillis { writeFileChunkSrBench(filePath, outputFilePath, "lsmseq") }}")
-//        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
-////        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
-//    }
+    }
 
 //    println("Read gor tree")
 //    for(x in 1..10) {
@@ -230,6 +242,17 @@ fun main(args : Array<String>) {
 
 }
 
+fun folderSize(directory:File):Long {
+    var length = 0L
+    for (file in directory.listFiles()) {
+        if (file.isFile())
+            length += file.length()
+        else
+            length += folderSize(file)
+    }
+    return length
+}
+
 fun writeFileShelburne(filePath:String,c:Compressor) {
     val bw = BufferedWriter(FileWriter(filePath+".test.csv")) //write a test output
     val br = BufferedReader(FileReader(filePath))
@@ -359,7 +382,7 @@ fun writeFileChunkSrBenchParallel(filePath:String, outputFilePath:String,cType:S
     }
 }
 
-fun writeFileChunkSrBench(filePath:String, outputFilePath:String,cType:String) {
+fun writeFileChunkSrBench(filePath:String, outputFilePath:String,cType:String, size:Int) {
     val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
     val sdf = SimpleDateFormat(DATE_FORMAT)
     File(filePath).walkTopDown()
@@ -375,9 +398,9 @@ fun writeFileChunkSrBench(filePath:String, outputFilePath:String,cType:String) {
         var c: Compressor
         when(cType) {
 //            "flat" ->  c = CompressorFlatChunk(out, header.size-1)
-            "tree" -> c = CompressorTree(outSingle, header.size-1, stationName)
-            "treeseq" -> c = CompressorTreeSeq(outSingle, header.size-1, stationName)
-            else -> c = CompressorFlatChunk(out, header.size-1)
+            "tree" -> c = CompressorTree(outSingle, header.size-1, stationName, size)
+            "treeseq" -> c = CompressorTreeSeq(outSingle, header.size-1, stationName, size)
+            else -> c = CompressorFlatChunk(out, header.size-1,size)
         }
 //        var addThis = false
         for(line in br.lines()) {

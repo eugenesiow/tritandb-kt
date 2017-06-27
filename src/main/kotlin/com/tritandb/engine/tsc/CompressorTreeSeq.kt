@@ -8,14 +8,15 @@ import org.mapdb.Serializer
  * TritanDb
  * Created by eugene on 22/06/2017.
  */
-class CompressorTreeSeq(fileName:String, val columns:Int, val name:String):Compressor {
+class CompressorTreeSeq(fileName:String, val columns:Int, val name:String, chunkSize:Int):Compressor {
     data class RowWrite(val value:Long, val bits:Int)
 
     var altCurrentBits = 0
     var count = 0
     var currentBits = 0
     //    val MAX_BYTES = 2097152
-    val MAX_BYTES = 1048576
+//    val MAX_BYTES = 1048576
+    val MAX_BYTES = chunkSize
     val MAX_BITS = MAX_BYTES * 8
     var out = BufferWriter(MAX_BYTES)
     var rowBits = 0
@@ -257,7 +258,7 @@ class CompressorTreeSeq(fileName:String, val columns:Int, val name:String):Compr
         rowWriter(1,1)
         rowWriter(leadingZeros.toLong(), 5) // Number of leading zeros in the next 5 bits
         val significantBits = 64 - leadingZeros - trailingZeros
-        rowWriter(significantBits.toLong(), 6) // Length of meaningful bits in the next 6 bits
+        rowWriter(significantBits.toLong().and(0x3F), 6) // Length of meaningful bits in the next 6 bits
         rowWriter(xor.ushr(trailingZeros), significantBits) // Store the meaningful bits of XOR
         storedLeadingZerosRow[col] = leadingZeros
         storedTrailingZerosRow[col] = trailingZeros

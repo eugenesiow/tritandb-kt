@@ -1,10 +1,7 @@
 package com.tritandb.engine.tsc
 
 import com.tritandb.engine.util.BufferWriter
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.*
 import org.mapdb.DBMaker
 import org.mapdb.Serializer
 
@@ -13,7 +10,7 @@ import org.mapdb.Serializer
  * TritanDb
  * Created by eugene on 12/06/2017.
  */
-class CompressorTree(fileName:String, val columns:Int, val name:String):Compressor {
+class CompressorTree(fileName:String, val columns:Int, val name:String, chunkSize:Int):Compressor {
     data class RowWrite(val value:Long, val bits:Int)
 
     private val jobs = arrayListOf<Job>()
@@ -21,7 +18,8 @@ class CompressorTree(fileName:String, val columns:Int, val name:String):Compress
     var count = 0
     var currentBits = 0
 //    val MAX_BYTES = 2097152
-    val MAX_BYTES = 1048576
+//    val MAX_BYTES = 1048576
+    val MAX_BYTES = chunkSize
     val MAX_BITS = MAX_BYTES * 8
     var out = BufferWriter(MAX_BYTES)
     var rowBits = 0
@@ -39,15 +37,15 @@ class CompressorTree(fileName:String, val columns:Int, val name:String):Compress
             .fileMmapEnable()
 //            .transactionEnable()
             .make()
-//    private val map = db.hashMap("map")
-//            .keySerializer(Serializer.LONG)
-//            .valueSerializer(Serializer.BYTE_ARRAY)
-//            .createOrOpen()
-    private val map = db.treeMap(name)
+    private val map = db.hashMap("map")
             .keySerializer(Serializer.LONG)
-            .valuesOutsideNodesEnable()
             .valueSerializer(Serializer.BYTE_ARRAY)
             .createOrOpen()
+//    private val map = db.treeMap(name)
+//            .keySerializer(Serializer.LONG)
+//            .valuesOutsideNodesEnable()
+//            .valueSerializer(Serializer.BYTE_ARRAY)
+//            .createOrOpen()
     private val row = mutableListOf<RowWrite>()
 
     init{
@@ -73,7 +71,7 @@ class CompressorTree(fileName:String, val columns:Int, val name:String):Compress
         if(currentBits + rowBits >= MAX_BITS) {
             closeBlock()
             val ba = out.toByteArray().clone()
-            jobs += launch(CommonPool) {
+            jobs += launch(Unconfined) {
                 map.put(blockTimestamp, ba)
 //                db.commit()
             }
@@ -173,8 +171,8 @@ class CompressorTree(fileName:String, val columns:Int, val name:String):Compress
                 it.join()
                 db.commit()
             }
+            db.close()
         }
-        db.close()
 //        db.close()
     }
     /**
@@ -278,7 +276,7 @@ class CompressorTree(fileName:String, val columns:Int, val name:String):Compress
         rowWriter(1,1)
         rowWriter(leadingZeros.toLong(), 5) // Number of leading zeros in the next 5 bits
         val significantBits = 64 - leadingZeros - trailingZeros
-        rowWriter(significantBits.toLong(), 6) // Length of meaningful bits in the next 6 bits
+        rowWriter(significantBits.toLong().and(0x3F), 6) // Length of meaningful bits in the next 6 bits
         rowWriter(xor.ushr(trailingZeros), significantBits) // Store the meaningful bits of XOR
         storedLeadingZerosRow[col] = leadingZeros
         storedTrailingZerosRow[col] = trailingZeros

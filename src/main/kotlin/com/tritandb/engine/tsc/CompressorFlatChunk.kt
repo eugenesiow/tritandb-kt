@@ -8,7 +8,7 @@ import java.nio.ByteBuffer
  * TritanDb
  * Created by eugene on 14/06/2017.
  */
-class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
+class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compressor {
     data class RowWrite(val value:Long, val bits:Int)
 
     val o = File(fileName).outputStream()
@@ -18,7 +18,7 @@ class CompressorFlatChunk(fileName:String, val columns:Int):Compressor {
     var currentBits = 0
 //    val MAX_BYTES = 0x200000 //2097152
 //    val MAX_BYTES = 0x100000 //1048576
-    val MAX_BYTES = 32768 //1048576
+    val MAX_BYTES = chunkSize
     val MAX_BITS = MAX_BYTES * 8
     var out = BufferWriter(MAX_BYTES)
     var rowBits = 0

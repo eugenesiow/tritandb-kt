@@ -165,7 +165,7 @@ class CompressorFlat(val timestamp:Long, val out: BitOutput, val columns:Int):Co
         out.writeBit(true)
         out.writeBits(leadingZeros.toLong(), 5) // Number of leading zeros in the next 5 bits
         val significantBits = 64 - leadingZeros - trailingZeros
-        out.writeBits(significantBits.toLong(), 6) // Length of meaningful bits in the next 6 bits
+        out.writeBits(significantBits.toLong().and(0x3F), 6) // Length of meaningful bits in the next 6 bits
         out.writeBits(xor.ushr(trailingZeros), significantBits) // Store the meaningful bits of XOR
         storedLeadingZerosRow[col] = leadingZeros
         storedTrailingZerosRow[col] = trailingZeros
