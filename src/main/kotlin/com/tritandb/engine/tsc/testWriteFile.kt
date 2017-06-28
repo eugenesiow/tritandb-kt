@@ -61,27 +61,38 @@ fun main(args : Array<String>) {
 ////        println("${measureTimeMillis { readFileTaxi(outputFilePath, d) }}")
 ////    }
 
-    println("Write gor tree")
-//    for(x in listOf(4,8,16,32,64,128,256)) {
-    for(x in listOf(4,8,16,32)) {
-//    for(x in 1..10) {
-        File(outputFilePath).delete()
-//        File(outputFilePath).deleteRecursively()
-//        File(outputFilePath).mkdir()
-//        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6, "map", 4096 * x)
-//        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 20, "map", 4096 * x)
-//        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6)
-        val c: CompressorTree = CompressorTree(outputFilePath, 6, "map", 4096 * x)
-//        val c: CompressorTree = CompressorTree(outputFilePath, 20, "map", 4096 * x)
-//        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 6, "map", 4096 * x)
-//        val c: CompressorLSMTree = CompressorLSMTree(outputFilePath, 20, "map", 4096 * x)
+//    println("Write gor tree")
+////    for(x in listOf(4,8,16,32,64,128,256)) {
+//    for(x in listOf(4,8,16,32)) {
+////    for(x in 1..10) {
+//        File(outputFilePath).delete()
+////        File(outputFilePath).deleteRecursively()
+////        File(outputFilePath).mkdir()
+////        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6, "map", 4096 * x)
+////        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 20, "map", 4096 * x)
+////        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6)
+//        val c: CompressorTree = CompressorTree(outputFilePath, 6, "map", 4096 * x)
+////        val c: CompressorTree = CompressorTree(outputFilePath, 20, "map", 4096 * x)
+////        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 6, "map", 4096 * x)
+////        val c: CompressorLSMTree = CompressorLSMTree(outputFilePath, 20, "map", 4096 * x)
+////        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 20, "map", 4096 * x)
+////        println("${measureTimeMillis { writeFileChunkSrBench(filePath, outputFilePath, "lsmseq") }}")
+////        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
+//        println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
+//        println("$x:${File(outputFilePath).length()}")
+////        println("$x:${folderSize(File(outputFilePath))}")
+////    }
+//    }
+
+    for(x in listOf(16)) {
+//        File(outputFilePath).delete()
+        File(outputFilePath).deleteRecursively()
+        File(outputFilePath).mkdir()
+        val c: CompressorLSMTree = CompressorLSMTree(outputFilePath, 6, "map", 4096 * x)
 //        val c: CompressorLSMTreeParallel = CompressorLSMTreeParallel(outputFilePath, 20, "map", 4096 * x)
-//        println("${measureTimeMillis { writeFileChunkSrBench(filePath, outputFilePath, "lsmseq") }}")
 //        println("${measureTimeMillis { writeFileTaxi(filePath, c) }}")
         println("${measureTimeMillis { writeFileShelburne(filePath, c) }}")
-        println("$x:${File(outputFilePath).length()}")
-//        println("$x:${folderSize(File(outputFilePath))}")
-//    }
+        println("$x:${folderSize(File(outputFilePath))}")
     }
 
 //    println("Read gor tree")

@@ -1,9 +1,9 @@
 package com.tritandb.engine.tsc
 
-import com.indeed.lsmtree.core.StorageType
-import com.indeed.lsmtree.core.StoreBuilder
 import com.indeed.util.serialization.LongSerializer
 import com.indeed.util.serialization.array.ByteArraySerializer
+import com.tritandb.engine.experimental.lsm.StorageType
+import com.tritandb.engine.experimental.lsm.StoreBuilder
 import com.tritandb.engine.util.BufferWriter
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -158,10 +158,9 @@ class CompressorLSMTreeParallel (fileName:String, val columns:Int, val name:Stri
             jobs.forEach {
                 it.join()
             }
+            map.close()
+            map.waitForCompactions()
         }
-        map.close()
-        map.waitForCompactions()
-//        db.close()
     }
     /**
      * Stores up to millisecond accuracy, if seconds are used, delta-delta scale automagically

@@ -1,9 +1,9 @@
 package com.tritandb.engine.tsc
 
-import com.indeed.lsmtree.core.StorageType
-import com.indeed.lsmtree.core.StoreBuilder
 import com.indeed.util.serialization.LongSerializer
 import com.indeed.util.serialization.array.ByteArraySerializer
+import com.tritandb.engine.experimental.lsm.StorageType
+import com.tritandb.engine.experimental.lsm.StoreBuilder
 import com.tritandb.engine.util.BufferWriter
 import java.io.File
 
@@ -30,7 +30,7 @@ class CompressorLSMTree(fileName:String, val columns:Int, val name:String, chunk
     private var storedTimestamp = -1L
     private var storedDelta = 0L
     private var blockTimestamp:Long = 0L
-    private val map = StoreBuilder(File(fileName), LongSerializer(), ByteArraySerializer()).setCodec(null).setStorageType(StorageType.INLINE).build()
+    private val map = StoreBuilder(File(fileName), LongSerializer(), ByteArraySerializer()).setCodec(null).setBlockSize(MAX_BYTES.toLong()*2).setStorageType(StorageType.INLINE).build()
     private val row = mutableListOf<RowWrite>()
 
     init{
