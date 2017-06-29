@@ -2,8 +2,7 @@ package com.tritandb.engine.tsc
 
 import com.tritandb.engine.experimental.valueC.DecompressorFpc
 import com.tritandb.engine.experimental.timestampC.DecompressorTs
-import com.tritandb.engine.query.op.RangeFlat
-import com.tritandb.engine.query.op.RangeTree
+import com.tritandb.engine.query.op.*
 import com.tritandb.engine.util.BitReader
 import java.io.File
 import java.io.InputStream
@@ -56,20 +55,59 @@ fun queryShelburne(filePath: String) {
         }
 //        println("Time: ${measureTimeMillis { rangeShelburne(filePath,start,end) }}, Start: ${start}, End: ${end}")
 //        println("${start},${end},${measureTimeMillis { rangeShelburneTree(filePath,start,end) }}")
-//        println("${measureTimeMillis { rangeShelburne(filePath,start,end) }}")
-        println("${measureTimeMillis { rangeShelburneTree(filePath,start,end) }}")
+//        println("${measureTimeMillis { range(filePath,start,end) }}")
+        println("${measureTimeMillis { rangeLSM(filePath,start,end) }}")
+//        println("${measureTimeMillis { rangeTree(filePath,start,end) }}")
+//        println("${measureTimeMillis { rangeHash(filePath,start,end) }}")
     }
 
 }
 
-fun rangeShelburneTree(filePath: String, start: Long, end: Long) {
+fun queryTaxi(filePath: String) {
+    val fixedSeed = 100L
+    val rand = Random(fixedSeed)
+    val max = 1467241200
+    val min = 1459465200
+    val range = (max + 1 - min)
+    for(i in 1..21) {
+        val a = (rand.nextInt(range)) + min
+        val b = (rand.nextInt(range)) + min
+        var start = a
+        var end = b
+        if(a>b) {
+            start = b
+            end = a
+        }
+//        println("Time: ${measureTimeMillis { rangeShelburne(filePath,start,end) }}, Start: ${start}, End: ${end}")
+//        println("${start},${end},${measureTimeMillis { rangeShelburneTree(filePath,start,end) }}")
+//        println("${measureTimeMillis { range(filePath,start,end) }}")
+//        println("${measureTimeMillis { rangeLSM(filePath,start.toLong(),end.toLong()) }}")
+        println("${measureTimeMillis { rangeTree(filePath,start.toLong(),end.toLong()) }}")
+//        println("${measureTimeMillis { rangeHash(filePath,start,end) }}")
+    }
+
+}
+
+fun rangeTree(filePath: String, start: Long, end: Long) {
     for(r in RangeTree(filePath).run(start,end)) {
 
     }
 }
 
-fun rangeShelburne(filePath: String, start: Long, end: Long) {
-    for(r in RangeFlat(filePath).run(start,end)) {
+fun rangeHash(filePath: String, start: Long, end: Long) {
+    for(r in RangeHash(filePath).run(start,end)) {
+
+    }
+}
+
+fun rangeLSM(filePath: String, start: Long, end: Long) {
+    for(r in RangeLSM(filePath).run(start,end)) {
+
+    }
+}
+
+fun range(filePath: String, start: Long, end: Long) {
+    for(r in RangeFlatChunk(filePath).run(start,end)) {
 
     }
 }

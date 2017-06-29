@@ -20,7 +20,7 @@ class DecompressorLSMTree(fileName:String):Decompressor {
     override fun readRows():Iterator<Row> = buildIterator {
         map.iterator().forEach {
             for (r in DecompressorTreeChunk(it.key, BufferReader(ByteBuffer.wrap(it.value))).readRows())
-            yield(r)
+                yield(r)
         }
         map.close()
     }
@@ -29,42 +29,14 @@ class DecompressorLSMTree(fileName:String):Decompressor {
         map.close()
     }
 
-//    fun readRange(start:Long,end:Long):Iterator<Row>  = buildIterator {
-//        ////        var previousKey = 0L
-//        val keys = sortedSetOf<Long>()
-//        var startKey = Long.MAX_VALUE
-//        var endKey = 0L
-//////        for(k in map.keys) {
-//////            if(previousKey==0L)
-//////                previousKey = k!!
-//////            if (k != null) {
-//////                if(k>start)
-//////                    startKey = previousKey
-//////                else if(k==start)
-//////                    startKey = k
-//////
-//////                if(k>=end)
-//////                    endKey = previousKey
-//////            }
-//////
-//////            previousKey = k!!
-//////        }
-//        for(k in map.keys) {
-//            if(k!! in start..end) {
-//                if(k<startKey)
-//                    startKey = k
-//                if(k >endKey)
-//                    endKey = k
-//            }
-//        }
-//        if(startKey>endKey) {
-//            val tempEnd = endKey
-//            endKey = start
-//            startKey = tempEnd
-//        }
-//        map.subMap(startKey,endKey).forEach({
-//            yieldAll(DecompressorTreeChunk(it.key, BufferReader(ByteBuffer.wrap(it.value))).readRows())
-//        })
-//        map.close()
-//    }
+    fun readRange(start:Long,end:Long):Iterator<Row>  = buildIterator {
+        val startKey = map.lower(start)!!.key
+        val endKey = map.higher(end)!!.key
+
+        map.iterator().forEach {
+            if(it.key!! in startKey..endKey)
+                yieldAll(DecompressorTreeChunk(it.key, BufferReader(ByteBuffer.wrap(it.value))).readRows())
+        }
+        map.close()
+    }
 }

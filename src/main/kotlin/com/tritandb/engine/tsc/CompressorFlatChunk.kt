@@ -30,6 +30,10 @@ class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compr
     private var storedDelta = 0L
     private var blockTimestamp:Long = 0L
 
+//    private var count1 = 0
+//    private var count2 = 0
+//    private var counterLeading = mutableMapOf<Int,Long>()
+
     private val row = mutableListOf<RowWrite>()
 
     init{
@@ -40,6 +44,9 @@ class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compr
             storedTrailingZerosRow[i] = 0
         }
         addHeader()
+//        for(i in 0..32) {
+//            counterLeading.put(i,0)
+//        }
     }
     private fun addHeader() {
         rowWriter(columns.toLong(),32)
@@ -167,6 +174,10 @@ class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compr
         o.close()
         closeIndex(ba.size)
         idx.close()
+//        for((k,v) in counterLeading) {
+//            println("$k : $v")
+//        }
+//        println("$count1 $count2")
     }
 
     private fun closeIndex(byteSize:Int) {
@@ -236,13 +247,16 @@ class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compr
                 if (leadingZeros >= 32) {
                     leadingZeros = 31
                 }
+//                counterLeading.put(leadingZeros, counterLeading.getValue(leadingZeros)+1)
                 // Store bit '1'
                 rowWriter(1,1)
                 if (leadingZeros >= storedLeadingZerosRow[i] && trailingZeros >= storedTrailingZerosRow[i]) {
                     writeExistingLeadingRow(xor, i)
+//                    count1++
                 }
                 else {
                     writeNewLeadingRow(xor, leadingZeros, trailingZeros, i)
+//                    count2++
                 }
             }
             storedVals[i] = values[i]
