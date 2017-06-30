@@ -59,5 +59,6 @@ class DecompressorHash(fileName:String):Decompressor {
                 yieldAll(DecompressorTreeChunk(it, BufferReader(ByteBuffer.wrap(map[it]))).readRows())
             }
         })
+        map.close()
     }
 }

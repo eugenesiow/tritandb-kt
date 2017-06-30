@@ -44,7 +44,7 @@ fun queryShelburne(filePath: String) {
     val max = 1406141325958
     val min = 1271692742104
     val range = ((max + 1 - min )/100).toInt()
-    for(i in 1..21) {
+    for(i in 1..101) {
         val a = (rand.nextInt(range))*100L + min
         val b = (rand.nextInt(range))*100L + min
         var start = a
@@ -69,7 +69,7 @@ fun queryTaxi(filePath: String) {
     val max = 1467241200
     val min = 1459465200
     val range = (max + 1 - min)
-    for(i in 1..21) {
+    for(i in 1..101) {
         val a = (rand.nextInt(range)) + min
         val b = (rand.nextInt(range)) + min
         var start = a
@@ -80,10 +80,10 @@ fun queryTaxi(filePath: String) {
         }
 //        println("Time: ${measureTimeMillis { rangeShelburne(filePath,start,end) }}, Start: ${start}, End: ${end}")
 //        println("${start},${end},${measureTimeMillis { rangeShelburneTree(filePath,start,end) }}")
-//        println("${measureTimeMillis { range(filePath,start,end) }}")
+//        println("${measureTimeMillis { range(filePath,start.toLong(),end.toLong()) }}")
 //        println("${measureTimeMillis { rangeLSM(filePath,start.toLong(),end.toLong()) }}")
-        println("${measureTimeMillis { rangeTree(filePath,start.toLong(),end.toLong()) }}")
-//        println("${measureTimeMillis { rangeHash(filePath,start,end) }}")
+//        println("${measureTimeMillis { rangeTree(filePath,start.toLong(),end.toLong()) }}")
+        println("${measureTimeMillis { rangeHash(filePath,start.toLong(),end.toLong()) }}")
     }
 
 }

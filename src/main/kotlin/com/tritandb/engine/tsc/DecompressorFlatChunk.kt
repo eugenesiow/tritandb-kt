@@ -55,11 +55,15 @@ class DecompressorFlatChunk(fileName:String):Decompressor {
     fun readRange(start:Long,end:Long):Iterator<Row>  = buildIterator {
         var previousBytes = 0L
         var startBytes = 0L
+        var firstSeek = true
         for((k,v) in index) {
             if(k>start) {
                 if(k>end)
                     break
-                file.seek(startBytes)
+                if(firstSeek) {
+                    file.seek(startBytes)
+                    firstSeek = false
+                }
                 val chunk = ByteArray(v)
                 file.read(chunk)
                 yieldAll(DecompressorTreeChunk(k, BufferReader(ByteBuffer.wrap(chunk))).readRows())
