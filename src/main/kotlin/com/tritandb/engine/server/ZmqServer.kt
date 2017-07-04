@@ -9,10 +9,10 @@ import com.tritandb.engine.experimental.timestampC.CompressorTs
 import com.tritandb.engine.experimental.valueC.CompressorFpDeltaDelta
 import com.tritandb.engine.tsc.Compressor
 import com.tritandb.engine.tsc.CompressorFlat
+import com.tritandb.engine.tsc.CompressorFlatChunk
 import com.tritandb.engine.tsc.data.DisruptorEvent
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent
-import com.tritandb.engine.tsc.FileCompressor
 import com.tritandb.engine.util.BitByteBufferWriter
 import com.tritandb.engine.util.BitOutput
 import org.zeromq.ZMQ
@@ -26,6 +26,8 @@ import java.io.OutputStream
  */
 class ZmqServer(val config:Configuration) {
 
+//    data class FileCompressor(val compressor: Compressor)
+
     private object server : PropertyGroup() {
         val port by intType
         val host by stringType
@@ -33,7 +35,8 @@ class ZmqServer(val config:Configuration) {
         val dataDir by stringType
     }
 
-    private val C:MutableMap<String, FileCompressor> = mutableMapOf()
+//    private val C:MutableMap<String, FileCompressor> = mutableMapOf()
+    private val C:MutableMap<String, Compressor> = mutableMapOf()
 
     private val handler: EventHandler<DisruptorEvent> = EventHandler({ (tEvent), _, _ ->
         when(tEvent.type) {
@@ -47,7 +50,7 @@ class ZmqServer(val config:Configuration) {
                 }
             }
             CLOSE -> {
-                val c = C.getValue(tEvent.name).compressor
+                val c = C.getValue(tEvent.name)
                 c.close()
                 C.remove(tEvent.name)
                 println("closed")
@@ -59,15 +62,15 @@ class ZmqServer(val config:Configuration) {
 
     private fun GetCompressor(name: String, timestamp: Long, valueCount: Int): Compressor {
         if(C.containsKey(name))
-            return C.getValue(name).compressor
+            return C.getValue(name)
         else {
-            val o:OutputStream = File("${config[server.dataDir]}/${name}.tsc").outputStream()
-            val b:BitOutput = BitByteBufferWriter(o)
+//            val o:OutputStream = File("${config[server.dataDir]}/${name}.tsc").outputStream()
+//            val b:BitOutput = BitByteBufferWriter(o)
 //            val b:BitOutput = BitWriter(o)
-            val c: Compressor = CompressorFlat(timestamp,b,valueCount)
-            val f: FileCompressor = FileCompressor(c,b,o)
-            C.put(name,f)
-            return f.compressor
+//            val c: Compressor = CompressorFlat(timestamp,b,valueCount)
+            val c: Compressor = CompressorFlatChunk("${config[server.dataDir]}/${name}.tsc",valueCount,4096 * 16)
+            C.put(name,c)
+            return c
         }
     }
 
