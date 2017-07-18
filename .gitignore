@@ -7,3 +7,5 @@
 .idea/workspace.xml
 
 *.csv
+
+data/query_output.txt

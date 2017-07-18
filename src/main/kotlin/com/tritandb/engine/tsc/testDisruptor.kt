@@ -1,7 +1,6 @@
 package com.tritandb.engine.tsc
 
-import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.CLOSE
-import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.INSERT
+import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
 import com.tritandb.engine.tsc.data.buildRow
 import com.tritandb.engine.tsc.data.buildRows
 import com.tritandb.engine.tsc.data.buildTritanEvent
@@ -10,6 +9,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.system.measureTimeMillis
 
 
@@ -20,18 +20,53 @@ import kotlin.system.measureTimeMillis
 
 fun main(args: Array<String>) {
     val context = ZMQ.context(2)
-    val sender = context.socket(ZMQ.PUSH)
-    sender.connect("tcp://localhost:5700")
+//    val sender = context.socket(ZMQ.PUSH)
+    val sender = context.socket(ZMQ.ROUTER)
+    sender.bind("tcp://localhost:5700")
 
     Thread.sleep(1000)
-
-    println("Time: ${measureTimeMillis{shelburne(sender,"/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv")}}")
-//    println("Time: ${measureTimeMillis{shelburne(sender,"/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv")}}")
+//    query_shelburne(sender)
+//    println("Time: ${measureTimeMillis{shelburne(sender,"/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv")}}")
+    println("Time: ${measureTimeMillis{shelburne(sender,"/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv")}}")
 //    println("Time: ${measureTimeMillis{ srbench(sender,"/Users/eugene/Downloads/knoesis_observations_csv_date_sorted/") }}")
 //    println("Time: ${measureTimeMillis{ taxi(sender,"/Users/eugene/Documents/Programming/data/2016_green_taxi_trip_data_sorted.csv") }}")
 
     sender.close()
     context.close()
+}
+
+fun query_shelburne(sender:ZMQ.Socket) {
+    val fixedSeed = 100L
+    val rand = Random(fixedSeed)
+    val max = 1406141325958
+    val min = 1271692742104
+    val range = ((max + 1 - min )/100).toInt()
+    for(i in 1..101) {
+        val a = (rand.nextInt(range))*100L + min
+        val b = (rand.nextInt(range))*100L + min
+        var start = a
+        var end = b
+        if(a>b) {
+            start = b
+            end = a
+        }
+        val event = buildTritanEvent {
+            type = QUERY
+            name = "shelburne"
+            rows = buildRows {
+                addRow(buildRow {
+                    timestamp = start
+                    addValue(end)
+                })
+            }
+        }
+        sender.send(event.toByteArray())
+    }
+
+    sender.send(buildTritanEvent {
+        type = INSERT_META
+        name = "shelburne"
+    }.toByteArray())
 }
 
 fun taxi(sender:ZMQ.Socket,filePath:String) {
@@ -166,8 +201,10 @@ fun shelburne(sender:ZMQ.Socket,filePath:String) {
                     })
                 }
             }
-            if(addThis)
+            if(addThis) {
                 sender.send(event.toByteArray())
+            }
+
         }
     }
     br.close()

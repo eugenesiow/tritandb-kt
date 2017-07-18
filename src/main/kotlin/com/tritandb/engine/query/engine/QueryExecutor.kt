@@ -2,14 +2,17 @@ package com.tritandb.engine.query.engine
 
 import org.apache.jena.query.ARQ
 import org.apache.jena.query.QueryExecutionFactory
+import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.query.QueryFactory
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
+import org.apache.jena.riot.RDFLanguages
 import org.apache.jena.sparql.engine.main.StageGenerator
 import org.apache.jena.sparql.util.QueryExecUtils
 import org.apache.jena.sparql.algebra.OpWalker
 import org.apache.jena.sparql.algebra.Algebra
 import org.apache.jena.sparql.algebra.Op
+import java.io.File
 import kotlin.system.measureTimeMillis
 
 
@@ -17,16 +20,17 @@ import kotlin.system.measureTimeMillis
  * Created by eugenesiow on 18/06/2017.
  */
 class QueryExecutor {
-    var NS = "http://example/"
+    var NS = "http://qudt.org/2.0/schema/qudt/"
+    var QUDT = "http://qudt.org/2.0/schema/qudt/"
 
     fun query() {
-        val queryString = arrayOf("PREFIX ns: <$NS>", "SELECT ?v ", "{ ?s ns:p1 'xyz' ;", "     ns:p2 ?v }")
+        val queryString = arrayOf("PREFIX qudt: <$QUDT>", "SELECT ?v ", "{ ?s qudt:numericValue ?v","}")
         val query = QueryFactory.create(queryString.joinToString("\n"))
         val op = Algebra.compile(query)
         println(op)
 
         val v = SparqlOpVisitor()
-        v.setModel(makeData())
+        v.setModel(loadData())
         println("Walk Time: ${measureTimeMillis{OpWalker.walk(op, v)}}")
 
         // The stage generator to be used for a query execution
@@ -72,6 +76,12 @@ class QueryExecutor {
         val p2 = model.createProperty(NS + "p2")
         model.add(r, p1, "xyz")
         model.add(r, p2, "abc")
+        return model
+    }
+
+    private fun loadData(): Model {
+        val model = ModelFactory.createDefaultModel()
+        RDFDataMgr.read(model, File("models/shelburne.ttl").inputStream(), RDFLanguages.TURTLE)
         return model
     }
 }

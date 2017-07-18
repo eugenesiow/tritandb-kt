@@ -7,6 +7,7 @@ import com.lmax.disruptor.util.DaemonThreadFactory
 import com.natpryce.konfig.*
 import com.tritandb.engine.experimental.timestampC.CompressorTs
 import com.tritandb.engine.experimental.valueC.CompressorFpDeltaDelta
+import com.tritandb.engine.query.op.RangeFlatChunk
 import com.tritandb.engine.tsc.Compressor
 import com.tritandb.engine.tsc.CompressorFlat
 import com.tritandb.engine.tsc.CompressorFlatChunk
@@ -18,6 +19,7 @@ import com.tritandb.engine.util.BitOutput
 import org.zeromq.ZMQ
 import java.io.File
 import java.io.OutputStream
+import kotlin.system.measureTimeMillis
 
 
 /**
@@ -48,6 +50,21 @@ class ZmqServer(val config:Configuration) {
                         c.addRow(row.timestamp, row.valueList)
                     }
                 }
+            }
+            QUERY -> {
+                if(tEvent.hasRows()) {
+                    val firstRow = tEvent.rows.getRow(0)
+                    val bw = File("${config[server.dataDir]}/query_output.txt").bufferedWriter()
+                    println(measureTimeMillis { for(r in RangeFlatChunk("${config[server.dataDir]}/${tEvent.name}.tsc").run(firstRow.timestamp,firstRow.getValue(0))) {
+                        bw.append(r.timestamp.toString())
+                        for(value in r.values)
+                            bw.append(",$value")
+                        bw.newLine()
+                    } })
+                }
+            }
+            INSERT_META -> {
+                println(tEvent.name)
             }
             CLOSE -> {
                 val c = C.getValue(tEvent.name)
