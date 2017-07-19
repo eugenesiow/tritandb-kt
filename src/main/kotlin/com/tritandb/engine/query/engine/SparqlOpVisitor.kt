@@ -1,20 +1,13 @@
 package com.tritandb.engine.query.engine
 
+import com.tritandb.engine.query.op.TrOp
 import org.apache.jena.query.DatasetFactory
 import org.apache.jena.rdf.model.Model
-import org.apache.jena.riot.Lang
-import org.apache.jena.riot.RDFParserBuilder
 import org.apache.jena.sparql.algebra.OpVisitor
 import org.apache.jena.sparql.algebra.op.*
-import org.apache.jena.sparql.engine.ExecutionContext
 import org.apache.jena.sparql.engine.QueryIterator
 import org.apache.jena.sparql.engine.binding.Binding
-import org.apache.jena.sparql.engine.iterator.QueryIterRoot
-import org.apache.jena.sparql.engine.main.QC
 import org.apache.jena.sparql.util.Context
-import org.apache.jena.sparql.graph.GraphFactory
-
-
 
 
 /**
@@ -23,6 +16,7 @@ import org.apache.jena.sparql.graph.GraphFactory
 class SparqlOpVisitor: OpVisitor {
     private var model:Model? = null
     private val bgpBindings = mutableListOf<Binding>()
+    private val plan = mutableMapOf<String,TrOp>()
 
     override fun visit(opBGP: OpBGP?) {
         val context = Context()
@@ -76,7 +70,10 @@ class SparqlOpVisitor: OpVisitor {
     }
 
     override fun visit(opFilter: OpFilter?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        opFilter!!.exprs.forEach { exp ->
+            for(binding in bgpBindings)
+                println(binding.get(exp.function.args[0].function.args[0].asVar()).literalLexicalForm)
+        }
     }
 
     override fun visit(opGraph: OpGraph?) {
@@ -146,7 +143,7 @@ class SparqlOpVisitor: OpVisitor {
     override fun visit(opProject: OpProject?) {
         for(binding in bgpBindings)
             for(pVar in opProject!!.vars)
-                println(binding.get(pVar))
+                println("$pVar:${binding.get(pVar)}")
     }
 
     override fun visit(opReduced: OpReduced?) {

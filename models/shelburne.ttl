@@ -5,7 +5,7 @@
 @prefix time: <http://www.w3.org/2006/time#>.
 
 
-_:obs a sosa:Observation;
+_:obsAirTemperature a sosa:Observation;
     sosa:observedProperty :AirTemperature;
     sosa:hasResult [
         a qudt:QuantityValue;
@@ -14,7 +14,7 @@ _:obs a sosa:Observation;
     sosa:resultTime _:time;
     sosa:madeBySensor _:sensor.
 
-_:obs a sosa:Observation;
+_:obsSolarRadiation a sosa:Observation;
     sosa:observedProperty :SolarRadiation;
     sosa:hasResult [
         a qudt:QuantityValue;
@@ -23,7 +23,7 @@ _:obs a sosa:Observation;
     sosa:resultTime _:time;
     sosa:madeBySensor _:sensor.
 
-_:obs a sosa:Observation;
+_:obsSoilMoisture a sosa:Observation;
     sosa:observedProperty :SoilMoisture;
     sosa:hasResult [
         a qudt:QuantityValue;
@@ -32,7 +32,7 @@ _:obs a sosa:Observation;
     sosa:resultTime _:time;
     sosa:madeBySensor _:sensor.
 
-_:obs a sosa:Observation;
+_:obsLeafWetness a sosa:Observation;
     sosa:observedProperty :LeafWetness;
     sosa:hasResult [
         a qudt:QuantityValue;
@@ -41,7 +41,7 @@ _:obs a sosa:Observation;
     sosa:resultTime _:time;
     sosa:madeBySensor _:sensor.
 
-_:obs a sosa:Observation;
+_:obsInternalTemperature a sosa:Observation;
     sosa:observedProperty :InternalTemperature;
     sosa:hasResult [
         a qudt:QuantityValue;
@@ -50,7 +50,7 @@ _:obs a sosa:Observation;
     sosa:resultTime _:time;
     sosa:madeBySensor _:sensor.
 
-_:obs a sosa:Observation;
+_:obsRelativeHumidity a sosa:Observation;
     sosa:observedProperty :RelativeHumidity;
     sosa:hasResult [
         a qudt:QuantityValue;

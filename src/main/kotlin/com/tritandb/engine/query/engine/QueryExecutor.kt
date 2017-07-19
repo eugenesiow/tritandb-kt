@@ -1,17 +1,12 @@
 package com.tritandb.engine.query.engine
 
-import org.apache.jena.query.ARQ
-import org.apache.jena.query.QueryExecutionFactory
-import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.query.QueryFactory
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
+import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.riot.RDFLanguages
-import org.apache.jena.sparql.engine.main.StageGenerator
-import org.apache.jena.sparql.util.QueryExecUtils
-import org.apache.jena.sparql.algebra.OpWalker
 import org.apache.jena.sparql.algebra.Algebra
-import org.apache.jena.sparql.algebra.Op
+import org.apache.jena.sparql.algebra.OpWalker
 import java.io.File
 import kotlin.system.measureTimeMillis
 
@@ -20,12 +15,9 @@ import kotlin.system.measureTimeMillis
  * Created by eugenesiow on 18/06/2017.
  */
 class QueryExecutor {
-    var NS = "http://qudt.org/2.0/schema/qudt/"
-    var QUDT = "http://qudt.org/2.0/schema/qudt/"
 
-    fun query() {
-        val queryString = arrayOf("PREFIX qudt: <$QUDT>", "SELECT ?v ", "{ ?s qudt:numericValue ?v","}")
-        val query = QueryFactory.create(queryString.joinToString("\n"))
+    fun query(queryString:String) {
+        val query = QueryFactory.create(queryString)
         val op = Algebra.compile(query)
         println(op)
 
@@ -67,16 +59,6 @@ class QueryExecutor {
 //        }
 //
 //        QueryExecUtils.executeQuery(query, engine)
-    }
-
-    private fun makeData(): Model {
-        val model = ModelFactory.createDefaultModel()
-        val r = model.createResource(NS + "r")
-        val p1 = model.createProperty(NS + "p1")
-        val p2 = model.createProperty(NS + "p2")
-        model.add(r, p1, "xyz")
-        model.add(r, p2, "abc")
-        return model
     }
 
     private fun loadData(): Model {

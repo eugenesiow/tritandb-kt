@@ -14,7 +14,15 @@ import kotlin.coroutines.experimental.buildIterator
  * TritanDb
  * Created by eugene on 29/06/2017.
  */
-class RangeFlatChunk(val filePath:String) {
+class RangeFlatChunk(val filePath:String):TrOp {
+    var start: Long = 0
+    var end: Long = 0
+    var iterator:Iterator<Row> = buildIterator {}
+
+    override fun execute() {
+        iterator = run(start,end)
+    }
+
     fun run(start: Long, end: Long): Iterator<Row> = buildIterator {
         val d: DecompressorFlatChunk = DecompressorFlatChunk(filePath)
         for (r in d.readRange(start,end)) {
