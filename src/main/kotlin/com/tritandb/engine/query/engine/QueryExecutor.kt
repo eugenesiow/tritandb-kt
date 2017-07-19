@@ -19,7 +19,7 @@ class QueryExecutor {
     fun query(queryString:String) {
         val query = QueryFactory.create(queryString)
         val op = Algebra.compile(query)
-        println(op)
+//        println(op)
 
         val v = SparqlOpVisitor()
         v.setModel(loadData())

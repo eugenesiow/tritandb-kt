@@ -13,14 +13,13 @@ fun main(args : Array<String>) {
     val queryString = "PREFIX qudt: <$QUDT>\n" +
             "PREFIX sosa: <$SOSA>\n" +
             "PREFIX time: <$TIME>\n" +
-            "SELECT ?v ?prop ?timeVal\n"+
+            "SELECT ?v ?timeVal\n"+
             "{  ?obs sosa:hasResult ?result;\n" +
-            "       sosa:observedProperty ?prop;\n" +
+            "       sosa:observedProperty <http://tritandb.com/ns/iot/RelativeHumidity>;\n" +
             "       sosa:resultTime ?time.\n" +
             "   ?result qudt:numericValue ?v.\n" +
             "   ?time time:inXSDDateTimeStamp ?timeVal.\n"+
             "   FILTER(?timeVal>\"2003-04-01T00:00:00\" && ?timeVal<\"2003-04-01T01:00:00\")\n"+
             "}"
     q.query(queryString)
-
 }

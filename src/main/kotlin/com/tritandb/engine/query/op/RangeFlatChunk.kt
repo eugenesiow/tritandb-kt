@@ -17,9 +17,11 @@ import kotlin.coroutines.experimental.buildIterator
 class RangeFlatChunk(val filePath:String):TrOp {
     var start: Long = 0
     var end: Long = 0
+    val cols = mutableListOf<String>()
     var iterator:Iterator<Row> = buildIterator {}
 
     override fun execute() {
+        println("$start:$end:$cols")
         iterator = run(start,end)
     }
 

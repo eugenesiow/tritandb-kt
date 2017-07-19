@@ -1,5 +1,7 @@
 package com.tritandb.engine.query.engine
 
+import com.tritandb.engine.query.op.RangeFlat
+import com.tritandb.engine.query.op.RangeFlatChunk
 import com.tritandb.engine.query.op.TrOp
 import org.apache.jena.query.DatasetFactory
 import org.apache.jena.rdf.model.Model
@@ -7,7 +9,11 @@ import org.apache.jena.sparql.algebra.OpVisitor
 import org.apache.jena.sparql.algebra.op.*
 import org.apache.jena.sparql.engine.QueryIterator
 import org.apache.jena.sparql.engine.binding.Binding
+import org.apache.jena.sparql.expr.Expr
 import org.apache.jena.sparql.util.Context
+import java.text.SimpleDateFormat
+
+
 
 
 /**
@@ -71,9 +77,50 @@ class SparqlOpVisitor: OpVisitor {
 
     override fun visit(opFilter: OpFilter?) {
         opFilter!!.exprs.forEach { exp ->
-            for(binding in bgpBindings)
-                println(binding.get(exp.function.args[0].function.args[0].asVar()).literalLexicalForm)
+            filterOp(exp)
         }
+    }
+
+    fun filterOp(exp:Expr) {
+        if(exp.isFunction) {
+            when(exp.function.opName) {
+                "&&" -> {
+                    filterOp(exp.function.args[0])
+                    filterOp(exp.function.args[1])
+                }
+                "<=","<" -> {
+                    processRange(exp.function.args[0],exp.function.args[1],false)
+                }
+                ">=",">" -> {
+                    processRange(exp.function.args[0],exp.function.args[1],true)
+
+                }
+            }
+
+        }
+
+    }
+
+    private fun  processRange(variable: Expr?, value: Expr?, isStart: Boolean) {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+        bgpBindings.map { it.get(variable!!.asVar()) }
+                .forEach {
+                    if(it.literalDatatypeURI == "http://iot.soton.ac.uk/s2s/s2sml#literalMap") {
+                        val tsNameParts = it.literalLexicalForm.split(".")
+                        if(value!!.isConstant) {
+                            val timestamp = sdf.parse(value!!.constant.string).time
+                            var op: TrOp? = plan.get(tsNameParts[0])
+                            if(op==null)
+                                op = RangeFlatChunk("data/shelburne.tsc")
+                            val opRange =  op as RangeFlatChunk
+                            if (isStart)
+                                opRange.start = timestamp
+                            else
+                                opRange.end = timestamp
+                            plan.put(tsNameParts[0],opRange)
+                        }
+                    }
+                }
     }
 
     override fun visit(opGraph: OpGraph?) {
@@ -141,9 +188,26 @@ class SparqlOpVisitor: OpVisitor {
     }
 
     override fun visit(opProject: OpProject?) {
-        for(binding in bgpBindings)
-            for(pVar in opProject!!.vars)
-                println("$pVar:${binding.get(pVar)}")
+        for(pVar in opProject!!.vars) {
+            for(binding in bgpBindings) {
+                if(binding.get(pVar).isLiteral && binding.get(pVar).literalDatatypeURI == "http://iot.soton.ac.uk/s2s/s2sml#literalMap")
+                   projectCols(binding.get(pVar).literalLexicalForm)
+//                println("$binding:$pVar:${binding.get(pVar).isLiteral}")
+            }
+        }
+
+        for((_,p) in plan)
+            p.execute()
+    }
+
+    private fun  projectCols(col:String) {
+        val tsNameParts = col.split(".")
+        var op: TrOp? = plan.get(tsNameParts[0])
+        if(op==null)
+            op = RangeFlatChunk("data/shelburne.tsc")
+        val opRange =  op as RangeFlatChunk
+        opRange.cols.add(tsNameParts[1])
+        plan.put(tsNameParts[0],opRange)
     }
 
     override fun visit(opReduced: OpReduced?) {
