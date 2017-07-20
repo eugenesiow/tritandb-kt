@@ -33,6 +33,14 @@ jar {
     exclude('META-INF/*.RSA')
 }
 
+task execute(type:JavaExec) {
+    if(project.hasProperty('myargs')){
+        args(myargs.split(','))
+    }
+    main = mainClass
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

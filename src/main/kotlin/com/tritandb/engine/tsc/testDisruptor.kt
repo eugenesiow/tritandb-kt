@@ -20,14 +20,15 @@ import kotlin.system.measureTimeMillis
 
 fun main(args: Array<String>) {
     val context = ZMQ.context(2)
-//    val sender = context.socket(ZMQ.PUSH)
-    val sender = context.socket(ZMQ.ROUTER)
-    sender.bind("tcp://localhost:5700")
+    val sender = context.socket(ZMQ.PUSH)
+//    val sender = context.socket(ZMQ.ROUTER)
+    sender.connect("tcp://localhost:5700")
+//    sender.bind("tcp://localhost:5700")
 
     Thread.sleep(1000)
 //    query_shelburne(sender)
-//    println("Time: ${measureTimeMillis{shelburne(sender,"/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv")}}")
-    println("Time: ${measureTimeMillis{shelburne(sender,"/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv")}}")
+    println("Time: ${measureTimeMillis{shelburne(sender,"/Users/eugene/Documents/Programming/data/shelburne/shelburne.csv")}}")
+//    println("Time: ${measureTimeMillis{shelburne(sender,"/Users/eugene/Documents/Programming/data/shelburne/shelburne_test.csv")}}")
 //    println("Time: ${measureTimeMillis{ srbench(sender,"/Users/eugene/Downloads/knoesis_observations_csv_date_sorted/") }}")
 //    println("Time: ${measureTimeMillis{ taxi(sender,"/Users/eugene/Documents/Programming/data/2016_green_taxi_trip_data_sorted.csv") }}")
 

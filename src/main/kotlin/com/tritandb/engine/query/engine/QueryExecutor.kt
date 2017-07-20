@@ -23,7 +23,12 @@ class QueryExecutor {
 
         val v = SparqlOpVisitor()
         v.setModel(loadData())
-        println("Walk Time: ${measureTimeMillis{OpWalker.walk(op, v)}}")
+        println("${measureTimeMillis{OpWalker.walk(op, v)}}")
+//        val out = File("data/dump.out.txt").outputStream().bufferedWriter()
+//        v.getIterator().forEach { it ->
+//            out.append("${it.toString()}\n")
+//        }
+//        out.close()
 
         // The stage generator to be used for a query execution
         // is read from the context.  There is a global context, which

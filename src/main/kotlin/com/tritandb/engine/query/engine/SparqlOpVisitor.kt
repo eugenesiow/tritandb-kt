@@ -3,6 +3,8 @@ package com.tritandb.engine.query.engine
 import com.tritandb.engine.query.op.RangeFlat
 import com.tritandb.engine.query.op.RangeFlatChunk
 import com.tritandb.engine.query.op.TrOp
+import com.tritandb.engine.tsc.data.EventProtos
+import com.tritandb.engine.tsc.data.Row
 import org.apache.jena.query.DatasetFactory
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.sparql.algebra.OpVisitor
@@ -12,8 +14,7 @@ import org.apache.jena.sparql.engine.binding.Binding
 import org.apache.jena.sparql.expr.Expr
 import org.apache.jena.sparql.util.Context
 import java.text.SimpleDateFormat
-
-
+import kotlin.coroutines.experimental.buildIterator
 
 
 /**
@@ -144,7 +145,7 @@ class SparqlOpVisitor: OpVisitor {
     }
 
     override fun visit(opExtend: OpExtend?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        println(opExtend)
     }
 
     override fun visit(opJoin: OpJoin?) {
@@ -196,8 +197,17 @@ class SparqlOpVisitor: OpVisitor {
             }
         }
 
-        for((_,p) in plan)
+        for((_,p) in plan) {
             p.execute()
+        }
+    }
+
+    fun getIterator():Iterator<Row> {
+        if(plan.isNotEmpty()) {
+            for((_,p) in plan)
+                return (p as RangeFlatChunk).iterator
+        }
+        return  buildIterator {  }
     }
 
     private fun  projectCols(col:String) {
@@ -223,7 +233,13 @@ class SparqlOpVisitor: OpVisitor {
     }
 
     override fun visit(opGroup: OpGroup?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        opGroup!!.aggregators.forEach{
+            aggr ->
+            println(aggr.aggVar)
+            println(aggr.aggregator.name)
+            println(aggr.aggregator.exprList.get(0))
+            
+        }
     }
 
     override fun visit(opTop: OpTopN?) {

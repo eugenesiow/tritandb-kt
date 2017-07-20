@@ -9,3 +9,5 @@
 *.csv
 
 data/query_output.txt
+
+test_overhead.txt

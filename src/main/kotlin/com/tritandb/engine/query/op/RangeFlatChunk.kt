@@ -21,7 +21,7 @@ class RangeFlatChunk(val filePath:String):TrOp {
     var iterator:Iterator<Row> = buildIterator {}
 
     override fun execute() {
-        println("$start:$end:$cols")
+//        println("$start:$end:$cols")
         iterator = run(start,end)
     }
 
