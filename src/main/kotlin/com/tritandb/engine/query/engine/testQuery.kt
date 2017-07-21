@@ -40,7 +40,8 @@ fun shelburneCol(num:Int) {
 
     }
 //    shelburneColQuery(start,end,col)
-    shelburneAggrQuery(start,end,col)
+//    shelburneAggrQuery(start,end,col)
+    shelburneRowQuery(start,end)
 }
 
 fun shelburneColQuery(start:Long,end:Long,col:Int) {
@@ -61,6 +62,40 @@ fun shelburneColQuery(start:Long,end:Long,col:Int) {
             "       sosa:observedProperty <http://tritandb.com/ns/iot/${colNamesShelburne[col]}>;\n" +
             "       sosa:resultTime ?time.\n" +
             "   ?result qudt:numericValue ?v.\n" +
+            "   ?time time:inXSDDateTimeStamp ?timeVal.\n"+
+            "   FILTER(?timeVal>\"$s\" && ?timeVal<\"$e\")\n"+
+            "}"
+//    println(queryString)
+    q.query(queryString)
+}
+
+fun shelburneRowQuery(start:Long,end:Long) {
+    val QUDT = "http://qudt.org/2.0/schema/qudt/"
+    val SOSA = "http://www.w3.org/ns/sosa/"
+    val TIME = "http://www.w3.org/2006/time#"
+
+    val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+    val s = sdf.format(Date(start))
+    val e = sdf.format(Date(end))
+
+    val sel = mutableListOf<String>()
+    val join = mutableListOf<String>()
+    for(colName in colNamesShelburne) {
+        join += "{  ?obs$colName sosa:hasResult ?result$colName;\n" +
+                "       sosa:observedProperty <http://tritandb.com/ns/iot/$colName>;\n" +
+                "       sosa:resultTime ?time.\n" +
+                "   ?result$colName qudt:numericValue ?v$colName.}\n"
+        sel += "?v$colName"
+    }
+    val joins = join.joinToString(" UNION ")
+    val sels = sel.joinToString(" ")
+
+    val q = QueryExecutor()
+    val queryString = "PREFIX qudt: <$QUDT>\n" +
+            "PREFIX sosa: <$SOSA>\n" +
+            "PREFIX time: <$TIME>\n" +
+            "SELECT ?timeVal $sels WHERE\n"+
+            "{ $joins" +
             "   ?time time:inXSDDateTimeStamp ?timeVal.\n"+
             "   FILTER(?timeVal>\"$s\" && ?timeVal<\"$e\")\n"+
             "}"

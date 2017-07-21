@@ -1,13 +1,7 @@
 package com.tritandb.engine.query.op
 
-import com.tritandb.engine.tsc.DecompressorFlat
 import com.tritandb.engine.tsc.DecompressorFlatChunk
-import com.tritandb.engine.tsc.DecompressorTree
 import com.tritandb.engine.tsc.data.Row
-import com.tritandb.engine.util.BitByteBufferReader
-import com.tritandb.engine.util.BitInput
-import java.io.File
-import java.io.InputStream
 import kotlin.coroutines.experimental.buildIterator
 
 /**
@@ -19,10 +13,19 @@ class RangeFlatChunk(val filePath:String):TrOp {
     var end: Long = 0
     val cols = mutableListOf<String>()
     var iterator:Iterator<Row> = buildIterator {}
+    val aggregates = mutableMapOf<String,MutableList<Pair<String,String>>>()
 
     override fun execute() {
 //        println("$start:$end:$cols")
         iterator = run(start,end)
+    }
+
+    fun aggr(col: String, varName: String, aggrName: String) {
+        var aggregate = aggregates[col]
+        if(aggregate==null)
+            aggregate = mutableListOf<Pair<String,String>>()
+        aggregate.add(Pair(aggrName,varName))
+        aggregates.put(col,aggregate)
     }
 
     fun run(start: Long, end: Long): Iterator<Row> = buildIterator {

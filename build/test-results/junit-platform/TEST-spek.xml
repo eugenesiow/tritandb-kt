@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="Spek" tests="7" skipped="0" failures="0" errors="0" time="0.024" hostname="ECS-Mac-August.local" timestamp="2017-07-20T15:21:23">
+<testsuite name="Spek" tests="7" skipped="0" failures="0" errors="0" time="0.021" hostname="ECS-Mac-August.local" timestamp="2017-07-21T10:50:43">
 <properties>
 <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
 <property name="file.encoding" value="UTF-8"/>
@@ -59,7 +59,7 @@
 <property name="user.timezone" value="Europe/London"/>
 <property name="user.variant" value=""/>
 </properties>
-<testcase name="it should decode a similar sequence of rows of FP values" classname="on encoding a stream of rows of FP values" time="0.008">
+<testcase name="it should decode a similar sequence of rows of FP values" classname="on encoding a stream of rows of FP values" time="0.006">
 <system-out><![CDATA[
 unique-id: [engine:spek]/[spec:com.tritandb.engine.CompressorFpcTest]/[group:describe Test to compress a series of FP values]/[group:on encoding a stream of rows of FP values]/[test:it should decode a similar sequence of rows of FP values]
 display-name: it should decode a similar sequence of rows of FP values
@@ -95,7 +95,7 @@ unique-id: [engine:spek]/[spec:com.tritandb.engine.CompressorTsTest]/[group:desc
 display-name: it should decode the same sequence of timestamps
 ]]></system-out>
 </testcase>
-<testcase name="it should return the same sequence of timestamps" classname="on encoding a sequence of timestamps with varying deltas" time="0.001">
+<testcase name="it should return the same sequence of timestamps" classname="on encoding a sequence of timestamps with varying deltas" time="0">
 <system-out><![CDATA[
 unique-id: [engine:spek]/[spec:com.tritandb.engine.CompressorTsTest]/[group:describe Test Delta_RLE_RICE timestamp encoding with an actual IoT stream of timestamps from Shelburne]/[group:on encoding a sequence of timestamps with varying deltas]/[test:it should return the same sequence of timestamps]
 display-name: it should return the same sequence of timestamps

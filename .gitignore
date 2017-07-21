@@ -4,10 +4,12 @@
 *.lock
 *.idx
 
+*.txt
+
 .idea/workspace.xml
 
 *.csv
 
-data/query_output.txt
+data/*.txt
 
-test_overhead.txt
+test_run.sh
