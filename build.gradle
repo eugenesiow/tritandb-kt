@@ -33,13 +33,13 @@ jar {
     exclude('META-INF/*.RSA')
 }
 
-task execute(type:JavaExec) {
-    if(project.hasProperty('myargs')){
-        args(myargs.split(','))
-    }
-    main = mainClass
-    classpath = sourceSets.main.runtimeClasspath
-}
+//task execute(type:JavaExec) {
+//    if(project.hasProperty('myargs')){
+//        args(myargs.split(','))
+//    }
+//    main = mainClass
+//    classpath = sourceSets.main.runtimeClasspath
+//}
 
 dependencies {
 
@@ -54,6 +54,7 @@ dependencies {
     compile 'org.apache.jena:jena-core:3.3.0'
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.16'
     compile group: 'com.indeed', name: 'lsmtree-core', version: '1.0.7'
+    compile 'com.github.jrachiele:timeseries:0.3'
 //    compile group: 'org.scorexfoundation', name: 'iodb_2.12', version: '0.3.1'
 
     testCompile 'com.nhaarman:mockito-kotlin:1.4.0'
