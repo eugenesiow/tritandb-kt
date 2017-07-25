@@ -11,10 +11,10 @@ import java.util.*
 val colNamesShelburne = arrayOf("AirTemperature", "SolarRadiation", "SoilMoisture", "LeafWetness", "InternalTemperature", "RelativeHumidity")
 
 fun main(args : Array<String>) {
-    shelburneCol(args[0].toInt())
+    shelburneCol(args[0].toInt(),args[1].toInt())
 }
 
-fun shelburneCol(num:Int) {
+fun shelburneCol(num:Int,queryType:Int) {
 
     var fixedSeed = 30L
     val rand = Random(fixedSeed)
@@ -39,9 +39,11 @@ fun shelburneCol(num:Int) {
 //        shelburneColQuery(start,end,col)
 
     }
-//    shelburneColQuery(start,end,col)
-//    shelburneAggrQuery(start,end,col)
-    shelburneRowQuery(start,end)
+    when(queryType) {
+        1->shelburneColQuery(start,end,col)
+        2->shelburneAggrQuery(start,end,col)
+        3->shelburneRowQuery(start,end)
+    }
 }
 
 fun shelburneColQuery(start:Long,end:Long,col:Int) {
