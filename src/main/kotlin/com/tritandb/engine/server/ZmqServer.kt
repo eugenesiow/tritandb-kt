@@ -55,41 +55,40 @@ class ZmqServer(val config:Configuration) {
                 if(tEvent.hasRows()) {
                     val firstRow = tEvent.rows.getRow(0)
                     var col = -1
+                    var aggregation = -1
                     if(tEvent.rows.rowCount>1) {
                         col = tEvent.rows.getRow(1).getValue(0).toInt()
+                    }
+                    if(tEvent.rows.rowCount>2) {
+                        aggregation = tEvent.rows.getRow(2).getValue(0).toInt()
                     }
                     val context = ZMQ.context(1)
                     val sender = context.socket(ZMQ.PUSH)
                     sender.connect("tcp://localhost:5800")
 //                    var i = 0
 //                    var row = ""
-                    for((timestamp, values) in RangeFlatChunk("${config[server.dataDir]}/${tEvent.name}.tsc").run(firstRow.timestamp,firstRow.getValue(0))) {
-                        var row = ""
-                        row += timestamp.toString()
-                        if(col==-1) {
-                            for (value in values)
-                                row += ",$value"
-                        } else {
-                            row += ",${values[col]}"
-                        }
-//                        row +="\n"
-//                        if(i%10000==0) {
-                            sender.send(row)
-//                            row = ""
-//                        }
-//                        i++
-
+                    val range = RangeFlatChunk("${config[server.dataDir]}/${tEvent.name}.tsc")
+                    var rangeRun = range.run(firstRow.timestamp,firstRow.getValue(0))
+                    if(aggregation>0) {
+                        rangeRun = range.avgRun(firstRow.timestamp,firstRow.getValue(0),col)
                     }
-//                    sender.send(row)
+                    for((timestamp, values) in rangeRun) {
+                        var row = ""
+                        if(aggregation>0) {
+                            row += "${values[0]}"
+                        } else {
+                            row += timestamp.toString()
+                            if (col == -1) {
+                                for (value in values)
+                                    row += ",$value"
+                            } else {
+                                row += ",${values[col]}"
+                            }
+                        }
+                        sender.send(row)
+                    }
                     sender.send("end")
                     sender.close()
-//                    val bw = File("${config[server.dataDir]}/query_output.txt").bufferedWriter()
-//                    println(measureTimeMillis { for(r in RangeFlatChunk("${config[server.dataDir]}/${tEvent.name}.tsc").run(firstRow.timestamp,firstRow.getValue(0))) {
-//                        bw.append(r.timestamp.toString())
-//                        for(value in r.values)
-//                            bw.append(",$value")
-//                        bw.newLine()
-//                    } })
                 }
             }
             INSERT_META -> {

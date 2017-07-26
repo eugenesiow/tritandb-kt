@@ -28,6 +28,14 @@ class RangeFlatChunk(val filePath:String):TrOp {
         aggregates.put(col,aggregate)
     }
 
+    fun avgRun(start: Long, end: Long, col:Int): Iterator<Row> = buildIterator {
+        val d: DecompressorFlatChunk = DecompressorFlatChunk(filePath)
+        for (r in d.readAggr(start,end,col)) {
+            yield(r)
+        }
+        d.close()
+    }
+
     fun run(start: Long, end: Long): Iterator<Row> = buildIterator {
         val d: DecompressorFlatChunk = DecompressorFlatChunk(filePath)
         for (r in d.readRange(start,end)) {
@@ -38,5 +46,6 @@ class RangeFlatChunk(val filePath:String):TrOp {
                 }
             }
         }
+        d.close()
     }
 }

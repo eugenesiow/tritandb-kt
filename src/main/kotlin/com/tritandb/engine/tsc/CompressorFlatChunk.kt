@@ -23,6 +23,7 @@ class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compr
     var out = BufferWriter(MAX_BYTES)
     var rowBits = 0
     private val FIRST_DELTA_BITS = 64
+    private var aggrSum:DoubleArray = DoubleArray(columns)
     private var storedLeadingZerosRow:IntArray = IntArray(columns)
     private var storedTrailingZerosRow:IntArray = IntArray(columns)
     private val storedVals:LongArray = LongArray(columns)
@@ -42,11 +43,13 @@ class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compr
         {
             storedLeadingZerosRow[i] = Integer.MAX_VALUE
             storedTrailingZerosRow[i] = 0
+            aggrSum[i] = 0.0
         }
         addHeader()
 //        for(i in 0..32) {
 //            counterLeading.put(i,0)
 //        }
+        idx.write(intToBytes(columns))
     }
     private fun addHeader() {
         rowWriter(columns.toLong(),32)
@@ -76,8 +79,7 @@ class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compr
             val ba = out.toByteArray()
 //            println(ba.size)
             o.write(ba) //write byte buffer chunk
-            idx.write(longToBytes(blockTimestamp))
-            idx.write(intToBytes(ba.size))
+            writeIndex(ba.size)
             currentBits = 0
             rowBits = 0
             for (i in 0..columns - 1)
@@ -94,6 +96,18 @@ class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compr
         }
         currentBits += rowBits
         rowBits = 0
+    }
+
+    private fun writeIndex(size: Int) {
+        idx.write(longToBytes(blockTimestamp))
+        idx.write(intToBytes(size))
+        idx.write(intToBytes(count)) //TODO: check last row if in or out
+        count = 0
+        for(sum in aggrSum)
+            idx.write(longToBytes(java.lang.Double.doubleToLongBits(sum)))
+        for (i in 0..columns - 1) {
+            aggrSum[i] = 0.0
+        }
     }
 
     private fun writeRowToOutput() {
@@ -147,6 +161,7 @@ class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compr
         rowWriter(storedDelta, FIRST_DELTA_BITS)
         for (i in 0..columns - 1)
         {
+            aggrSum[i] += java.lang.Double.longBitsToDouble(values[i])
             storedVals[i] = values[i]
             rowWriter(storedVals[i], 64)
         }
@@ -181,8 +196,7 @@ class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compr
     }
 
     private fun closeIndex(byteSize:Int) {
-        idx.write(longToBytes(blockTimestamp))
-        idx.write(intToBytes(byteSize))
+        writeIndex(byteSize)
         idx.write(longToBytes(0x7FFFFFFFFFFFFFFF))
         idx.write(intToBytes(0x7FFFFFFF))
     }
@@ -233,6 +247,9 @@ class CompressorFlatChunk(fileName:String, val columns:Int, chunkSize:Int):Compr
 
     private fun compressValues(values:List<Long>) {
         (0..columns - 1).forEach { i ->
+            aggrSum[i] = ((aggrSum[i] * (count-1)) + java.lang.Double.longBitsToDouble(values[i]) ) / (count * 1.0)
+//            println(aggrSum[i])
+//            aggrSum[i] += java.lang.Double.longBitsToDouble(values[i])
             val xor = storedVals[i] xor values[i]
             if (xor == 0L) {
                 // Write 0
