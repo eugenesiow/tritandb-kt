@@ -1,19 +1,5 @@
 package com.tritandb.engine.tsc
 
-import com.tritandb.engine.experimental.valueC.CompressorFpDeltaDelta
-import com.tritandb.engine.experimental.valueC.CompressorFpc
-import com.tritandb.engine.experimental.valueC.DecompressorFpDeltaDelta
-import com.tritandb.engine.experimental.valueC.DecompressorFpc
-import com.tritandb.engine.util.BitByteBufferReader
-import com.tritandb.engine.util.BitByteBufferWriter
-import com.tritandb.engine.util.BitInput
-import com.tritandb.engine.util.BitOutput
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
-import org.mapdb.DBMaker
-import org.mapdb.Serializer
 import java.io.*
 import java.lang.Double
 import java.text.SimpleDateFormat
@@ -59,16 +45,11 @@ fun main(args : Array<String>) {
         File(outputFilePath).delete()
 //        File(outputFilePath).deleteRecursively()
 //        File(outputFilePath).mkdir()
-//        val c: CompressorLSMTree = CompressorLSMTree(outputFilePath, 20, "map", 4096 * x)
-//        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 6, 4096 * x)
-        val c: CompressorTreeSeq = CompressorTreeSeq(outputFilePath, 6, "map", 4096 * x)
+        val c: CompressorFlatChunk = CompressorFlatChunk(outputFilePath, 6, 4096 * x)
         writeFileShelburne(filePath, c)
 //        writeFileTaxi(filePath, c)
         for(i in 1..10) {
-//            val d: Decompressor = DecompressorFlatChunk(outputFilePath)
-//            val d: Decompressor = DecompressorLSMTree(outputFilePath)
-            val d: Decompressor = DecompressorTree(outputFilePath)
-//            val d: Decompressor = DecompressorHash(outputFilePath)
+            val d: Decompressor = DecompressorFlatChunk(outputFilePath)
             println("${measureTimeMillis { readFileShelburne(outputFilePath, d) }}")
 //            println("${measureTimeMillis { readFileTaxi(outputFilePath, d) }}")
         }
@@ -333,104 +314,6 @@ fun writeFileShelburne(filePath:String,c:Compressor) {
     c.close()
 }
 
-fun readFileSrBench(folderPath:String,cType:String) {
-    File(folderPath).walkTopDown()
-            .filter { !it.name.startsWith(".") && it.isFile && it.name.endsWith(".tsc") }.forEach {
-        val i: InputStream = File(it.absolutePath).inputStream()
-        val bi: BitInput = BitByteBufferReader(i)
-//        println(it.absolutePath)
-        var d:Decompressor = DecompressorFlat(bi)
-        when(cType) {
-            "gor" ->  d = DecompressorFlat(bi)
-            "fpc" -> d = DecompressorFpc(bi)
-            "fpdelta" -> d = DecompressorFpDeltaDelta(bi)
-        }
-        File("${it.absolutePath}.csv").printWriter().use { out ->
-            for (r in d.readRows()) {
-//                out.print("${r.timestamp}")
-                for (pair in r.getRow()) {
-//                    out.print(", ${pair.getDoubleValue()}")
-                }
-//                out.println()
-            }
-        }
-        i.close()
-    }
-}
-
-fun writeFileChunkSrBenchParallel(filePath:String, outputFilePath:String,cType:String) {
-    val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
-    val jobs = arrayListOf<Job>()
-    val outSingle = outputFilePath + "data.tsc"
-    val db = DBMaker
-            .fileDB(outSingle)
-            .fileMmapEnable()
-            .make()
-    File(filePath).walkTopDown()
-            .filter { !it.name.startsWith(".") && it.isFile && it.name.endsWith(".csv") }.forEach {
-        val br = BufferedReader(FileReader(it.absolutePath))
-        val header = br.readLine().split(",") //header
-        val stationName = it.name.replace(".csv","")
-
-        jobs += launch(CommonPool) {
-            val sdf = SimpleDateFormat(DATE_FORMAT)
-//            val map = db.hashMap(stationName)
-//                .keySerializer(Serializer.LONG)
-//                .valueSerializer(Serializer.BYTE_ARRAY)
-//                .createOrOpen()
-            val map = db.treeMap(stationName)
-                .keySerializer(Serializer.LONG)
-//                .valuesOutsideNodesEnable()
-                .valueSerializer(Serializer.BYTE_ARRAY)
-                .createOrOpen()
-            val previousVals:MutableList<Long> = mutableListOf()
-            for(i in 0..header.size-1)
-                previousVals.add(0)
-            var c: Compressor
-            when(cType) {
-                else -> c = CompressorTreeSeqParallel(map, header.size-1)
-            }
-//        var addThis = false
-            for(line in br.lines()) {
-//            addThis = true
-                val parts = line.split(",")
-                if(parts.size>header.size-1) {
-                    val list = mutableListOf<Long>()
-                    val timestamp = (sdf.parse(parts[0]).time/1000)
-                    for(i in 1..header.size-1) {
-                        if (parts[i] == "")
-                            list.add(previousVals[i])
-                        else {
-                            var value:Long = 0
-                            if(parts[i]=="true")
-                                value = 1L
-                            else if(parts[i]=="false")
-                                value = 0L
-                            else
-                                value = java.lang.Double.doubleToLongBits(parts[i].toDouble())
-                            list.add(value)
-                            previousVals[i] = value
-                        }
-
-                    }
-                    c.addRow(timestamp,list)
-                } else {
-                    println(line)
-                }
-            }
-            br.close()
-            c.close()
-        }
-    }
-    runBlocking {
-        jobs.forEach {
-            it.join()
-            db.commit()
-        }
-        db.close()
-    }
-}
-
 fun writeFileChunkSrBench(filePath:String, outputFilePath:String,cType:String, size:Int) {
     val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
     val sdf = SimpleDateFormat(DATE_FORMAT)
@@ -446,66 +329,12 @@ fun writeFileChunkSrBench(filePath:String, outputFilePath:String,cType:String, s
             previousVals.add(0)
         var c: Compressor
         when(cType) {
-//            "flat" ->  c = CompressorFlatChunk(out, header.size-1)
-            "tree" -> c = CompressorTree(outSingle, header.size-1, stationName, size)
-            "treeseq" -> c = CompressorTreeSeq(outSingle, header.size-1, stationName, size)
+            "flat" ->  c = CompressorFlatChunk(out, header.size-1, size)
             else -> c = CompressorFlatChunk(out, header.size-1,size)
         }
 //        var addThis = false
         for(line in br.lines()) {
 //            addThis = true
-            val parts = line.split(",")
-            if(parts.size>header.size-1) {
-                val list = mutableListOf<Long>()
-                val timestamp = (sdf.parse(parts[0]).time/1000)
-                for(i in 1..header.size-1) {
-                    if (parts[i] == "")
-                        list.add(previousVals[i])
-                    else {
-                        var value:Long = 0
-                        if(parts[i]=="true")
-                            value = 1L
-                        else if(parts[i]=="false")
-                            value = 0L
-                        else
-                            value = java.lang.Double.doubleToLongBits(parts[i].toDouble())
-                        list.add(value)
-                        previousVals[i] = value
-                    }
-
-                }
-                c.addRow(timestamp,list)
-            } else {
-                println(line)
-            }
-        }
-        br.close()
-        c.close()
-    }
-}
-
-fun writeFileSrBench(filePath:String, outputFilePath:String,cType:String) {
-    val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
-    val sdf = SimpleDateFormat(DATE_FORMAT)
-    File(filePath).walkTopDown()
-            .filter { !it.name.startsWith(".") && it.isFile && it.name.endsWith(".csv") }.forEach {
-        val br = BufferedReader(FileReader(it.absolutePath))
-        val header = br.readLine().split(",") //header
-        val stationName = it.name.replace(".csv","")
-        val o: OutputStream = File(outputFilePath + stationName + ".tsc").outputStream()
-        val out: BitOutput = BitByteBufferWriter(o)
-        val previousVals:MutableList<Long> = mutableListOf()
-        for(i in 0..header.size-1)
-            previousVals.add(0)
-        var c: Compressor = CompressorFlat(0, out, header.size-1)
-        when(cType) {
-            "gor" ->  c = CompressorFlat(0, out, header.size-1)
-            "fpc" -> c = CompressorFpc(0, out, header.size-1)
-            "fpdelta" -> c = CompressorFpDeltaDelta(0, out, header.size-1)
-        }
-        var addThis = false
-        for(line in br.lines()) {
-            addThis = true
             val parts = line.split(",")
             if(parts.size>header.size-1) {
                 val list = mutableListOf<Long>()

@@ -49,13 +49,10 @@ dependencies {
     compile 'com.google.protobuf:protobuf-java:3.3.0'
     compile 'com.natpryce:konfig:1.6.1.0'
     compile 'org.zeromq:jeromq:0.4.0'
-    compile 'org.mapdb:mapdb:3.0.4'
     compile 'org.apache.jena:jena-arq:3.3.0'
     compile 'org.apache.jena:jena-core:3.3.0'
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.16'
-    compile group: 'com.indeed', name: 'lsmtree-core', version: '1.0.7'
     compile 'com.github.jrachiele:timeseries:0.3'
-//    compile group: 'org.scorexfoundation', name: 'iodb_2.12', version: '0.3.1'
 
     testCompile 'com.nhaarman:mockito-kotlin:1.4.0'
     testCompile "org.jetbrains.kotlin:kotlin-test"
