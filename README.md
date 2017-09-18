@@ -1,4 +1,4 @@
-README
+TritanDB
 ======
 
 **TritanDb** is a time-series database for Internet of Things Analytics with a rich graph data model and fast lightweight core.
@@ -36,3 +36,6 @@ You can build TritanDb using Gradle
 Questions?
 ----------
 
+Projects
+-------
+* [Experimental Repo](https://github.com/eugenesiow/tritandb-experimental)
