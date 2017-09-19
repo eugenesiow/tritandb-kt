@@ -37,6 +37,7 @@ message TritanEvent {
     }
     EventType type = 1;
     string name = 2;
+    string address = 3;
     Rows rows = 4;
     Cols cols = 5;
 }
