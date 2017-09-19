@@ -53,6 +53,8 @@ dependencies {
     compile 'org.apache.jena:jena-core:3.3.0'
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.16'
     compile 'com.github.jrachiele:timeseries:0.3'
+    compile 'io.github.microutils:kotlin-logging:1.4'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
 
     testCompile 'com.nhaarman:mockito-kotlin:1.4.0'
     testCompile "org.jetbrains.kotlin:kotlin-test"

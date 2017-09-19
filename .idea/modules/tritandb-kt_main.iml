@@ -45,6 +45,8 @@
     <orderEntry type="library" name="Gradle: org.apache.jena:jena-core:3.3.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlinx:kotlinx-coroutines-core:0.16" level="project" />
     <orderEntry type="library" name="Gradle: com.github.jrachiele:timeseries:0.3" level="project" />
+    <orderEntry type="library" name="Gradle: io.github.microutils:kotlin-logging:1.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-simple:1.6.1" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.jena:jena-shaded-guava:3.3.0" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.httpcomponents:httpclient:4.5.2" level="project" />

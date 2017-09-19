@@ -11,6 +11,7 @@ import com.tritandb.engine.tsc.CompressorFlatChunk
 import com.tritandb.engine.tsc.data.DisruptorEvent
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
+import mu.KLogging
 import org.zeromq.ZMQ
 
 
@@ -20,6 +21,7 @@ import org.zeromq.ZMQ
  */
 class ZmqServer(val config:Configuration) {
 
+    companion object: KLogging()
 //    data class FileCompressor(val compressor: Compressor)
 
     private object server : PropertyGroup() {
@@ -126,6 +128,8 @@ class ZmqServer(val config:Configuration) {
         val receiver = context.socket(ZMQ.PULL)
         //tcp://localhost:5700
         receiver.bind("${config[server.host]}:${config[server.port]}")
+
+        logger.info("server started...")
         while (!Thread.currentThread().isInterrupted) {
             val msg = receiver.recv()
             ringBuffer.publishEvent { event, _ -> event.value = TritanEvent.parseFrom(msg)}
