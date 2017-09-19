@@ -13,6 +13,7 @@ import com.tritandb.engine.tsc.data.EventProtos.TritanEvent
 import com.tritandb.engine.tsc.data.EventProtos.TritanEvent.EventType.*
 import mu.KLogging
 import org.zeromq.ZMQ
+import java.io.File
 
 
 /**
@@ -86,7 +87,10 @@ class ZmqServer(val config:Configuration) {
                 }
             }
             INSERT_META -> {
-                println(tEvent.name)
+//                println(tEvent.name)
+                when(tEvent.name) {
+                    "list" -> SendStr(ListTimeSeries())
+                }
             }
             CLOSE -> {
                 val c = C.getValue(tEvent.name)
@@ -98,6 +102,25 @@ class ZmqServer(val config:Configuration) {
             }
         }
     })
+
+    private fun SendStr(str: String) {
+        val context = ZMQ.context(1)
+        val sender = context.socket(ZMQ.PUSH)
+        sender.connect("tcp://localhost:5800")
+        sender.send(str)
+        sender.close()
+    }
+
+    private fun ListTimeSeries():String {
+        //list the timeseries
+        var listing = ""
+        File(config[server.dataDir]).walk().forEach {
+            if(it.name.endsWith(".tsc")) {
+                listing += it.name.replace(".tsc","") + "\n"
+            }
+        }
+        return listing
+    }
 
     private fun GetCompressor(name: String, timestamp: Long, valueCount: Int): Compressor {
         if(C.containsKey(name))

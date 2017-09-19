@@ -18,7 +18,6 @@ Features
 * Optimised for Fog Computing across lightweight Things as well as cloud servers.
 * Written in Kotlin and runs on the JVM.
 
-
 Documentation
 -------------
 * [Docs](https://eugenesiow.gitbooks.io/tritandb)
@@ -31,11 +30,29 @@ You can build TritanDb using Gradle
     git clone https://github.com/eugenesiow/tritandb-kt.git
     cd tritandb-kt
     ./gradlew build
+    
+Usage
+-------
 
+Start the TritanDB server:
 
-Questions?
-----------
+    ./gradlew execute
+
+Get the TritanDB Command Line Client ([tritandb-cli](https://github.com/eugenesiow/tritandb-cli)) and issue commands:
+
+```
+usage: tritandb-cli [-h] [--ingest]
+
+optional arguments:
+  -h, --help  show this help message and exit
+
+  --ingest,   mode of operation
+  --query,
+  --list
+```
+
 
 Projects
 -------
+* [Command Line Client](https://github.com/eugenesiow/tritandb-cli)
 * [Experimental Repo](https://github.com/eugenesiow/tritandb-experimental)
