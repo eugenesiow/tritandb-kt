@@ -59,7 +59,7 @@ class ZmqServer(val config:Configuration) {
                     }
                     val context = ZMQ.context(1)
                     val sender = context.socket(ZMQ.PUSH)
-                    sender.connect("tcp://localhost:5800")
+                    sender.connect("tcp://${tEvent.address}:5800")
 //                    var i = 0
 //                    var row = ""
                     val range = RangeFlatChunk("${config[server.dataDir]}/${tEvent.name}.tsc")
@@ -87,9 +87,9 @@ class ZmqServer(val config:Configuration) {
                 }
             }
             INSERT_META -> {
-//                println(tEvent.name)
                 when(tEvent.name) {
-                    "list" -> SendStr(ListTimeSeries())
+                    "list" -> SendStr(ListTimeSeries(),tEvent.address)
+                    else -> println(tEvent.name)
                 }
             }
             CLOSE -> {
@@ -103,10 +103,10 @@ class ZmqServer(val config:Configuration) {
         }
     })
 
-    private fun SendStr(str: String) {
+    private fun SendStr(str: String, address:String) {
         val context = ZMQ.context(1)
         val sender = context.socket(ZMQ.PUSH)
-        sender.connect("tcp://localhost:5800")
+        sender.connect("tcp://$address:5800")
         sender.send(str)
         sender.close()
     }
