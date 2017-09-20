@@ -1,0 +1,5 @@
+{
+  "timestamp":"timestamp",
+  "columns":["AirTemperature", "SolarRadiation", "SoilMoisture", "LeafWetness", "InternalTemperature", "RelativeHumidity"],
+  "model":"shelburne.ttl"
+}

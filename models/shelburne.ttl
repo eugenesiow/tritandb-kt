@@ -9,7 +9,7 @@ _:obsAirTemperature a sosa:Observation;
     sosa:observedProperty :AirTemperature;
     sosa:hasResult [
         a qudt:QuantityValue;
-        qudt:numericValue "wsda_sensor.air_temperature"^^s2s:literalMap;
+        qudt:numericValue "shelburne.AirTemperature"^^s2s:literalMap;
         qudt:unit "celcius"];
     sosa:resultTime _:time;
     sosa:madeBySensor _:sensor.
@@ -18,7 +18,7 @@ _:obsSolarRadiation a sosa:Observation;
     sosa:observedProperty :SolarRadiation;
     sosa:hasResult [
         a qudt:QuantityValue;
-        qudt:numericValue "wsda_sensor.solar_radiation"^^s2s:literalMap;
+        qudt:numericValue "shelburne.SolarRadiation"^^s2s:literalMap;
         qudt:unit "generic"];
     sosa:resultTime _:time;
     sosa:madeBySensor _:sensor.
@@ -27,7 +27,7 @@ _:obsSoilMoisture a sosa:Observation;
     sosa:observedProperty :SoilMoisture;
     sosa:hasResult [
         a qudt:QuantityValue;
-        qudt:numericValue "wsda_sensor.soil_moisture"^^s2s:literalMap;
+        qudt:numericValue "shelburne.SoilMoisture"^^s2s:literalMap;
         qudt:unit "generic"];
     sosa:resultTime _:time;
     sosa:madeBySensor _:sensor.
@@ -36,7 +36,7 @@ _:obsLeafWetness a sosa:Observation;
     sosa:observedProperty :LeafWetness;
     sosa:hasResult [
         a qudt:QuantityValue;
-        qudt:numericValue "wsda_sensor.leaf_wetness"^^s2s:literalMap;
+        qudt:numericValue "shelburne.LeafWetness"^^s2s:literalMap;
         qudt:unit "generic"];
     sosa:resultTime _:time;
     sosa:madeBySensor _:sensor.
@@ -45,7 +45,7 @@ _:obsInternalTemperature a sosa:Observation;
     sosa:observedProperty :InternalTemperature;
     sosa:hasResult [
         a qudt:QuantityValue;
-        qudt:numericValue "wsda_sensor.internal_temperature"^^s2s:literalMap;
+        qudt:numericValue "shelburne.InternalTemperature"^^s2s:literalMap;
         qudt:unit "generic"];
     sosa:resultTime _:time;
     sosa:madeBySensor _:sensor.
@@ -54,13 +54,13 @@ _:obsRelativeHumidity a sosa:Observation;
     sosa:observedProperty :RelativeHumidity;
     sosa:hasResult [
         a qudt:QuantityValue;
-        qudt:numericValue "wsda_sensor.relative_humidity"^^s2s:literalMap;
+        qudt:numericValue "shelburne.RelativeHumidity"^^s2s:literalMap;
         qudt:unit "generic"];
     sosa:resultTime _:time;
     sosa:madeBySensor _:sensor.
 
 _:time a time:Instant;
-    time:inXSDDateTimeStamp "wsda_sensor.timestamp"^^s2s:literalMap.
+    time:inXSDDateTimeStamp "shelburne.timestamp"^^s2s:literalMap.
 
 _:sensor a sosa:Sensor;
     :name "wsda_sensor";

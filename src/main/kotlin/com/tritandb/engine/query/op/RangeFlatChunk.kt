@@ -12,7 +12,7 @@ class RangeFlatChunk(val filePath:String):TrOp {
     var start: Long = 0
     var end: Long = 0
     val cols = mutableListOf<String>()
-    var iterator:Iterator<Row> = buildIterator {}
+    override var iterator:Iterator<Row> = buildIterator {}
     val aggregates = mutableMapOf<String,MutableList<Pair<String,String>>>()
 
     override fun execute() {

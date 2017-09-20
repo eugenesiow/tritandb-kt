@@ -1,5 +1,9 @@
 package com.tritandb.engine.query.engine
 
+import com.google.gson.Gson
+import com.natpryce.konfig.*
+import com.tritandb.engine.query.op.RangeFlatChunk
+import com.tritandb.engine.tsc.data.Row
 import org.apache.jena.query.QueryFactory
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
@@ -8,67 +12,59 @@ import org.apache.jena.riot.RDFLanguages
 import org.apache.jena.sparql.algebra.Algebra
 import org.apache.jena.sparql.algebra.OpWalker
 import java.io.File
+import kotlin.coroutines.experimental.buildIterator
 import kotlin.system.measureTimeMillis
 
 
 /**
  * Created by eugenesiow on 18/06/2017.
  */
-class QueryExecutor {
+class QueryExecutor(private val config: Configuration) {
+    private val model = loadData()
+    private object server : PropertyGroup() {
+        val dataDir by stringType
+        val modelDir by stringType
+    }
+    private val meta = loadMetaData()
 
-    fun query(queryString:String) {
+    fun query(queryString:String):Iterator<Row> {
         val query = QueryFactory.create(queryString)
         val op = Algebra.compile(query)
 //        println(op)
 
         val v = SparqlOpVisitor()
-        v.setModel(loadData())
+        v.setModel(model)
         println("${measureTimeMillis{OpWalker.walk(op, v)}}")
-//        val out = File("data/dump.out.txt").outputStream().bufferedWriter()
-//        v.getIterator().forEach { it ->
-//            out.append("${it.toString()}\n")
-//        }
-//        out.close()
 
-        // The stage generator to be used for a query execution
-        // is read from the context.  There is a global context, which
-        // is cloned when a query execution object (query engine) is
-        // created.
+        v.getPlan().forEach { (a,b)->
+            b as RangeFlatChunk
+            println(b.cols)
+            b.execute()
+            return buildIterator { b.iterator.forEach { it->
+                yield(it)
+            }}
+        }
 
-        // Normally, StageGenerators are chained - a new one inspects the
-        // execution request and sees if it handles it.  If it does not,
-        // it sends the request to the stage generator that was already registered.
+        return buildIterator {}
 
-        // The normal stage generator is registerd in the global context.
-        // This can be replaced, so that every query execution uses the
-        // alternative stage generator, or the cloned context can be
-        // alter so that just one query execution is affected.
+    }
 
-        // Change the stage generator for all queries ...
-//        if (false) {
-////            val origStageGen = ARQ.getContext().get<Any>(ARQ.stageGenerator) as StageGenerator
-//            val stageGenAlt = StageGeneratorAlt()
-//            ARQ.getContext().set(ARQ.stageGenerator, stageGenAlt)
-//        }
-//
-//        val query = QueryFactory.create(queryString.joinToString("\n"))
-//        val engine = QueryExecutionFactory.create(query, makeData())
-//
-//        // ... or set on a per-execution basis.
-//        if (true) {
-////            println(engine.getContext())
-////            println(ARQ.getContext())
-////            val stageGenAlt = StageGeneratorAlt(engine.getContext().get(ARQ.stageGenerator))
-//            val stageGenAlt = StageGeneratorAlt()
-//            engine.context.set(ARQ.stageGenerator, stageGenAlt)
-//        }
-//
-//        QueryExecUtils.executeQuery(query, engine)
+    private fun loadMetaData():Map<String,String> {
+        val metadata = mutableMapOf<String,String>()
+        val gson = Gson()
+        File(config[server.dataDir]).walk().forEach {
+            if(it.name.endsWith(".json")) {
+                val name = it.name.replace(".json","")
+//                gson.fromJson(it.readText(),Meta.class)
+                metadata.put(name,"")
+            }
+        }
+        return metadata
     }
 
     private fun loadData(): Model {
         val model = ModelFactory.createDefaultModel()
-        RDFDataMgr.read(model, File("models/shelburne.ttl").inputStream(), RDFLanguages.TURTLE)
+        RDFDataMgr.read(model, File("${config[server.modelDir]}/shelburne.ttl").inputStream(), RDFLanguages.TURTLE)
         return model
     }
 }

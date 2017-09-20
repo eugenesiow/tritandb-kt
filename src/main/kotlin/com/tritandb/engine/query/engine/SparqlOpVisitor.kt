@@ -245,12 +245,16 @@ class SparqlOpVisitor: OpVisitor {
 //        }
     }
 
-    fun getIterator():Iterator<Row> {
-        if(plan.isNotEmpty()) {
-            for((_,p) in plan)
-                return (p as RangeFlatChunk).iterator
-        }
-        return  buildIterator {  }
+//    fun getIterator():Iterator<Row> {
+//        if(plan.isNotEmpty()) {
+//            for((_,p) in plan)
+//                return (p as RangeFlatChunk).iterator
+//        }
+//        return  buildIterator {  }
+//    }
+
+    fun getPlan(): MutableMap<String, TrOp> {
+        return plan
     }
 
     private fun  projectCols(col:String) {

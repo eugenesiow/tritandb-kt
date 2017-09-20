@@ -5,7 +5,7 @@ import com.lmax.disruptor.EventHandler
 import com.lmax.disruptor.dsl.Disruptor
 import com.lmax.disruptor.util.DaemonThreadFactory
 import com.natpryce.konfig.*
-import com.tritandb.engine.query.op.RangeFlatChunk
+import com.tritandb.engine.query.engine.QueryExecutor
 import com.tritandb.engine.tsc.Compressor
 import com.tritandb.engine.tsc.CompressorFlatChunk
 import com.tritandb.engine.tsc.data.DisruptorEvent
@@ -20,7 +20,7 @@ import java.io.File
  * TritanDb
  * Created by eugene on 17/05/2017.
  */
-class ZmqServer(val config:Configuration) {
+class ZmqServer(private val config:Configuration) {
 
     companion object: KLogging()
 //    data class FileCompressor(val compressor: Compressor)
@@ -32,6 +32,8 @@ class ZmqServer(val config:Configuration) {
         val dataDir by stringType
     }
 
+    private val q = QueryExecutor(config)
+
 //    private val C:MutableMap<String, FileCompressor> = mutableMapOf()
     private val C:MutableMap<String, Compressor> = mutableMapOf()
 
@@ -40,6 +42,7 @@ class ZmqServer(val config:Configuration) {
             INSERT -> {
                 if(tEvent.hasRows()) {
                     val firstRow = tEvent.rows.getRow(0)
+                    CreateMetadata(tEvent.name,firstRow.valueCount)
                     val c = GetCompressor(tEvent.name,firstRow.timestamp,firstRow.valueCount)
                     for (row in tEvent.rows.rowList) {
                         c.addRow(row.timestamp, row.valueList)
@@ -47,44 +50,45 @@ class ZmqServer(val config:Configuration) {
                 }
             }
             QUERY -> {
-                if(tEvent.hasRows()) {
-                    val firstRow = tEvent.rows.getRow(0)
-                    var col = -1
-                    var aggregation = -1
-                    if(tEvent.rows.rowCount>1) {
-                        col = tEvent.rows.getRow(1).getValue(0).toInt()
-                    }
-                    if(tEvent.rows.rowCount>2) {
-                        aggregation = tEvent.rows.getRow(2).getValue(0).toInt()
-                    }
-                    val context = ZMQ.context(1)
-                    val sender = context.socket(ZMQ.PUSH)
-                    sender.connect("tcp://${tEvent.address}:5800")
-//                    var i = 0
-//                    var row = ""
-                    val range = RangeFlatChunk("${config[server.dataDir]}/${tEvent.name}.tsc")
-                    var rangeRun = range.run(firstRow.timestamp,firstRow.getValue(0))
-                    if(aggregation>0) {
-                        rangeRun = range.avgRun(firstRow.timestamp,firstRow.getValue(0),col)
-                    }
-                    for((timestamp, values) in rangeRun) {
-                        var row = ""
-                        if(aggregation>0) {
-                            row += "${values[0]}"
-                        } else {
-                            row += timestamp.toString()
-                            if (col == -1) {
-                                for (value in values)
-                                    row += ",$value"
-                            } else {
-                                row += ",${values[col]}"
-                            }
-                        }
-                        sender.send(row)
-                    }
-                    sender.send("end")
-                    sender.close()
-                }
+                ProcessQuery(q,tEvent.name!!,tEvent.address!!)
+//                if(tEvent.hasRows()) {
+//                    val firstRow = tEvent.rows.getRow(0)
+//                    var col = -1
+//                    var aggregation = -1
+//                    if(tEvent.rows.rowCount>1) {
+//                        col = tEvent.rows.getRow(1).getValue(0).toInt()
+//                    }
+//                    if(tEvent.rows.rowCount>2) {
+//                        aggregation = tEvent.rows.getRow(2).getValue(0).toInt()
+//                    }
+//                    val context = ZMQ.context(1)
+//                    val sender = context.socket(ZMQ.PUSH)
+//                    sender.connect("tcp://${tEvent.address}:5800")
+////                    var i = 0
+////                    var row = ""
+//                    val range = RangeFlatChunk("${config[server.dataDir]}/${tEvent.name}.tsc")
+//                    var rangeRun = range.run(firstRow.timestamp,firstRow.getValue(0))
+//                    if(aggregation>0) {
+//                        rangeRun = range.avgRun(firstRow.timestamp,firstRow.getValue(0),col)
+//                    }
+//                    for((timestamp, values) in rangeRun) {
+//                        var row = ""
+//                        if(aggregation>0) {
+//                            row += "${values[0]}"
+//                        } else {
+//                            row += timestamp.toString()
+//                            if (col == -1) {
+//                                for (value in values)
+//                                    row += ",$value"
+//                            } else {
+//                                row += ",${values[col]}"
+//                            }
+//                        }
+//                        sender.send(row)
+//                    }
+//                    sender.send("end")
+//                    sender.close()
+//                }
             }
             INSERT_META -> {
                 when(tEvent.name) {
@@ -102,6 +106,31 @@ class ZmqServer(val config:Configuration) {
             }
         }
     })
+
+    private fun CreateMetadata(name:String, width:Int) {
+        //check if tsc file exists
+        val tscFileExists = File("${config[server.dataDir]}/$name.tsc").exists()
+        if(!tscFileExists) {
+            val jsonMetadata = File("${config[server.dataDir]}/$name.json")
+            //TODO: create json metadata and mappings file automatically
+        }
+    }
+
+    private fun ProcessQuery(q:QueryExecutor, query: String, address: String) {
+        val context = ZMQ.context(1)
+        val sender = context.socket(ZMQ.PUSH)
+        sender.connect("tcp://$address:5800")
+        val rangeRun = q.query(query)
+        for((timestamp, values) in rangeRun) {
+            var row = ""
+            row += timestamp.toString()
+            for (value in values)
+                row += ",$value"
+            sender.send(row)
+        }
+        sender.send("end")
+        sender.close()
+    }
 
     private fun SendStr(str: String, address:String) {
         val context = ZMQ.context(1)

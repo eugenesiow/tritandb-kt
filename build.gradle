@@ -55,6 +55,7 @@ dependencies {
     compile 'com.github.jrachiele:timeseries:0.3'
     compile 'io.github.microutils:kotlin-logging:1.4'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
+    compile 'com.google.code.gson:gson:2.8.1'
 
     testCompile 'com.nhaarman:mockito-kotlin:1.4.0'
     testCompile "org.jetbrains.kotlin:kotlin-test"
