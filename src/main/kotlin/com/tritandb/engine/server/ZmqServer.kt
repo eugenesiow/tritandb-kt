@@ -125,7 +125,7 @@ class ZmqServer(private val config:Configuration) {
             var row = ""
             row += timestamp.toString()
             for (value in values)
-                row += ",$value"
+                row += ",${java.lang.Double.longBitsToDouble(value)}"
             sender.send(row)
         }
         sender.send("end")

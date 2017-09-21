@@ -38,10 +38,26 @@ class QueryExecutor(private val config: Configuration) {
 
         v.getPlan().forEach { (a,b)->
             b as RangeFlatChunk
-            println(b.cols)
+            val metaData = meta[a]
+            var showTimestamp = false
+            val colsProject = mutableListOf<Int>()
+            for(colName in b.cols) {
+                if(colName==metaData!!.timestamp)
+                    showTimestamp=true
+                val colIdx = metaData.columns.indexOf(colName)
+                if(colIdx>=0)
+                    colsProject.add(colIdx)
+            }
+//            println(metaData)
+//            println(b.cols)
             b.execute()
-            return buildIterator { b.iterator.forEach { it->
-                yield(it)
+            return buildIterator { b.iterator.forEach {
+                (timestamp, values) ->
+                val newValues = values
+                        .filterIndexed { index, _ -> colsProject.contains(index) }
+                        .toMutableList()
+                yield(Row(timestamp,newValues.toLongArray()))
+//                row -> yield(row)
             }}
         }
 
@@ -49,14 +65,14 @@ class QueryExecutor(private val config: Configuration) {
 
     }
 
-    private fun loadMetaData():Map<String,String> {
-        val metadata = mutableMapOf<String,String>()
+    private fun loadMetaData():Map<String,Meta> {
+        val metadata = mutableMapOf<String,Meta>()
         val gson = Gson()
         File(config[server.dataDir]).walk().forEach {
             if(it.name.endsWith(".json")) {
                 val name = it.name.replace(".json","")
-//                gson.fromJson(it.readText(),Meta.class)
-                metadata.put(name,"")
+                val obj = gson.fromJson(it.readText(),Meta::class.java)
+                metadata.put(name,obj)
             }
         }
         return metadata
