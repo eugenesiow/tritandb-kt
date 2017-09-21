@@ -51,7 +51,21 @@ class QueryExecutor(private val config: Configuration) {
 //            println(metaData)
 //            println(b.cols)
             b.execute()
-            return buildIterator { b.iterator.forEach {
+            var itr = b.iterator
+            if(b.aggregates.isNotEmpty()) {
+                itr = buildIterator{
+                    for((colName,aggrFun) in b.aggregates) {
+                        val colIdx = metaData!!.columns.indexOf(colName.replace("$a.",""))
+                        if(colIdx>=0) {
+                            if(aggrFun[0].first.toUpperCase() == "AVG") {
+                                colsProject.add(0)
+                                yieldAll(b.avgRun(b.start, b.end, colIdx))
+                            }
+                        }
+                    }
+                }
+            }
+            return buildIterator { itr.forEach {
                 (timestamp, values) ->
                 val newValues = values
                         .filterIndexed { index, _ -> colsProject.contains(index) }

@@ -234,7 +234,7 @@ class SparqlOpVisitor: OpVisitor {
                 if (value.isLiteral && value.literalDatatypeURI == "http://iot.soton.ac.uk/s2s/s2sml#literalMap") //binding to timeseries
                     projectCols(value.literalLexicalForm)
                 else if(value.isLiteral) { //aggregation
-                    //do something
+                    projectCols(value.literalLexicalForm)
                 }
             }
 //                println("$binding:$pVar:${binding.get(pVar).isLiteral}")
