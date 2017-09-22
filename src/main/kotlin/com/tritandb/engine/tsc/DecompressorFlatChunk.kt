@@ -70,7 +70,7 @@ class DecompressorFlatChunk(fileName:String):Decompressor {
         return java.lang.Double.longBitsToDouble(x)
     }
 
-    fun readAggr(start:Long,end:Long,col:Int):Iterator<Row>  = buildIterator {
+    fun readAggr(start:Long,end:Long,col:Int,type:String):Iterator<Row>  = buildIterator {
         var startBytes = 0L
         var firstSeek = true
         var firstBlock = -1L
@@ -117,7 +117,14 @@ class DecompressorFlatChunk(fileName:String):Decompressor {
                 totalSum = rL.second
             }
         }
-        yield(Row(0, listOf(java.lang.Double.doubleToLongBits(totalSum/totalCount)).toLongArray()))
+        var result = 0L
+        when(type) {
+            "avg"->result=java.lang.Double.doubleToLongBits(totalSum/totalCount)
+            "sum"->result=java.lang.Double.doubleToLongBits(totalSum)
+            "count"->result=totalCount
+            else->result=totalCount
+        }
+        yield(Row(0, listOf(result).toLongArray()))
         file.close()
     }
 
