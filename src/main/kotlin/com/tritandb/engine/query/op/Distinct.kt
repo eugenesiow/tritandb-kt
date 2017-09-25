@@ -7,8 +7,8 @@ import kotlin.coroutines.experimental.buildIterator
  * TritanDb
  * Created by eugene on 22/09/2017.
  */
-class Distinct {
-    fun distinct(rows:Iterator<Row>):Iterator<Row> {
+class Distinct(val rows:Iterator<Row>):TrOp {
+    override fun execute():Iterator<Row> {
         return buildIterator {
             var previousRow = Row(0, listOf<Long>().toLongArray())
             for (row in rows) {

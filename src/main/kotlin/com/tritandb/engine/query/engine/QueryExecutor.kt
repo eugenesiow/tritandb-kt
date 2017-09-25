@@ -50,8 +50,7 @@ class QueryExecutor(private val config: Configuration) {
             }
 //            println(metaData)
 //            println(b.cols)
-            b.execute()
-            var itr = b.iterator
+            var itr = b.execute()
             if(b.aggregates.isNotEmpty()) {
                 itr = buildIterator{
                     for((colName,aggrFun) in b.aggregates) {

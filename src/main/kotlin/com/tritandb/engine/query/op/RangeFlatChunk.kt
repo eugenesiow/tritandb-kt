@@ -8,16 +8,15 @@ import kotlin.coroutines.experimental.buildIterator
  * TritanDb
  * Created by eugene on 29/06/2017.
  */
-class RangeFlatChunk(val filePath:String):TrOp {
+class RangeFlatChunk(private val filePath:String):TrOp {
     var start: Long = 0
     var end: Long = 0
     val cols = mutableListOf<String>()
-    override var iterator:Iterator<Row> = buildIterator {}
     val aggregates = mutableMapOf<String,MutableList<Pair<String,String>>>()
 
-    override fun execute() {
+    override fun execute():Iterator<Row> {
 //        println("$start:$end:$cols")
-        iterator = run(start,end)
+        return run(start,end)
     }
 
     fun aggr(col: String, varName: String, aggrName: String) {

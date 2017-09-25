@@ -7,8 +7,8 @@ import kotlin.coroutines.experimental.buildIterator
  * TritanDb
  * Created by eugene on 22/09/2017.
  */
-class Limit {
-    fun limit(rows:Iterator<Row>,limit:Int,offset:Int):Iterator<Row> {
+class Limit(val rows:Iterator<Row>, private val limit:Int, private val offset:Int):TrOp {
+    override fun execute():Iterator<Row> {
         return buildIterator {
             var totalIdx = 0
             var resultIdx = 0
