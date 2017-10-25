@@ -1,7 +1,10 @@
 package com.tritandb.engine.query.engine
 
 import com.google.gson.Gson
-import com.natpryce.konfig.*
+import com.natpryce.konfig.Configuration
+import com.natpryce.konfig.PropertyGroup
+import com.natpryce.konfig.getValue
+import com.natpryce.konfig.stringType
 import com.tritandb.engine.query.op.RangeFlatChunk
 import com.tritandb.engine.tsc.data.Row
 import org.apache.jena.query.QueryFactory
@@ -36,45 +39,51 @@ class QueryExecutor(private val config: Configuration) {
         v.setModel(model)
         println("${measureTimeMillis{OpWalker.walk(op, v)}}")
 
+        var finalItr:Iterator<Row> = buildIterator {}
         v.getPlan().forEach { (a,b)->
-            b as RangeFlatChunk
-            val metaData = meta[a]
-            var showTimestamp = false
-            val colsProject = mutableListOf<Int>()
-            for(colName in b.cols) {
-                if(colName==metaData!!.timestamp)
-                    showTimestamp=true
-                val colIdx = metaData.columns.indexOf(colName)
-                if(colIdx>=0)
-                    colsProject.add(colIdx)
-            }
+            if(b is RangeFlatChunk) {
+//                b as RangeFlatChunk
+                val metaData = meta[a]
+                var showTimestamp = false
+                val colsProject = mutableListOf<Int>()
+                for (colName in b.cols) {
+                    if (colName == metaData!!.timestamp)
+                        showTimestamp = true
+                    val colIdx = metaData.columns.indexOf(colName)
+                    if (colIdx >= 0)
+                        colsProject.add(colIdx)
+                }
 //            println(metaData)
 //            println(b.cols)
-            var itr = b.execute()
-            if(b.aggregates.isNotEmpty()) {
-                itr = buildIterator{
-                    for((colName,aggrFun) in b.aggregates) {
-                        val colIdx = metaData!!.columns.indexOf(colName.replace("$a.",""))
-                        if(colIdx>=0) {
-                            if(aggrFun[0].first.toUpperCase() == "AVG") {
-                                colsProject.add(0)
-                                yieldAll(b.avgRun(b.start, b.end, colIdx))
+                var itr = b.execute()
+                if (b.aggregates.isNotEmpty()) {
+                    itr = buildIterator {
+                        for ((colName, aggrFun) in b.aggregates) {
+                            val colIdx = metaData!!.columns.indexOf(colName.replace("$a.", ""))
+                            if (colIdx >= 0) {
+                                if (aggrFun[0].first.toUpperCase() == "AVG") {
+                                    colsProject.add(0)
+                                    yieldAll(b.avgRun(b.start, b.end, colIdx))
+                                }
                             }
                         }
                     }
                 }
-            }
-            return buildIterator { itr.forEach {
-                (timestamp, values) ->
-                val newValues = values
-                        .filterIndexed { index, _ -> colsProject.contains(index) }
-                        .toMutableList()
-                yield(Row(timestamp,newValues.toLongArray()))
+                finalItr = buildIterator {
+                    itr.forEach { (timestamp, values) ->
+                        val newValues = values
+                                .filterIndexed { index, _ -> colsProject.contains(index) }
+                                .toMutableList()
+                        yield(Row(timestamp, newValues.toLongArray()))
 //                row -> yield(row)
-            }}
+                    }
+                }
+            } else {
+                finalItr = b.execute()
+            }
         }
 
-        return buildIterator {}
+        return finalItr
 
     }
 
